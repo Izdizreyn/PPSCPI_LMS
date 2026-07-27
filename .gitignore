@@ -1,0 +1,16 @@
+# Node / React (client)
+client/node_modules/
+client/dist/
+client/.env
+client/.env.local
+
+# PHP (api)
+api/vendor/
+api/.env
+
+# General
+.DS_Store
+*.log
+
+# Secrets
+api/config/jwt.php

@@ -1,0 +1,57 @@
+.button1 {
+  display: inline-block;
+  border: solid gray;
+  border-width: 2px;
+  padding-left: 25px;
+  padding-right: 25px;
+  border-radius: 8px;
+  margin-right: 5px;
+  cursor: pointer;
+  background-color: #800080;
+  transition: background-color 0.3s;
+  font-size: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button2 {
+  display: inline-block;
+  border: solid gray;
+  border-width: 2px;
+  padding-left: 25px;
+  padding-right: 25px;
+  border-radius: 8px;
+  margin-left: 5px;
+  cursor: pointer;
+  background-color: #d5b121;
+  transition: background-color 0.3s;
+  font-size: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button3 {
+  display: inline-block;
+  border: solid gray;
+  border-width: 2px;
+  padding-left: 25px;
+  padding-right: 25px;
+  border-radius: 8px;
+  margin-left: 5px;
+  cursor: pointer;
+  background-color: #333;
+  transition: background-color 0.3s;
+  font-size: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button1 a,
+.button2 a,
+.button3 a {
+  color: white;
+  text-decoration: none;
+}
+
+.heading {
+  padding-top: 3in;
+  font-size: 30px;
+  font-weight: bold;
+}
