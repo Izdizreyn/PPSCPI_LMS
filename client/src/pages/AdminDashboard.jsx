@@ -2,8 +2,16 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
+import AdminLayout from "../components/AdminLayout";
 import "./AdminDashboard.css";
 
+// NOTE: adjust these "to" paths to match your actual React Router routes
+const adminLinks = [
+  { to: "/admin", label: "Dashboard", icon: "🏠" },
+  { to: "/admin/students", label: "Students", icon: "👨‍🎓" },
+  { to: "/admin/enrolled", label: "Enrolled", icon: "📚" },
+  { to: "/admin/requests", label: "Requests", icon: "📩" },
+];
 
 export default function AdminDashboard() {
   const { token, logout } = useAuth();
@@ -54,7 +62,13 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <AdminLayout links={adminLinks}>
+        <p>Loading...</p>
+      </AdminLayout>
+    );
+  }
 
   if (selected && details) {
     const prefix = selected.type === "new" ? "_new" : selected.type === "old" ? "_old" : "_trans";
@@ -62,6 +76,7 @@ export default function AdminDashboard() {
     const fullName = `${student[`fname${prefix}`]} ${student[`mname${prefix}`]} ${student[`lname${prefix}`]}`;
 
     return (
+      <AdminLayout links={adminLinks}>
       <div className="container">
         <button className="back-btn" onClick={() => { setSelected(null); setDetails(null); }}>
           Back to Student List
@@ -97,10 +112,12 @@ export default function AdminDashboard() {
           <p style={{ color: "green", fontWeight: "bold" }}>Enrollment Status: Approved</p>
         )}
       </div>
+      </AdminLayout>
     );
   }
 
   return (
+    <AdminLayout links={adminLinks}>
     <div className="admin-dashboard container">
       <h1>Enrollees</h1>
       <div className="tab">
@@ -140,5 +157,6 @@ export default function AdminDashboard() {
         </tbody>
       </table>
     </div>
+    </AdminLayout>
   );
 }

@@ -82,7 +82,12 @@ function calculateFees($conn, $year_level, $strand = null)
 
 function recalculateBalance($conn, $balance_id)
 {
-    $balance_stmt = $conn->prepare('SELECT total_fees FROM student_balances WHERE balance_id = ?');
+    // Get the student's academic information
+    $balance_stmt = $conn->prepare("
+        SELECT year_level, strand
+        FROM student_balances
+        WHERE balance_id = ?
+    ");
     $balance_stmt->bind_param('i', $balance_id);
     $balance_stmt->execute();
     $balance_result = $balance_stmt->get_result();
@@ -92,19 +97,55 @@ function recalculateBalance($conn, $balance_id)
         return false;
     }
 
-    $total_fees = (float) $balance_result->fetch_assoc()['total_fees'];
+    $balance = $balance_result->fetch_assoc();
     $balance_stmt->close();
 
-    $payment_stmt = $conn->prepare('SELECT COALESCE(SUM(amount), 0) AS paid_total FROM payment_transactions WHERE balance_id = ?');
+    // Recalculate fees from the current fee catalog
+    $fee_data = calculateFees(
+        $conn,
+        $balance['year_level'],
+        $balance['strand']
+    );
+
+    $total_fees = (float)$fee_data['total'];
+
+    // Compute total payments made
+    $payment_stmt = $conn->prepare("
+        SELECT COALESCE(SUM(amount),0) AS paid_total
+        FROM payment_transactions
+        WHERE balance_id = ?
+    ");
     $payment_stmt->bind_param('i', $balance_id);
     $payment_stmt->execute();
-    $paid_amount = (float) $payment_stmt->get_result()->fetch_assoc()['paid_total'];
+
+    $paid_amount = (float)$payment_stmt
+        ->get_result()
+        ->fetch_assoc()['paid_total'];
+
     $payment_stmt->close();
 
-    $remaining_balance = $total_fees - $paid_amount;
+    // Compute remaining balance
+    $remaining_balance = max(0, $total_fees - $paid_amount);
 
-    $update_stmt = $conn->prepare('UPDATE student_balances SET paid_amount = ?, remaining_balance = ?, last_updated = NOW() WHERE balance_id = ?');
-    $update_stmt->bind_param('ddi', $paid_amount, $remaining_balance, $balance_id);
+    // Update everything using the fresh fee total
+    $update_stmt = $conn->prepare("
+        UPDATE student_balances
+        SET
+            total_fees = ?,
+            paid_amount = ?,
+            remaining_balance = ?,
+            last_updated = NOW()
+        WHERE balance_id = ?
+    ");
+
+    $update_stmt->bind_param(
+        'dddi',
+        $total_fees,
+        $paid_amount,
+        $remaining_balance,
+        $balance_id
+    );
+
     $updated = $update_stmt->execute();
     $update_stmt->close();
 
@@ -300,7 +341,7 @@ function updateStudentBalanceRecord($conn, $student_id, $student_type, $year_lev
         $balance = $result->fetch_assoc();
         $balance_id = (int) $balance['balance_id'];
         $paid_amount = (float) $balance['paid_amount'];
-        $remaining_balance = $total_fees - $paid_amount;
+        $remaining_balance = max(0, $total_fees - $paid_amount);
         $stmt->close();
 
         $update_stmt = $conn->prepare('UPDATE student_balances

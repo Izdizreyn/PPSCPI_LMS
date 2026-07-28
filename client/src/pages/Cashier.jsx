@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
-import AdminLayout from "../components/AdminLayout";
+import CashierLayout from "../components/CashierLayout";
 import "./Cashier.css";
 
 const cashierLinks = [
@@ -100,7 +100,7 @@ export default function Cashier() {
   };
 
   return (
-    <AdminLayout links={cashierLinks}>
+    <CashierLayout links={cashierLinks}>
       <div className="cashier-container">
         {!data ? (
           <div className="card">
@@ -238,6 +238,6 @@ export default function Cashier() {
           </>
         )}
       </div>
-    </AdminLayout>
+    </CashierLayout>
   );
 }
