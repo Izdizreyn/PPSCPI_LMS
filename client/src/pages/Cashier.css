@@ -1,0 +1,155 @@
+.cashier-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: #800080;
+  color: white;
+  padding: 12px 20px;
+}
+
+.card-header h5 {
+  margin: 0;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.search-form,
+.payment-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.search-form input,
+.payment-form input,
+.payment-form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.btn-primary {
+  background-color: #800080;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #5a005a;
+}
+
+.btn-clear {
+  margin-left: 10px;
+  background: none;
+  border: 1px solid #084298;
+  color: #084298;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.error-text {
+  color: red;
+  font-weight: bold;
+}
+
+.fee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: #fff;
+  text-align: left;
+}
+
+.fee-item.clickable {
+  cursor: pointer;
+  border-color: #cfe2ff;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.fee-item.clickable:hover {
+  background-color: #eef5ff;
+  border-color: #9ec5fe;
+}
+
+.fee-item.paid {
+  background-color: #f8fff9;
+  border-color: #d1e7dd;
+}
+
+.fee-item.clickable.selected {
+  background-color: #dbeafe;
+  border-color: #0d6efd;
+}
+
+.paid-label {
+  color: #198754;
+  font-weight: 600;
+}
+
+.unpaid-label {
+  color: #0d6efd;
+  font-weight: 600;
+}
+
+.selected-fee-badge {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #eef5ff;
+  border: 1px solid #9ec5fe;
+  border-radius: 6px;
+  color: #084298;
+}
+
+.cashier-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.cashier-container th,
+.cashier-container td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+.cashier-container th {
+  background-color: #f8f9fa;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background-color: #555;
+}

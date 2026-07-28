@@ -1,0 +1,10 @@
+.admin-layout {
+  min-height: 100vh;
+  background-color: #B6C2D9;
+}
+
+.admin-content {
+  margin-left: 100px;
+  padding: 20px;
+  transition: margin-left 0.3s;
+}
