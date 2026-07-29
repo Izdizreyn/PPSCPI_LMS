@@ -7,11 +7,29 @@ import "./AdminDashboard.css";
 
 // NOTE: adjust these "to" paths to match your actual React Router routes
 const adminLinks = [
-  { to: "/admin", label: "Dashboard", icon: "🏠" },
+  { to: "/admin/dashboard", label: "Dashboard", icon: "🏠" },
   { to: "/admin/students", label: "Students", icon: "👨‍🎓" },
   { to: "/admin/enrolled", label: "Enrolled", icon: "📚" },
   { to: "/admin/requests", label: "Requests", icon: "📩" },
 ];
+
+const REQUIREMENT_LABELS = {
+  form137_trans: "Form 137 (Transferee)",
+  gmorale_trans: "Good Moral Certificate (Transferee)",
+  cert_trans: "Certificate (Transferee)",
+  tor_trans: "Transcript of Records (Transferee)",
+  id_pic_trans: "ID Picture (Transferee)",
+  id_pic_old: "ID Picture (Old Student)",
+  report_card_new: "Report Card (New Student)",
+  form_137_new: "Form 137 (New Student)",
+  gmorale_new: "Good Moral Certificate (New Student)",
+  id_pic_new: "ID Picture (New Student)",
+};
+
+function formatRequirementLabel(key) {
+  return REQUIREMENT_LABELS[key] || "Unknown Document";
+}
+
 
 export default function AdminDashboard() {
   const { token, logout } = useAuth();
@@ -135,6 +153,26 @@ export default function AdminDashboard() {
               <p>{details.parent[`parent_phone${prefix}`]}</p>
             </>
           )}
+
+          {details.requirements && (
+  <>
+    <h3>Requirements</h3>
+    <ul className="requirements-list">
+      {Object.entries(details.requirements)
+        .filter(([key, value]) => !key.startsWith("id_req_") && value)
+        .map(([key, value]) => {
+          const fileHref = value.replace(/\\/g, "/").replace(/^\/+/, "");
+          return (
+            <li key={key}>
+              <a href={`${API_BASE_URL}/${fileHref}`} target="_blank" rel="noreferrer">
+                {formatRequirementLabel(key)}
+              </a>
+            </li>
+          );
+        })}
+    </ul>
+  </>
+)}
 
           {student[`status${prefix}`] !== "Approved" ? (
             <button onClick={approveStudent} className="approve-btn">

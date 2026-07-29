@@ -57,10 +57,25 @@
   margin-bottom: 15px;
 }
 
-.approved-students .balance-due { color: #b42318; font-weight: bold; }
-.approved-students .balance-paid { color: #198754; font-weight: bold; }
-.approved-students .balance-none { color: #888; font-style: italic; }
-.approved-students .view-link { color: blue; text-decoration: none; }
+.approved-students .balance-due {
+  color: #b42318;
+  font-weight: bold;
+}
+
+.approved-students .balance-paid {
+  color: #198754;
+  font-weight: bold;
+}
+
+.approved-students .balance-none {
+  color: #888;
+  font-style: italic;
+}
+
+.approved-students .view-link {
+  color: blue;
+  text-decoration: none;
+}
 
 .approved-students .modal {
   display: flex;
@@ -68,8 +83,10 @@
   justify-content: center;
   position: fixed;
   z-index: 1000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -102,4 +119,65 @@
   padding: 8px;
   border-bottom: 1px solid #eee;
   text-align: left;
+}
+
+.approved-students .balance-footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.approved-students .print-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.approved-students .print-btn:hover {
+  background-color: #218838;
+}
+
+@media print {
+  .sidebar,
+  .toggle-btn,
+  .admin-content > h1,
+  .admin-content > .tab,
+  .approved-students > .student-table,
+  .approved-students .year-level-section,
+  .close {
+    display: none !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .approved-students .modal,
+  .approved-students .modal-content,
+  .approved-students .modal-content * {
+    visibility: visible;
+  }
+
+  .approved-students .modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  .approved-students .modal-content {
+    width: 100%;
+    max-width: 100%;
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    padding: 20px;
+  }
 }

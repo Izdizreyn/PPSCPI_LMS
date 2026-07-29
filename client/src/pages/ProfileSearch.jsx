@@ -19,17 +19,21 @@ export default function ProfileSearch() {
     setError("");
     setData(null);
     try {
-      const res = await axios.get(`${API_BASE_URL}/students/profile-search.php?lrn=${lrn}`);
+      const res = await axios.get(
+        `${API_BASE_URL}/students/profile-search.php?lrn=${lrn}`,
+      );
       setData(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || `No student found with LRN: ${lrn}`);
+      setError(
+        err.response?.data?.message || `No student found with LRN: ${lrn}`,
+      );
     }
   };
 
   const openQueueModal = async () => {
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/students/queue-info.php?id=${data.student.id}&type=${data.student.mapped_type}`
+        `${API_BASE_URL}/students/queue-info.php?id=${data.student.id}&type=${data.student.mapped_type}`,
       );
       setQueueInfo(res.data.queue);
       setShowQueueModal(true);
@@ -40,7 +44,9 @@ export default function ProfileSearch() {
 
   const openBalanceModal = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/students/balance-info.php?lrn=${data.student.lrn}`);
+      const res = await axios.get(
+        `${API_BASE_URL}/students/balance-info.php?lrn=${data.student.lrn}`,
+      );
       setBalanceInfo(res.data);
       setShowBalanceModal(true);
     } catch (err) {
@@ -48,9 +54,18 @@ export default function ProfileSearch() {
     }
   };
 
-  const primAddField = data && data.student.type === "old" ? "prim_add_old" : `prim_add_${data?.student.type}`;
-  const secAddField = data && data.student.type === "old" ? "sec_add_old" : `sec_add_${data?.student.type}`;
-  const zipCodeField = data && data.student.type === "old" ? "zip_code_old" : `zip_code_${data?.student.type}`;
+  const primAddField =
+    data && data.student.type === "old"
+      ? "prim_add_old"
+      : `prim_add_${data?.student.type}`;
+  const secAddField =
+    data && data.student.type === "old"
+      ? "sec_add_old"
+      : `sec_add_${data?.student.type}`;
+  const zipCodeField =
+    data && data.student.type === "old"
+      ? "zip_code_old"
+      : `zip_code_${data?.student.type}`;
 
   const requirementLabels = {
     form137_trans: "Form 137 (Transferee)",
@@ -84,7 +99,10 @@ export default function ProfileSearch() {
       {data && (
         <div className="container">
           <div className="edit-link-row">
-            <Link to={`/edit-student?id=${data.student.id}&type=${data.student.type}`} className="edit-btn">
+            <Link
+              to={`/edit-student?id=${data.student.id}&type=${data.student.type}`}
+              className="edit-btn"
+            >
               Edit Profile
             </Link>
           </div>
@@ -93,19 +111,39 @@ export default function ProfileSearch() {
 
           <div className="info-item">
             <span className="info-label">Status:</span>
-            <span style={{ color: data.student.status === "Approved" ? "green" : "orange", fontWeight: "bold" }}>
+            <span
+              style={{
+                color: data.student.status === "Approved" ? "green" : "orange",
+                fontWeight: "bold",
+              }}
+            >
               {data.student.status}
             </span>
-            {data.student.status === "Approved" && data.student.has_queue_info && (
-              <>
-                <a href="#" className="queue-btn" onClick={(e) => { e.preventDefault(); openQueueModal(); }}>
-                  View Queue Number
-                </a>
-                <a href="#" className="balance-btn" onClick={(e) => { e.preventDefault(); openBalanceModal(); }}>
-                  View Balance
-                </a>
-              </>
-            )}
+            {data.student.status === "Approved" &&
+              data.student.has_queue_info && (
+                <>
+                  <a
+                    href="#"
+                    className="queue-btn"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openQueueModal();
+                    }}
+                  >
+                    View Queue Number
+                  </a>
+                  <a
+                    href="#"
+                    className="balance-btn"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openBalanceModal();
+                    }}
+                  >
+                    View Balance
+                  </a>
+                </>
+              )}
           </div>
 
           {data.balance && (
@@ -117,15 +155,18 @@ export default function ProfileSearch() {
                     data.balance.remaining_balance <= 0
                       ? "green"
                       : data.balance.remaining_balance < 500
-                      ? "orange"
-                      : "red",
+                        ? "orange"
+                        : "red",
                   fontWeight: "bold",
                 }}
               >
                 ₱ {Number(data.balance.remaining_balance).toFixed(2)}
               </span>
-              <span style={{ fontSize: "12px", color: "#666", marginLeft: "5px" }}>
-                (Last Updated: {new Date(data.balance.last_updated).toLocaleDateString()})
+              <span
+                style={{ fontSize: "12px", color: "#666", marginLeft: "5px" }}
+              >
+                (Last Updated:{" "}
+                {new Date(data.balance.last_updated).toLocaleDateString()})
               </span>
             </div>
           )}
@@ -133,7 +174,11 @@ export default function ProfileSearch() {
           <div className="info-row">
             <div className="info-item">
               <span className="info-label">Type:</span>
-              {data.student.type === "new" ? "New Student" : data.student.type === "trans" ? "Transferee" : "Old Student"}
+              {data.student.type === "new"
+                ? "New Student"
+                : data.student.type === "trans"
+                  ? "Transferee"
+                  : "Old Student"}
             </div>
             <div className="info-item">
               <span className="info-label">LRN:</span> {data.student.lrn}
@@ -143,27 +188,41 @@ export default function ProfileSearch() {
           <div className="info-row">
             <div className="info-item">
               <span className="info-label">Name:</span>{" "}
-              {data.student.first_name} {data.student.middle_name} {data.student.last_name} {data.student.ext_name}
+              {data.student.first_name} {data.student.middle_name}{" "}
+              {data.student.last_name} {data.student.ext_name}
             </div>
             <div className="info-item">
-              <span className="info-label">Year Level:</span> {data.student.year_level}
+              <span className="info-label">Year Level:</span>{" "}
+              {data.student.year_level}
             </div>
             {data.student.year_level >= 11 && (
               <div className="info-item">
-                <span className="info-label">Strand:</span> {data.student.strand || "Not assigned"}
+                <span className="info-label">Strand:</span>{" "}
+                {data.student.strand || "Not assigned"}
               </div>
             )}
           </div>
 
           <div className="info-row">
-            <div className="info-item"><span className="info-label">Age:</span> {data.student.age}</div>
-            <div className="info-item"><span className="info-label">Birthday:</span> {data.student.birthday}</div>
-            <div className="info-item"><span className="info-label">Gender:</span> {data.student.gender}</div>
+            <div className="info-item">
+              <span className="info-label">Age:</span> {data.student.age}
+            </div>
+            <div className="info-item">
+              <span className="info-label">Birthday:</span>{" "}
+              {data.student.birthday}
+            </div>
+            <div className="info-item">
+              <span className="info-label">Gender:</span> {data.student.gender}
+            </div>
           </div>
 
           <div className="info-row">
-            <div className="info-item"><span className="info-label">Phone:</span> {data.student.phone}</div>
-            <div className="info-item"><span className="info-label">Email:</span> {data.student.email}</div>
+            <div className="info-item">
+              <span className="info-label">Phone:</span> {data.student.phone}
+            </div>
+            <div className="info-item">
+              <span className="info-label">Email:</span> {data.student.email}
+            </div>
           </div>
 
           <div className="section-header">Address Information</div>
@@ -171,17 +230,20 @@ export default function ProfileSearch() {
             <>
               <div className="info-row">
                 <div className="info-item">
-                  <span className="info-label">Primary Address:</span> {data.address[primAddField] ?? "N/A"}
+                  <span className="info-label">Primary Address:</span>{" "}
+                  {data.address[primAddField] ?? "N/A"}
                 </div>
               </div>
               <div className="info-row">
                 <div className="info-item">
-                  <span className="info-label">Secondary Address:</span> {data.address[secAddField] ?? "N/A"}
+                  <span className="info-label">Secondary Address:</span>{" "}
+                  {data.address[secAddField] ?? "N/A"}
                 </div>
               </div>
               <div className="info-row">
                 <div className="info-item">
-                  <span className="info-label">Zip Code:</span> {data.address[zipCodeField] ?? "N/A"}
+                  <span className="info-label">Zip Code:</span>{" "}
+                  {data.address[zipCodeField] ?? "N/A"}
                 </div>
               </div>
             </>
@@ -194,21 +256,26 @@ export default function ProfileSearch() {
             <>
               <div className="info-row">
                 <div className="info-item">
-                  <span className="info-label">Name:</span> {data.parent[`parent_name_${data.student.type}`] ?? "N/A"}
+                  <span className="info-label">Name:</span>{" "}
+                  {data.parent[`parent_name_${data.student.type}`] ?? "N/A"}
                 </div>
               </div>
               <div className="info-row">
                 <div className="info-item">
-                  <span className="info-label">Address:</span> {data.parent[`parent_add_${data.student.type}`] ?? "N/A"}
+                  <span className="info-label">Address:</span>{" "}
+                  {data.parent[`parent_add_${data.student.type}`] ?? "N/A"}
                 </div>
               </div>
               <div className="info-row">
                 <div className="info-item">
-                  <span className="info-label">Relationship to the Enrollee:</span>{" "}
+                  <span className="info-label">
+                    Relationship to the Enrollee:
+                  </span>{" "}
                   {data.parent[`parent_rel_${data.student.type}`] ?? "N/A"}
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Phone:</span> {data.parent[`parent_phone_${data.student.type}`] ?? "N/A"}
+                  <span className="info-label">Phone:</span>{" "}
+                  {data.parent[`parent_phone_${data.student.type}`] ?? "N/A"}
                 </div>
               </div>
             </>
@@ -225,7 +292,7 @@ export default function ProfileSearch() {
                 const fileHref = value.replace(/\\/g, "/").replace(/^\/+/, "");
                 return (
                   <li key={key}>
-                    <a href={`${API_BASE_URL.replace("/api", "")}/${fileHref}`} target="_blank" rel="noreferrer">
+                    <a href={`${API_BASE_URL}/${fileHref}`} target="_blank" rel="noreferrer">
                       {label}
                     </a>
                   </li>
@@ -238,7 +305,9 @@ export default function ProfileSearch() {
       {showQueueModal && queueInfo && (
         <div className="modal" onClick={() => setShowQueueModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="close" onClick={() => setShowQueueModal(false)}>&times;</span>
+            <span className="close" onClick={() => setShowQueueModal(false)}>
+              &times;
+            </span>
             <div className="queue-card">
               <div className="queue-header">
                 <h2>Queue Number</h2>
@@ -247,14 +316,29 @@ export default function ProfileSearch() {
               <div className="queue-details">
                 <table>
                   <tbody>
-                    <tr><td>Student Name:</td><td>{queueInfo.enrollee_name}</td></tr>
-                    <tr><td>LRN:</td><td>{queueInfo.lrn}</td></tr>
-                    <tr><td>Enrollment Date:</td><td>{new Date(queueInfo.enrollment_date).toLocaleDateString()}</td></tr>
+                    <tr>
+                      <td>Student Name:</td>
+                      <td>{queueInfo.enrollee_name}</td>
+                    </tr>
+                    <tr>
+                      <td>LRN:</td>
+                      <td>{queueInfo.lrn}</td>
+                    </tr>
+                    <tr>
+                      <td>Enrollment Date:</td>
+                      <td>
+                        {new Date(
+                          queueInfo.enrollment_date,
+                        ).toLocaleDateString()}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
             </div>
-            <button className="print-btn" onClick={() => window.print()}>Print Queue</button>
+            <button className="print-btn" onClick={() => window.print()}>
+              Print Queue
+            </button>
           </div>
         </div>
       )}
@@ -262,7 +346,9 @@ export default function ProfileSearch() {
       {showBalanceModal && balanceInfo && (
         <div className="modal" onClick={() => setShowBalanceModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="close" onClick={() => setShowBalanceModal(false)}>&times;</span>
+            <span className="close" onClick={() => setShowBalanceModal(false)}>
+              &times;
+            </span>
             {balanceInfo.balance ? (
               <div className="balance-card">
                 <div className="balance-header">
@@ -272,10 +358,43 @@ export default function ProfileSearch() {
                 <div className="balance-summary">
                   <table width="100%">
                     <tbody>
-                      <tr><td><strong>Total Fees:</strong></td><td align="right">₱ {Number(balanceInfo.balance.total_fees).toFixed(2)}</td></tr>
-                      <tr><td><strong>Paid Amount:</strong></td><td align="right">₱ {Number(balanceInfo.balance.paid_amount).toFixed(2)}</td></tr>
-                      <tr className="balance-highlight"><td><strong>Remaining Balance:</strong></td><td align="right">₱ {Number(balanceInfo.balance.remaining_balance).toFixed(2)}</td></tr>
-                      <tr><td><strong>Last Updated:</strong></td><td align="right">{new Date(balanceInfo.balance.last_updated).toLocaleDateString()}</td></tr>
+                      <tr>
+                        <td>
+                          <strong>Total Fees:</strong>
+                        </td>
+                        <td align="right">
+                          ₱ {Number(balanceInfo.balance.total_fees).toFixed(2)}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>Paid Amount:</strong>
+                        </td>
+                        <td align="right">
+                          ₱ {Number(balanceInfo.balance.paid_amount).toFixed(2)}
+                        </td>
+                      </tr>
+                      <tr className="balance-highlight">
+                        <td>
+                          <strong>Remaining Balance:</strong>
+                        </td>
+                        <td align="right">
+                          ₱{" "}
+                          {Number(
+                            balanceInfo.balance.remaining_balance,
+                          ).toFixed(2)}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>Last Updated:</strong>
+                        </td>
+                        <td align="right">
+                          {new Date(
+                            balanceInfo.balance.last_updated,
+                          ).toLocaleDateString()}
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -285,12 +404,20 @@ export default function ProfileSearch() {
                     <h3>Payment History</h3>
                     <table className="transaction-table">
                       <thead>
-                        <tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt #</th><th>Remarks</th></tr>
+                        <tr>
+                          <th>Date</th>
+                          <th>Amount</th>
+                          <th>Method</th>
+                          <th>Receipt #</th>
+                          <th>Remarks</th>
+                        </tr>
                       </thead>
                       <tbody>
                         {balanceInfo.transactions.map((t) => (
                           <tr key={t.transaction_id}>
-                            <td>{new Date(t.payment_date).toLocaleDateString()}</td>
+                            <td>
+                              {new Date(t.payment_date).toLocaleDateString()}
+                            </td>
                             <td>₱ {Number(t.amount).toFixed(2)}</td>
                             <td>{t.payment_method}</td>
                             <td>{t.receipt_number}</td>
@@ -301,15 +428,21 @@ export default function ProfileSearch() {
                     </table>
                   </div>
                 ) : (
-                  <div className="no-transactions"><p>No payment transactions found.</p></div>
+                  <div className="no-transactions">
+                    <p>No payment transactions found.</p>
+                  </div>
                 )}
 
                 <div className="balance-footer">
-                  <button className="print-btn" onClick={() => window.print()}>Print Statement</button>
+                  <button className="print-btn" onClick={() => window.print()}>
+                    Print Statement
+                  </button>
                 </div>
               </div>
             ) : (
-              <div className="no-balance"><p>No financial information found for this student.</p></div>
+              <div className="no-balance">
+                <p>No financial information found for this student.</p>
+              </div>
             )}
           </div>
         </div>
