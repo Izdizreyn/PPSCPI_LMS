@@ -1,0 +1,63 @@
+.enroll-student .form-group {
+  margin-bottom: 15px;
+}
+
+.enroll-student .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.enroll-student .form-group input,
+.enroll-student .form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.enroll-student .btn {
+  background-color: #800080;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.enroll-student .btn:hover {
+  background-color: #5a005a;
+}
+
+.enroll-student .alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.enroll-student .alert-success {
+  color: #3c763d;
+  background-color: #dff0d8;
+}
+
+.enroll-student .alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+}
+
+.enroll-student .room-info {
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.enroll-student .back-btn {
+  display: inline-block;
+  margin-top: 20px;
+  background-color: #666;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

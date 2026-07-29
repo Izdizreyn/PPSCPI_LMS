@@ -128,12 +128,14 @@
   width: 100%;
   border-collapse: collapse;
 }
+
 .cashier-container th,
 .cashier-container td {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
+
 .cashier-container th {
   background-color: #f8f9fa;
 }

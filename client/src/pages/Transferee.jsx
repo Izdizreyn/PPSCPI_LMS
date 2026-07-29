@@ -470,9 +470,7 @@ export default function Transferee() {
             <label>Transcript of Record:</label>
             <input
               type="file"
-              onChange={(e) =>
-                handleFileChange("tor_trans", e.target.files[0])
-              }
+              onChange={(e) => handleFileChange("tor_trans", e.target.files[0])}
               required
             />
           </div>
