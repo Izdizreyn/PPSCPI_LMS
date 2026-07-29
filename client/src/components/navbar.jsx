@@ -8,7 +8,7 @@ export default function Navbar() {
     { to: "/", label: "Home" },
     { to: "/admin-login", label: "Staff Login" },
     { to: "/enroll", label: "Student Enroll" },
-    { to: "/profile-search", label: "Student Profile" },
+    { to: "/profile-search", label: "Search Student" },
     { to: "/request-certificate", label: "Request" },
   ];
 
