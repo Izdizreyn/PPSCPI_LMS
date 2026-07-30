@@ -1,0 +1,154 @@
+body {
+  font-family: "Times New Roman", Times, serif;
+}
+
+.cert-error {
+  text-align: center;
+  padding: 40px;
+  font-family: sans-serif;
+  color: #721c24;
+}
+
+.certificate-container {
+  width: 8.5in;
+  height: 11in;
+  margin: 0 auto;
+  padding: 0.5in;
+  border: 2px solid #333;
+  box-sizing: border-box;
+  position: relative;
+  background-color: white;
+  overflow: hidden;
+}
+
+.certificate-header {
+  text-align: center;
+  margin-bottom: 0.5in;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  width: 1.5in;
+  height: auto;
+  margin-bottom: 0.2in;
+  position: relative;
+  z-index: 1;
+}
+
+.school-name {
+  font-size: 24pt;
+  font-weight: bold;
+  color: #800080;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.school-address {
+  font-size: 12pt;
+  margin: 5px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.certificate-title {
+  font-size: 28pt;
+  font-weight: bold;
+  margin: 0.5in 0;
+  text-align: center;
+  color: #800080;
+  text-decoration: underline;
+  position: relative;
+  z-index: 1;
+}
+
+.certificate-body {
+  font-size: 14pt;
+  line-height: 1.5;
+  text-align: justify;
+  margin-bottom: 1in;
+  position: relative;
+  z-index: 1;
+}
+
+.certificate-footer {
+  text-align: center;
+  margin-top: 1in;
+  position: relative;
+  z-index: 1;
+}
+
+.signature-line {
+  width: 2.5in;
+  border-top: 1px solid black;
+  margin: 0 auto;
+  padding-top: 5px;
+}
+
+.signature-name {
+  font-weight: bold;
+  font-size: 14pt;
+}
+
+.signature-title {
+  font-size: 12pt;
+}
+
+.certificate-number {
+  position: absolute;
+  bottom: 0.5in;
+  left: 0.5in;
+  font-size: 10pt;
+  color: #333;
+  z-index: 1;
+}
+
+.watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.08;
+  width: 6in;
+  height: 6in;
+  z-index: 0;
+}
+
+.print-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #800080;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 100;
+}
+
+.print-button:hover {
+  background-color: #600060;
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  body * {
+    visibility: visible !important;
+  }
+  .certificate-container {
+    border: none;
+  }
+  .print-button {
+    display: none;
+  }
+}
