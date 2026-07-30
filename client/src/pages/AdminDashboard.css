@@ -58,7 +58,7 @@ a:hover {
     border-bottom: 1px solid #ddd;
 }
 
-.tab-container {
+.tab-admin-dashboard {
     margin-bottom: 20px;
 }
 
@@ -117,7 +117,7 @@ a:hover {
     color: red;
 }
 
-.container {
+.admin-dashboard {
     max-width: 1200px;
     margin: 0 auto;
     background-color: #fff;

@@ -10,12 +10,12 @@ export default function Home() {
         <div className="heading">
           <p>WELCOME!</p>
         </div>
-        <div className="button1 active">
+        <div className="home-btn-staff active">
           <Link to="/admin-login">
             <p>Staff</p>
           </Link>
         </div>
-        <div className="button2">
+        <div className="home-btn-enrollee">
           <Link to="/enroll">
             <p>Enrollee</p>
           </Link>

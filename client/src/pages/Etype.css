@@ -1,4 +1,4 @@
-.button1 {
+.etype-btn-old {
   display: inline-block;
   border: solid gray;
   border-width: 2px;
@@ -13,7 +13,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.button2 {
+.etype-btn-new {
   display: inline-block;
   border: solid gray;
   border-width: 2px;
@@ -28,7 +28,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.button3 {
+.etype-btn-trans {
   display: inline-block;
   border: solid gray;
   border-width: 2px;
@@ -43,9 +43,9 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.button1 a,
-.button2 a,
-.button3 a {
+.etype-btn-old a,
+.etype-btn-new a,
+.etype-btn-trans a {
   color: white;
   text-decoration: none;
 }

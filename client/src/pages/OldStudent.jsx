@@ -129,7 +129,7 @@ export default function OldStudent() {
   return (
     <>
       <Navbar />
-      <div className="container">
+      <div className="old-student-form">
         <h2>Pre-Enrollment Form for Old Student</h2>
 
         {error && <p style={{ color: "red" }}>{error}</p>}

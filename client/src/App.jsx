@@ -12,6 +12,10 @@ import ProfileSearch from "./pages/ProfileSearch";
 import ApprovedStudents from "./pages/ApprovedStudents";
 import AdminQueuePage from "./pages/AdminQueuePage";
 import EnrollStudentPage from "./pages/EnrollStudentPage";
+import RequestCertificate from "./pages/RequestCertificate";
+import AdminRequests from "./pages/AdminRequests";
+import EnrolledStudents from "./pages/EnrolledStudents";
+import PrintCertificate from "./pages/PrintCertificate";
 
 function App() {
   return (
@@ -24,6 +28,8 @@ function App() {
         <Route path="/enroll/transferee" element={<Transferee />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/profile-search" element={<ProfileSearch />} />
+        <Route path="/request-certificate" element={<RequestCertificate />} />
+        <Route path="/print-certificate" element={<PrintCertificate />} />
 
         <Route
           path="/admin/dashboard"
@@ -66,6 +72,23 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+  path="/admin/requests"
+  element={
+    <ProtectedRoute allowedRoles={["purple_admin"]}>
+      <AdminRequests />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/enrolled"
+  element={
+    <ProtectedRoute allowedRoles={["purple_admin"]}>
+      <EnrolledStudents />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </BrowserRouter>
   );
