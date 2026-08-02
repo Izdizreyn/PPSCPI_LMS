@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import LandingPage from "./pages/LandingPage";
 import Etype from "./pages/Etype";
 import OldStudent from "./pages/OldStudent";
 import NewStudent from "./pages/NewStudent";
@@ -21,7 +21,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/enroll" element={<Etype />} />
         <Route path="/enroll/old" element={<OldStudent />} />
         <Route path="/enroll/new" element={<NewStudent />} />

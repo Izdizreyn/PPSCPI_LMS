@@ -1,6 +1,12 @@
+.profile-search-page {
+  width: 100%;
+  max-width: 800px;
+  padding: 20px 0;
+}
+
 .search-form {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .search-form input,
@@ -10,10 +16,17 @@
   font-size: 16px;
 }
 
+.search-form input {
+  min-width: 220px;
+  border: none;
+  border-radius: 4px;
+}
+
 .search-form button {
   background-color: #800080;
   color: white;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
 }
 
@@ -23,36 +36,38 @@
 
 .search-error {
   text-align: center;
-  color: red;
+  color: #ffb3b3;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-.container {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+.profile-search-results {
   max-width: 800px;
   margin: 20px auto;
+  padding: 20px;
   position: relative;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .edit-link-row {
-  text-align: right;
   margin-top: -10px;
+  text-align: right;
 }
 
 .edit-btn,
 .queue-btn,
 .balance-btn {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 8px 15px;
   background-color: #800080;
   color: white !important;
-  padding: 8px 15px;
-  border-radius: 4px;
   text-decoration: none;
-  display: inline-block;
   font-size: 14px;
+  border-radius: 4px;
   transition: background-color 0.3s;
-  margin-left: 10px;
 }
 
 .balance-btn {
@@ -68,11 +83,23 @@
   background-color: #218838;
 }
 
+.print-btn {
+  display: block;
+  width: 150px;
+  margin: 20px auto;
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .section-header {
+  margin: 20px 0 15px;
+  padding: 10px;
   background-color: #800080;
   color: white;
-  padding: 10px;
-  margin: 20px 0 15px 0;
   border-radius: 4px;
 }
 
@@ -89,33 +116,30 @@
 }
 
 .info-label {
-  font-weight: bold;
   margin-right: 5px;
+  font-weight: bold;
 }
 
 .modal {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
   position: fixed;
+  inset: 0;
   z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
-  background-color: #fefefe;
-  margin: 5% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  border-radius: 8px;
+  position: relative;
   width: 60%;
   max-width: 600px;
-  position: relative;
+  margin: 5% auto;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #888;
+  border-radius: 8px;
 }
 
 .close {
@@ -134,10 +158,10 @@
 
 .queue-card,
 .balance-card {
-  border: 2px solid #800080;
-  border-radius: 8px;
   padding: 20px;
   background-color: #f9f9f9;
+  border: 2px solid #800080;
+  border-radius: 8px;
 }
 
 .balance-card {
@@ -146,22 +170,22 @@
 
 .queue-header,
 .balance-header {
-  text-align: center;
   margin-bottom: 20px;
-  border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
 }
 
 .queue-number {
-  font-size: 36px;
-  font-weight: bold;
-  color: #800080;
-  text-align: center;
   margin: 20px 0;
   padding: 15px;
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  color: #800080;
+  background-color: #f0e6f5;
   border: 2px dashed #800080;
   border-radius: 8px;
-  background-color: #f0e6f5;
 }
 
 .queue-details table,
@@ -170,14 +194,14 @@
   border-collapse: collapse;
 }
 
-.queue-details table td {
+.queue-details td {
   padding: 10px;
   border-bottom: 1px solid #eee;
 }
 
-.queue-details table td:first-child {
-  font-weight: bold;
+.queue-details td:first-child {
   width: 40%;
+  font-weight: bold;
 }
 
 .transaction-table th,
@@ -197,27 +221,15 @@
   color: #28a745;
 }
 
+.balance-footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
 .no-transactions,
 .no-balance {
-  text-align: center;
   padding: 20px;
+  text-align: center;
   color: #666;
   font-style: italic;
-}
-
-.balance-footer {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.print-btn {
-  display: block;
-  width: 150px;
-  margin: 20px auto;
-  padding: 10px 15px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }

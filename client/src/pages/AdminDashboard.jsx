@@ -111,7 +111,7 @@ export default function AdminDashboard() {
 
     return (
       <AdminLayout links={adminLinks}>
-        <div className="container">
+        <div className="admin-dashboard">
           <button
             className="back-btn"
             onClick={() => {
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout links={adminLinks}>
-      <div className="admin-dashboard container">
+      <div className="admin-dashboard admin-dashboard">
         <h1>Enrollees</h1>
         <div className="tab">
           {["new", "old", "transferee"].map((tab) => (

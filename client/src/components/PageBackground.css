@@ -1,0 +1,37 @@
+.page-bg {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(circle at 15% 10%, #2c8fa8 0%, transparent 45%),
+              linear-gradient(135deg, #3a3a8c 0%, #6a2ea0 45%, #9b2ea6 75%, #b829a0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.page-bg-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.page-bg-lines .line {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 2;
+}
+
+.page-bg-lines .line-2 { stroke: rgba(255, 255, 255, 0.14); }
+.page-bg-lines .line-3 { stroke: rgba(255, 255, 255, 0.10); }
+.page-bg-lines .line-4 { stroke: rgba(255, 255, 255, 0.22); }
+
+.page-bg-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
