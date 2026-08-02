@@ -142,7 +142,7 @@ export default function NewStudent() {
   return (
     <>
       <Navbar />
-      <div className="container">
+      <div className="new-student-form">
         <h2>Pre-Enrollment Form for New Student</h2>
 
         {error && <p style={{ color: "red" }}>{error}</p>}

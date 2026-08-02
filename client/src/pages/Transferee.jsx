@@ -148,7 +148,7 @@ export default function Transferee() {
   return (
     <>
       <Navbar />
-      <div className="container">
+      <div className="transferee-form">
         <h2>Pre-Enrollment Form for Transferee</h2>
 
         {error && <p style={{ color: "red" }}>{error}</p>}

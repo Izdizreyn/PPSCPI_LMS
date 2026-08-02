@@ -9,10 +9,10 @@
 .topnav .logo {
   width: 60px;
   height: 60px;
-  object-fit: contain; /* Keeps the image proportional */
-  margin-right: 15px;
-  margin: 2px 15px 2px 0;
+  object-fit: contain;
+  flex-shrink: 0;
   display: block;
+  margin-right: 15px;
 }
 
 .topnav a {

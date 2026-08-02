@@ -1,0 +1,210 @@
+.hero {
+  position: relative;
+  min-height: 640px;
+  overflow: hidden;
+  background: radial-gradient(circle at 15% 10%, #2c8fa8 0%, transparent 45%),
+              linear-gradient(135deg, #3a3a8c 0%, #6a2ea0 45%, #9b2ea6 75%, #b829a0 100%);
+  display: flex;
+  align-items: center;
+  padding: 60px 5%;
+  box-sizing: border-box;
+}
+
+.hero-waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.wave { fill: none; stroke: rgba(255, 255, 255, 0.18); stroke-width: 2; }
+.wave-2 { stroke: rgba(255, 255, 255, 0.14); }
+.wave-3 { stroke: rgba(255, 255, 255, 0.10); }
+.wave-4 { stroke: rgba(255, 255, 255, 0.22); }
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.hero-text { color: white; }
+
+.hero-text h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 24px;
+  color: #df65d9;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+.hero-text p {
+  font-size: 1rem;
+  line-height: 1.7;
+  opacity: 0.92;
+  margin-bottom: 16px;
+}
+
+.hero-text p:last-child { margin-bottom: 0; }
+
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-self: end;
+  width: 100%;
+  max-width: 280px;
+}
+
+.hero-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 22px 28px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.hero-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.hero-btn-label {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.hero-btn-hint {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.hero-btn-staff {
+  background-color: white;
+  color: #6a2ea0;
+}
+
+.hero-btn-enrollee {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.hero-btn-enrollee:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.scroll-arrow {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid rgba(255, 255, 255, 0.75);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.75);
+  transform: rotate(45deg);
+  animation: bounce 1.6s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: rotate(45deg) translate(0, 0); }
+  50% { transform: rotate(45deg) translate(4px, 4px); }
+}
+
+.content-section {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 70px 20px;
+}
+
+.programs-section { text-align: center; }
+
+.section-title {
+  color: #800080;
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+
+.section-subtitle {
+  color: #666;
+  margin-bottom: 32px;
+}
+
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  text-align: left;
+}
+
+.program-card {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid #eee;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(128, 0, 128, 0.12);
+}
+
+.program-card h3 {
+  color: #333;
+  font-size: 1.05rem;
+  margin-bottom: 14px;
+}
+
+.program-sections { display: flex; gap: 8px; }
+
+.section-badge {
+  background-color: #f0e6f5;
+  color: #800080;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+@media (max-width: 860px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .hero-actions {
+    justify-self: stretch;
+    flex-direction: row;
+    max-width: none;
+  }
+  .hero-btn { flex: 1; }
+}
+
+@media (max-width: 600px) {
+  .hero-text h1 { font-size: 1.6rem; }
+  .hero-actions { flex-direction: column; }
+}

@@ -203,7 +203,7 @@ export default function ApprovedStudents() {
               <tr><td><strong>Paid Amount:</strong></td><td align="right">₱ {Number(balanceModal.balance.paid_amount).toFixed(2)}</td></tr>
               <tr><td><strong>Remaining Balance:</strong></td><td align="right">₱ {Number(balanceModal.balance.remaining_balance).toFixed(2)}</td></tr>
             </tbody>
-          </table>
+          </table> 
           {balanceModal.transactions.length > 0 && (
             <>
               <h3>Payment History</h3>

@@ -1,57 +1,66 @@
-.etype-btn-old {
-  display: inline-block;
-  border: solid gray;
-  border-width: 2px;
-  padding-left: 25px;
-  padding-right: 25px;
-  border-radius: 8px;
-  margin-right: 5px;
-  cursor: pointer;
-  background-color: #800080;
-  transition: background-color 0.3s;
-  font-size: 25px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.etype-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  padding: 36px 40px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
 }
 
-.etype-btn-new {
-  display: inline-block;
-  border: solid gray;
-  border-width: 2px;
-  padding-left: 25px;
-  padding-right: 25px;
-  border-radius: 8px;
-  margin-left: 5px;
-  cursor: pointer;
-  background-color: #d5b121;
-  transition: background-color 0.3s;
-  font-size: 25px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.etype-title {
+  margin: 0 0 6px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #222;
 }
 
-.etype-btn-trans {
-  display: inline-block;
-  border: solid gray;
-  border-width: 2px;
-  padding-left: 25px;
-  padding-right: 25px;
-  border-radius: 8px;
-  margin-left: 5px;
-  cursor: pointer;
-  background-color: #333;
-  transition: background-color 0.3s;
-  font-size: 25px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.etype-subtitle {
+  margin: 0 0 24px 0;
+  font-size: 0.9rem;
+  color: #777;
 }
 
-.etype-btn-old a,
-.etype-btn-new a,
-.etype-btn-trans a {
-  color: white;
+.etype-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.etype-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   text-decoration: none;
+  color: white;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
-.heading {
-  padding-top: 3in;
-  font-size: 30px;
-  font-weight: bold;
+.etype-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  filter: brightness(1.05);
+}
+
+.etype-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.etype-btn-old { background-color: #800080; }
+.etype-btn-new { background-color: #d5b121; }
+.etype-btn-trans { background-color: #2c3e50; }
+
+@media (max-width: 480px) {
+  .etype-card {
+    padding: 28px 24px;
+  }
 }

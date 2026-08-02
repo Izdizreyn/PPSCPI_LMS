@@ -5,9 +5,7 @@ import { API_BASE_URL } from "../config/api";
 import CashierLayout from "../components/CashierLayout";
 import "./Cashier.css";
 
-const cashierLinks = [
-  { to: "/cashier", label: "Dashboard", icon: "🧾" },
-];
+const cashierLinks = [{ to: "/cashier", label: "Dashboard", icon: "🧾" }];
 
 export default function Cashier() {
   const { token } = useAuth();
@@ -26,7 +24,10 @@ export default function Cashier() {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.get(`${API_BASE_URL}/cashier/search-student.php?lrn=${lrn}`, authHeaders);
+      const res = await axios.get(
+        `${API_BASE_URL}/cashier/search-student.php?lrn=${lrn}`,
+        authHeaders,
+      );
       setData(res.data);
 
       if (!res.data.balance) {
@@ -39,9 +40,12 @@ export default function Cashier() {
             strand: res.data.student.strand,
             student_lrn: res.data.student.lrn,
           },
-          authHeaders
+          authHeaders,
         );
-        const refreshed = await axios.get(`${API_BASE_URL}/cashier/search-student.php?lrn=${lrn}`, authHeaders);
+        const refreshed = await axios.get(
+          `${API_BASE_URL}/cashier/search-student.php?lrn=${lrn}`,
+          authHeaders,
+        );
         setData(refreshed.data);
       }
     } catch (err) {
@@ -85,14 +89,17 @@ export default function Cashier() {
           remarks,
           fee_id: selectedFee,
         },
-        authHeaders
+        authHeaders,
       );
       alert("Payment recorded successfully.");
       setSelectedFee(null);
       setAmount("");
       setReceiptNumber("");
       setRemarks("");
-      const refreshed = await axios.get(`${API_BASE_URL}/cashier/search-student.php?lrn=${lrn}`, authHeaders);
+      const refreshed = await axios.get(
+        `${API_BASE_URL}/cashier/search-student.php?lrn=${lrn}`,
+        authHeaders,
+      );
       setData(refreshed.data);
     } catch (err) {
       alert(err.response?.data?.message || "Failed to record payment.");
@@ -116,7 +123,9 @@ export default function Cashier() {
                   placeholder="Learner Reference Number (LRN)"
                   required
                 />
-                <button type="submit" className="btn-primary">Search</button>
+                <button type="submit" className="btn-primary">
+                  Search
+                </button>
               </form>
               {error && <p className="error-text">{error}</p>}
             </div>
@@ -132,9 +141,17 @@ export default function Cashier() {
                 <h5>Student Information</h5>
               </div>
               <div className="card-body">
-                <p><strong>Name:</strong> {data.student.full_name}</p>
-                <p><strong>Year Level:</strong> {data.student.year_level}</p>
-                {data.student.strand && <p><strong>Strand:</strong> {data.student.strand}</p>}
+                <p>
+                  <strong>Name:</strong> {data.student.full_name}
+                </p>
+                <p>
+                  <strong>Year Level:</strong> {data.student.year_level}
+                </p>
+                {data.student.strand && (
+                  <p>
+                    <strong>Strand:</strong> {data.student.strand}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -149,9 +166,15 @@ export default function Cashier() {
                     className={`fee-item ${fee.is_paid ? "paid" : "clickable"} ${selectedFee === fee.fee_id ? "selected" : ""}`}
                     onClick={() => !fee.is_paid && selectFee(fee)}
                   >
-                    <span>{fee.fee_name} <small>({fee.category_name})</small></span>
-                    <span className={fee.is_paid ? "paid-label" : "unpaid-label"}>
-                      {fee.is_paid ? `Paid · ₱ ${fee.amount_due.toFixed(2)}` : `Pay ₱ ${fee.remaining.toFixed(2)}`}
+                    <span>
+                      {fee.fee_name} <small>({fee.category_name})</small>
+                    </span>
+                    <span
+                      className={fee.is_paid ? "paid-label" : "unpaid-label"}
+                    >
+                      {fee.is_paid
+                        ? `Paid · ₱ ${fee.amount_due.toFixed(2)}`
+                        : `Pay ₱ ${fee.remaining.toFixed(2)}`}
                     </span>
                   </div>
                 ))}
@@ -164,16 +187,31 @@ export default function Cashier() {
                   <h5>Balance Information</h5>
                 </div>
                 <div className="card-body">
-                  <p><strong>Total Fees:</strong> ₱ {Number(data.balance.total_fees).toFixed(2)}</p>
-                  <p><strong>Paid Amount:</strong> ₱ {Number(data.balance.paid_amount).toFixed(2)}</p>
-                  <p><strong>Remaining Balance:</strong> ₱ {Number(data.balance.remaining_balance).toFixed(2)}</p>
+                  <p>
+                    <strong>Total Fees:</strong> ₱{" "}
+                    {Number(data.balance.total_fees).toFixed(2)}
+                  </p>
+                  <p>
+                    <strong>Paid Amount:</strong> ₱{" "}
+                    {Number(data.balance.paid_amount).toFixed(2)}
+                  </p>
+                  <p>
+                    <strong>Remaining Balance:</strong> ₱{" "}
+                    {Number(data.balance.remaining_balance).toFixed(2)}
+                  </p>
 
                   <h6>Record New Payment</h6>
 
                   {selectedFee && (
                     <div className="selected-fee-badge active">
                       Paying: {remarks} — ₱ {amount}
-                      <button type="button" className="btn-clear" onClick={clearSelectedFee}>Clear</button>
+                      <button
+                        type="button"
+                        className="btn-clear"
+                        onClick={clearSelectedFee}
+                      >
+                        Clear
+                      </button>
                     </div>
                   )}
 
@@ -186,7 +224,10 @@ export default function Cashier() {
                       placeholder="Amount"
                       required
                     />
-                    <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+                    <select
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    >
                       <option value="Cash">Cash</option>
                       <option value="Online Payment">Online Payment</option>
                     </select>
@@ -204,7 +245,9 @@ export default function Cashier() {
                       placeholder="Remarks"
                       required
                     />
-                    <button type="submit" className="btn-primary">Record Payment</button>
+                    <button type="submit" className="btn-primary">
+                      Record Payment
+                    </button>
                   </form>
                 </div>
               </div>
@@ -218,7 +261,13 @@ export default function Cashier() {
                 <div className="card-body">
                   <table>
                     <thead>
-                      <tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt #</th><th>Remarks</th></tr>
+                      <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Receipt #</th>
+                        <th>Remarks</th>
+                      </tr>
                     </thead>
                     <tbody>
                       {data.payment_history.map((p) => (
