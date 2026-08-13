@@ -55,7 +55,7 @@ export default function RequestCertificate() {
   return (
     <>
       <Navbar />
-      <div className="container">
+      <div className="request-certificate-form">
         <h1>Request Certificate of Enrollment</h1>
 
         {successMessage && <div className="alert alert-success">{successMessage}</div>}

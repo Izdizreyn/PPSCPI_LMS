@@ -135,7 +135,7 @@ export default function ApprovedStudents() {
 
   return (
     <AdminLayout links={adminLinks}>
-      <div className="approved-students container">
+      <div className="approved-students">
         <h1>Approved Students</h1>
 
         <div className="tab">

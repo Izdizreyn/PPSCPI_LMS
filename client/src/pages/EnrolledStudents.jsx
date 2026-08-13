@@ -63,6 +63,33 @@ export default function EnrolledStudents() {
     roomsByLevel[r.level].push(r);
   });
 
+  const renderTable = (list) => (
+    <table className="student-table">
+      <thead>
+        <tr>
+          <th>LRN</th>
+          <th>Name</th>
+          <th>Year Level</th>
+          <th>Strand</th>
+          <th>Room</th>
+          <th>Date Enrolled</th>
+        </tr>
+      </thead>
+      <tbody>
+        {list.map((s) => (
+          <tr key={s.id}>
+            <td>{s.lrn}</td>
+            <td>{s.full_name}</td>
+            <td>{s.year_level}</td>
+            <td>{s.strand}</td>
+            <td>{s.room}</td>
+            <td>{new Date(s.enrollment_date).toLocaleDateString()}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
   if (loading) {
     return (
       <AdminLayout links={adminLinks}>
@@ -73,7 +100,14 @@ export default function EnrolledStudents() {
 
   return (
     <AdminLayout links={adminLinks}>
-      <div className="enrolled-students container">
+      <div className="enrolled-students">
+        <div className="page-header-row">
+          <div className="page-header-spacer" />
+          <button className="print-btn" onClick={() => window.print()}>
+            Print List
+          </button>
+        </div>
+
         <h1>Enrolled Students</h1>
 
         <div className="search-container">
@@ -86,19 +120,46 @@ export default function EnrolledStudents() {
         </div>
 
         <div className="tab">
-          <button className={activeTab === "all" ? "active" : ""} onClick={() => setActiveTab("all")}>All Students</button>
-          <button className={activeTab === "level" ? "active" : ""} onClick={() => setActiveTab("level")}>By Level</button>
-          <button className={activeTab === "room" ? "active" : ""} onClick={() => setActiveTab("room")}>By Room</button>
-          <button className={activeTab === "occupancy" ? "active" : ""} onClick={() => setActiveTab("occupancy")}>Room Occupancy</button>
+          <button
+            className={activeTab === "all" ? "active" : ""}
+            onClick={() => setActiveTab("all")}
+          >
+            All Students
+          </button>
+          <button
+            className={activeTab === "level" ? "active" : ""}
+            onClick={() => setActiveTab("level")}
+          >
+            By Level
+          </button>
+          <button
+            className={activeTab === "room" ? "active" : ""}
+            onClick={() => setActiveTab("room")}
+          >
+            By Room
+          </button>
+          <button
+            className={activeTab === "occupancy" ? "active" : ""}
+            onClick={() => setActiveTab("occupancy")}
+          >
+            Room Occupancy
+          </button>
         </div>
 
         {activeTab === "all" && (
           <>
-            <button className="print-btn" onClick={() => window.print()}>Print List</button>
             {filteredStudents.length > 0 ? (
               <table className="student-table">
                 <thead>
-                  <tr><th>LRN</th><th>Name</th><th>Year Level</th><th>Strand</th><th>Room</th><th>Level</th><th>Date Enrolled</th></tr>
+                  <tr>
+                    <th>LRN</th>
+                    <th>Name</th>
+                    <th>Year Level</th>
+                    <th>Strand</th>
+                    <th>Room</th>
+                    <th>Level</th>
+                    <th>Date Enrolled</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {filteredStudents.map((s) => (
@@ -121,111 +182,140 @@ export default function EnrolledStudents() {
         )}
 
         {activeTab === "level" && (
-          Object.keys(byLevel).sort(levelSort).map((level) => (
-            <div className="level-section" key={level}>
-              <div className="section-header"><h3>{level}</h3></div>
-              <table className="student-table">
-                <thead>
-                  <tr>
-                    <th>LRN</th><th>Name</th><th>Year Level</th>
-                    {level === "Senior High School" && <th>Strand</th>}
-                    <th>Room</th><th>Date Enrolled</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {byLevel[level].map((s) => (
-                    <tr key={s.id}>
-                      <td>{s.lrn}</td>
-                      <td>{s.full_name}</td>
-                      <td>{s.year_level}</td>
-                      {level === "Senior High School" && <td>{s.strand}</td>}
-                      <td>{s.room}</td>
-                      <td>{new Date(s.enrollment_date).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))
+          <>
+            {Object.keys(byLevel)
+              .sort(levelSort)
+              .map((level) => (
+                <div className="level-section" key={level}>
+                  <div className="section-header">
+                    <h3>{level}</h3>
+                  </div>
+                  {renderTable(byLevel[level])}
+                </div>
+              ))}
+          </>
         )}
 
         {activeTab === "room" && (
-          Object.keys(byRoom)
-            .sort((a, b) => {
-              const cmp = levelSort(roomLevels[a], roomLevels[b]);
-              return cmp !== 0 ? cmp : a.localeCompare(b);
-            })
-            .map((room) => {
-              const level = roomLevels[room];
-              return (
-                <div className="room-section" key={room}>
-                  <div className="room-header">
-                    <h3>{room} ({level})</h3>
-                    <span className="capacity-badge">{byRoom[room].length} students</span>
+          <>
+            {Object.keys(byRoom)
+              .sort((a, b) => {
+                const cmp = levelSort(roomLevels[a], roomLevels[b]);
+                return cmp !== 0 ? cmp : a.localeCompare(b);
+              })
+              .map((room) => {
+                const level = roomLevels[room];
+                return (
+                  <div className="room-section" key={room}>
+                    <div className="room-header">
+                      <h3>
+                        {room} ({level})
+                      </h3>
+                      <span className="capacity-badge">
+                        {byRoom[room].length} students
+                      </span>
+                    </div>
+                    <table className="student-table">
+                      <thead>
+                        <tr>
+                          <th>LRN</th>
+                          <th>Name</th>
+                          <th>Year Level</th>
+                          {level === "Senior High School" && <th>Strand</th>}
+                          <th>Date Enrolled</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {byRoom[room].map((s) => (
+                          <tr key={s.id}>
+                            <td>{s.lrn}</td>
+                            <td>{s.full_name}</td>
+                            <td>{s.year_level}</td>
+                            {level === "Senior High School" && (
+                              <td>{s.strand}</td>
+                            )}
+                            <td>
+                              {new Date(s.enrollment_date).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
+          </>
+        )}
+
+        {activeTab === "occupancy" && (
+          <>
+            {Object.keys(roomsByLevel)
+              .sort(levelSort)
+              .map((level) => (
+                <div className="level-section" key={level}>
+                  <div className="section-header">
+                    <h3>{level}</h3>
                   </div>
                   <table className="student-table">
                     <thead>
                       <tr>
-                        <th>LRN</th><th>Name</th><th>Year Level</th>
+                        <th>Room</th>
+                        <th>Year Level</th>
                         {level === "Senior High School" && <th>Strand</th>}
-                        <th>Date Enrolled</th>
+                        <th>Capacity</th>
+                        <th>Enrolled</th>
+                        <th>Available</th>
+                        <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {byRoom[room].map((s) => (
-                        <tr key={s.id}>
-                          <td>{s.lrn}</td>
-                          <td>{s.full_name}</td>
-                          <td>{s.year_level}</td>
-                          {level === "Senior High School" && <td>{s.strand}</td>}
-                          <td>{new Date(s.enrollment_date).toLocaleDateString()}</td>
-                        </tr>
-                      ))}
+                      {roomsByLevel[level]
+                        .sort((a, b) =>
+                          a.year_level === b.year_level
+                            ? a.room_name.localeCompare(b.room_name)
+                            : a.year_level - b.year_level,
+                        )
+                        .map((room) => {
+                          const available = room.capacity - room.current_count;
+                          const percentFull =
+                            (room.current_count / room.capacity) * 100;
+                          const status =
+                            percentFull >= 100
+                              ? "Full"
+                              : percentFull >= 80
+                                ? "Almost Full"
+                                : "Available";
+                          const statusClass =
+                            percentFull >= 100
+                              ? "status-full"
+                              : percentFull >= 80
+                                ? "status-almost"
+                                : "status-available";
+                          const strandMatch =
+                            level === "Senior High School"
+                              ? room.room_name.match(/Grade \d+-(.*)-[A-Z]/)
+                              : null;
+                          const strand = strandMatch ? strandMatch[1] : "";
+
+                          return (
+                            <tr key={room.id} className={statusClass}>
+                              <td>{room.room_name}</td>
+                              <td>{room.year_level}</td>
+                              {level === "Senior High School" && (
+                                <td>{strand}</td>
+                              )}
+                              <td>{room.capacity}</td>
+                              <td>{room.current_count}</td>
+                              <td>{available}</td>
+                              <td>{status}</td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 </div>
-              );
-            })
-        )}
-
-        {activeTab === "occupancy" && (
-          Object.keys(roomsByLevel).sort(levelSort).map((level) => (
-            <div className="level-section" key={level}>
-              <div className="section-header"><h3>{level}</h3></div>
-              <table className="student-table">
-                <thead>
-                  <tr>
-                    <th>Room</th><th>Year Level</th>
-                    {level === "Senior High School" && <th>Strand</th>}
-                    <th>Capacity</th><th>Enrolled</th><th>Available</th><th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {roomsByLevel[level]
-                    .sort((a, b) => a.year_level === b.year_level ? a.room_name.localeCompare(b.room_name) : a.year_level - b.year_level)
-                    .map((room) => {
-                      const available = room.capacity - room.current_count;
-                      const percentFull = (room.current_count / room.capacity) * 100;
-                      const status = percentFull >= 100 ? "Full" : percentFull >= 80 ? "Almost Full" : "Available";
-                      const statusClass = percentFull >= 100 ? "status-full" : percentFull >= 80 ? "status-almost" : "status-available";
-                      const strandMatch = level === "Senior High School" ? room.room_name.match(/Grade \d+-(.*)-[A-Z]/) : null;
-                      const strand = strandMatch ? strandMatch[1] : "";
-                      return (
-                        <tr key={room.id} className={statusClass}>
-                          <td>{room.room_name}</td>
-                          <td>{room.year_level}</td>
-                          {level === "Senior High School" && <td>{strand}</td>}
-                          <td>{room.capacity}</td>
-                          <td>{room.current_count}</td>
-                          <td>{available}</td>
-                          <td>{status}</td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
-          ))
+              ))}
+          </>
         )}
       </div>
     </AdminLayout>

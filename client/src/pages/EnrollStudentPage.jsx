@@ -63,7 +63,7 @@ export default function EnrollStudentPage() {
 
   return (
     <AdminLayout links={adminLinks}>
-      <div className="enroll-student container">
+      <div className="enroll-student">
         <h1>Enroll Student</h1>
         {message && (
           <div className={`alert alert-${message.type}`}>{message.text}</div>

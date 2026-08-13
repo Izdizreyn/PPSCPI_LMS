@@ -33,7 +33,7 @@ export default function PrintCertificate() {
   const { request, school, certificate_number, current_date, school_year } = data;
 
   return (
-    <>
+    <div className="print-certificate">
       <button className="print-button" onClick={() => window.print()}>
         Print Certificate
       </button>
@@ -83,6 +83,6 @@ export default function PrintCertificate() {
 
         <div className="certificate-number">Certificate No: {certificate_number}</div>
       </div>
-    </>
+    </div>
   );
 }

@@ -39,6 +39,24 @@ a:hover {
     text-decoration: none;
 }
 
+.approve-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 18px;
+    background-color: #800080;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.approve-btn:hover {
+    background-color: #5d005d;
+}
+
 .student-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
