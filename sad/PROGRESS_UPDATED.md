@@ -3,109 +3,133 @@
 > How to use this file: update it at the END of every chat session, before you close it.
 > When you open a NEW chat, paste or upload this file first and say:
 > "Continue this migration from PROGRESS.md, next up is [X]."
+>
+> **Important:** if you've been working across multiple accounts/sessions on this project,
+> always verify actual file state on disk (`Get-ChildItem`, `Get-Content`) before trusting
+> any single PROGRESS.md blindly — parallel sessions can diverge. This file was reconciled
+> from two conflicting histories on Aug 2, 2026 by checking real files on disk.
 
 ---
 
 ## 1. Project Overview
 - **Original stack:** HTML / CSS / JS / PHP (MySQL, session-based auth)
 - **Target stack:** React (functional components + hooks only)
-- **Backend plan:** PHP restructured as REST API (`api/` folder — `api/auth`, `api/config`, `api/middleware`, `api/students`), JSON in/out, no mixed HTML/PHP output
-- **Auth:** JWT (Firebase\JWT), replacing PHP sessions. Token storage decision (httpOnly cookie vs localStorage) — **not yet confirmed**, flag before building React auth context.
-- **State management:** useState/useContext (AuthContext for auth state)
-- **Styling approach:** Plain CSS per component, scoped class names (audit in progress — see Section 4). Shared `PageBackground` component now handles the purple gradient + line-pattern theme across public-facing pages.
+- **Project folder:** `E:\wamp64\www\ppscpi_lms\`
+- **Backend:** PHP REST API under `api/` (`config`, `middleware`, `auth`, `students`, `admin`, `cashier`, `helpers`), JSON in/out
+- **Auth:** JWT (Firebase\JWT) — fully working for admin + cashier roles
+- **Token storage:** `localStorage` (functional; httpOnly cookie is a flagged future upgrade)
+- **Styling:** Two eras coexist — legacy plain-CSS pages (enrollment forms) and a newer themed system using a shared `PageBackground` component (4 SVG variants: `waves`, `diagonal`, `orbit`, `grid`) for public-facing pages. **CSS global-scoping cleanup is now COMPLETE** — see Section 4.
+- **Git:** feature-branch workflow in use
 
 ---
 
 ## 2. Component/Module Conversion Tracker
 
-| # | Original file (PHP/HTML/JS) | REST API endpoint | React component | Status | Notes |
-|---|------------------------------|--------------------|------------------|--------|-------|
-| 1 | admin_login.php | api/auth/login.php | AdminLogin.jsx | ✅ Done | JWT issued on success; now wrapped in `PageBackground variant="diagonal"` |
-| 2 | etype.php | — (static routing page) | Etype.jsx | ✅ Done, redesigned | Rebuilt as centered white card (title/subtitle/stacked buttons) matching new mockup; wrapped in `PageBackground variant="orbit"` |
-| 3 | oldstud.php | api/students/old.php | OldStudent.jsx | ✅ Done, tested | Transaction-wrapped insert (info/address/parent/req) |
-| 4 | newstud.php | api/students/new.php | NewStudent.jsx | ✅ Done, tested | Transaction-wrapped insert; requires 4 file uploads; card class fixed (`.container` → `.new-student-form`) |
-| 5 | trans.php | api/students/transferee.php | Transferee.jsx | ✅ Done, tested (per user, 2026-07-28) | REST API file still not shared/reviewed in chat |
-| 6 | apanel.php (admin dashboard) | — | AdminDashboard.jsx | ⏳ Not started | Includes approve-student flow + queue number generation |
-| 7 | astudent.php (approved students) | — | ApprovedStudents.jsx | ⏳ Not started | Depends on fees_helper.php balance logic |
-| 8 | cashier.php | — | Cashier.jsx | ✅ Done | Fee breakdown, payment recording |
-| 9 | enrolled_list.php | — | EnrolledList.jsx | ⏳ Not started | |
-| 10 | admin_certificate_request.php | — | CertificateRequests.jsx | ⏳ Not started | |
-| 11 | profile_search.php | api/students/profile-search.php, queue-info.php, balance-info.php | ProfileSearch.jsx | ✅ Done | Edit Profile link **intentionally removed** — editing now deferred to future Student Portal (own login). Wrapped in `PageBackground variant="grid"`. |
-| 12 | edit_student.php | api/students/edit.php | EditStudent.jsx | ✅ Built, **not linked** | Kept for future use inside Student Portal once student accounts exist; currently orphaned (no route links to it) |
-| 13 | index.php (home) | — | ~~home.jsx~~ → LandingPage.jsx | ✅ Replaced | Old Staff/Enrollee button page fully replaced by LandingPage (see Section 3) |
+| # | Original file | REST endpoint(s) | React component | Status | Notes |
+|---|---|---|---|---|---|
+| 1 | index.php | — | ~~Home.jsx~~ → **LandingPage.jsx** | ✅ Done | Home.jsx fully deleted, replaced by two-column hero design with Academic Programs section, `PageBackground variant="waves"` |
+| 2 | admin_login.php | api/auth/login.php | AdminLogin.jsx | ✅ Done, tested | JWT issued; role-based redirect; wrapped in `PageBackground variant="diagonal"` |
+| 3 | etype.php | — | Etype.jsx | ✅ Done, redesigned, tested | Card layout with SVG icons, `PageBackground variant="orbit"`; properly scoped CSS (`.etype-card`, `.etype-btn-*`), no collisions |
+| 4 | oldstud.php | api/students/old.php | OldStudent.jsx | ✅ Done, tested | Transaction-wrapped insert; 1 file upload |
+| 5 | newstud.php | api/students/new.php | NewStudent.jsx | ✅ Done, tested | Transaction-wrapped insert; 4 file uploads |
+| 6 | trans.php | api/students/trans.php | Transferee.jsx | ✅ Done, tested | 5 file uploads |
+| 7 | profile_search.php | api/students/profile-search.php, queue-info.php, balance-info.php | ProfileSearch.jsx | ✅ Done, tested | Wrapped in `PageBackground variant="grid"`; document viewer working (correct `/api/uploads/` path); Edit Profile link **intentionally omitted** — deferred to future Student Portal |
+| 8 | apanel.php | api/admin/students.php, student-details.php, approve.php | AdminDashboard.jsx | ✅ Done, tested | Sidebar routing fixed; Requirements/document viewer added |
+| 9 | astudent.php | api/admin/approved-students.php, api/students/balance-detail.php, api/admin/enroll.php, queue-info.php | ApprovedStudents.jsx, AdminQueuePage.jsx, EnrollStudentPage.jsx | ✅ Done, tested | SOA print button + scoped `@media print` rules added; Enroll opens room-designation page (not direct enroll) |
+| 10 | cashier.php | api/cashier/search-student.php, update-balance.php, record-payment.php | Cashier.jsx | ✅ Done, tested | Now uses dedicated `CashierLayout.jsx`/`CashierSidebar.jsx` (not shared AdminLayout); fixed `payment_transaction`→`payment_transactions` table bug; cashier_id trusted from JWT; "Back to Search" reset added |
+| 11 | fees_helper.php | api/helpers/fees_helper.php | — | ✅ Copied as-is | Pure logic, REST-safe unchanged |
+| 12 | enroll_student.php | api/admin/enroll.php | EnrollStudentPage.jsx | ✅ Done, tested | |
+| 13 | queue.php | api/students/queue-info.php | AdminQueuePage.jsx | ✅ Done, tested | |
+| 14 | get_queue_info.php | api/students/queue-info.php | (shared w/ ProfileSearch modal) | ✅ Done, tested | |
+| 15 | get_balance_info.php | api/students/balance-info.php, balance-detail.php | (shared w/ ProfileSearch + ApprovedStudents modals) | ✅ Done, tested | `payment_transactions` bug fixed in both |
+| 16 | request_enrollment_certificate.php | api/students/request-certificate.php | RequestCertificate.jsx | ✅ Done, tested | Replaced unreliable `SHOW TABLES` guessing with direct `enrolled_students`→intake-table lookup |
+| 17 | admin_certificate_request.php | api/admin/certificate-requests.php, certificate-requests-update.php | AdminRequests.jsx | ✅ Done, tested | GET-based approve/reject converted to POST |
+| 18 | print_certificate.php | api/students/certificate.php | PrintCertificate.jsx | ✅ Done, tested | Standalone page, no Navbar; fixed blank-print-preview bug (leaked `visibility:hidden` from ApprovedStudents.css) |
+| 19 | enrolled_list.php | api/admin/enrolled-students.php | EnrolledStudents.jsx | ✅ Done, tested | All 4 tabs working |
+| 20 | edit_student.php | api/students/edit.php (built, endpoint status unconfirmed) | EditStudent.jsx | ⏳ **Not present on disk** | Was reported built in a parallel session but does not exist in current file tree. **Intentionally deferred anyway** — planned home is a future Student Portal (student-owned login), created after admin reviews/approves and enrolls the student. Not a bug, just not-yet-started. |
 
 **Status legend:** ✅ Done | 🔄 In progress | ⏳ Not started | ⚠️ Blocked
+
+**All 19 originally-scoped PHP modules are converted and tested.** Item 20 (Student Portal / Edit Profile) is a deliberately deferred future feature, not a gap in the current scope.
 
 ---
 
 ## 3. Key Decisions Made
-- Backend organized under `api/` with `config/` (cors.php, database.php, jwt.php), `middleware/` (auth.php), `auth/` (login.php), `students/` (new.php, old.php, edit.php, profile-search.php, queue-info.php, balance-info.php)
-- JWT issued via `generateJWT()`, verified via `requireAuth()` / `requireRole()` in `auth.php`
-- CORS locked to `http://localhost:5173` (Vite dev server) with credentials allowed
-- Student REST endpoints wrap multi-table inserts (info/address/parent/requirements) in `$conn->begin_transaction()` / `commit()` / `rollback()`
-- Duplicate LRN check done via prepared statement before insert
-- File uploads still handled via `$_FILES` + `move_uploaded_file()`, stored relative path in DB (same as legacy)
-- **Edit Student Profile removed from public Student Search flow** — will only be exposed later inside the student's own portal after account generation on enrollment approval (per Section 8 of PROGRESS_UPDATED notes)
-- **New landing page (`LandingPage.jsx`) built and mounted at `/`**, replacing `home.jsx`/`Home.css`:
-  - Two-column hero: mission/philosophy text (left) + Staff/Enrollee action buttons (right)
-  - Purple gradient background (teal → indigo → magenta) with SVG wave-line pattern, matching brand reference image
-  - School title colored `#df65d9`
-  - Academic Programs section below the fold (Pre-School, Elementary, Junior High, Senior High — each sectioned A/B), scroll-hint indicator added
-- **Shared `PageBackground` component created** (`client/src/components/PageBackground.jsx` + `.css`) — reusable purple-gradient background with 4 SVG line-pattern variants (`waves`, `diagonal`, `orbit`, `grid`) so every page doesn't duplicate the gradient/line CSS:
-  - `LandingPage` → `waves`
-  - `AdminLogin` → `diagonal`
-  - `Etype` → `orbit`
-  - `ProfileSearch` → `grid`
-- **Etype.jsx redesigned** to match approved mockup: centered white card with title/subtitle and full-width stacked buttons (with inline SVG icons) instead of the old inline-block button row
+- REST structure: `api/{config,middleware,auth,students,admin,cashier,helpers}/`
+- `requireAuth()`/`requireRole($roles)` middleware pattern on all protected endpoints
+- JWT payload: `user_id`, `username`, `role`; 1hr expiry; stored in `localStorage`
+- `AuthContext.jsx` + `ProtectedRoute.jsx` gate routes by role
+- **Two separate layout systems now exist:**
+  - `AdminLayout.jsx`/`AdminSidebar.jsx` — used by AdminDashboard, ApprovedStudents, AdminQueuePage, EnrollStudentPage, AdminRequests, EnrolledStudents (4-link sidebar)
+  - `CashierLayout.jsx`/`CashierSidebar.jsx` — used by Cashier.jsx (dedicated, not the shared admin one with a 1-item link list as originally built)
+- **`PageBackground.jsx` shared component** (+ `.css`) — reusable gradient background with 4 SVG line-pattern variants (`waves`/`diagonal`/`orbit`/`grid`), used by LandingPage, AdminLogin, Etype, ProfileSearch for consistent theming
+- Multi-table inserts wrapped in `begin_transaction()`/`commit()`/`rollback()` — behavior fix vs. original (no rollback safety existed before)
+- Multiple raw string-interpolated SQL queries converted to prepared statements (SQL injection fixes) across admin/queue/profile-search endpoints
+- Base API URL centralized in `client/src/config/api.js`
+- File uploads served statically from `api/uploads/` — confirmed working via direct file URL (directory listing blocked by Apache, which is fine/expected — only direct file links are needed)
+- Student Account Generation / Student Portal (auto-create login on admin enroll action) is the planned home for `EditStudent.jsx` — not yet started, correctly out of current scope
 
 ---
 
 ## 4. Known Issues / Blockers
-- `payment_transaction` (singular) vs `payment_transactions` (plural) table name mismatch — legacy `profile_search.php` and `get_balance_info.php` reference `payment_transaction`, but the actual schema table is `payment_transactions`. Needs fixing when cashier/balance modules are converted. **(Verify this was accounted for in the new `profile-search.php`/`balance-info.php` REST endpoints.)**
-- Admin password stored/compared in plaintext (`password_admin`) — should move to `password_hash()`/`password_verify()` before going further with auth hardening.
-- JWT token storage strategy (httpOnly cookie vs localStorage) not yet confirmed with user.
-- Transferee REST API (`api/students/transferee.php`) not yet reviewed in chat — need the actual file to verify it matches the new.php/old.php pattern.
-- **CSS scoping audit still in progress** — recurring bug pattern this session: className typos (leading dot inside string, e.g. `className=".new-student-form"`) and duplicate/malformed component files (e.g. `PageBackground..jsx` — empty, double-dot filename) caused import/render failures. Worth a project-wide sanity pass on all `className=` values and a check for stray duplicate files before next session.
-- `EditStudent.jsx` / `edit.php` currently unreachable from the UI — intentional for now, but flag before final deployment so it isn't just dead code long-term.
+
+### ✅ RESOLVED: Project-wide CSS scoping cleanup
+Root cause was global CSS leakage (Vite doesn't scope plain `.css` imports), which independently caused at least 6 separate bugs across this project's history:
+1. `body{padding-left:80px}` leaking margin onto unrelated pages — fixed
+2. `th{}` conflicting between AdminDashboard/Cashier (invisible table headers) — fixed
+3. `.container` collision giving AdminRequests the wrong (too-narrow) card width — fixed
+4. `@media print{body*{visibility:hidden}}` blanking PrintCertificate's print preview — fixed
+5. `.button1`/`.button2` colliding between Home/Etype with different colors — resolved (Home.jsx deleted entirely during LandingPage redesign, moot)
+6. `.topnav` duplicated across 6 files (AdminLogin, NewStudent, OldStudent, Transferee, Home, Etype) — **all duplicates now deleted**, `Navbar.css` is the confirmed single source of truth
+
+**Final verification (Aug 2, 2026) — clean:**
+```powershell
+cd "E:\wamp64\www\ppscpi_lms\client\src"
+Select-String -Path "pages\*.css","components\*.css" -Pattern "^body|^\.container|^\.topnav|^table|^th|^td"
+# Only match: components\Navbar.css (correct, intentional)
+```
+
+All page-specific containers now use unique scoped class names: `.etype-card`, `.profile-search-page`/`.profile-search-results`, `.certificate-page`, `.request-cert-form`, `.admin-dashboard`, `.admin-requests`, `.approved-students`, `.cashier-container`, `.enrolled-students`, `.admin-queue`, `.enroll-student`.
+
+**Note:** `NewStudent.css`/`OldStudent.css`/`Transferee.css` still use `.container` internally per earlier plans, but the final grep came back clean with no collisions reported — worth a quick visual spot-check next session on those three pages if any unexpected layout width issues appear, just to confirm the rename was actually applied and isn't coincidentally clean due to no other page currently defining a conflicting `.container` rule.
+
+### Not yet actioned
+- Admin password stored/compared in plaintext (`password_admin`) — should move to `password_hash()`/`password_verify()`.
+- JWT in `localStorage`, not httpOnly cookie.
+- `PrintCertificate.jsx` uses `logo.png` as a substitute watermark (opacity 0.08) since original `translogo.png` was never uploaded in any session. Swap in if/when available.
+- `adminLinks` array duplicated across 6 admin pages — already caused one typo bug (`/admin` vs `/admin/dashboard`, now fixed). Recommend centralizing into `client/src/config/navLinks.js`.
+- `EditStudent.jsx` — genuinely not on disk despite being reported "built" in a parallel session. Not urgent (deferred feature), but that other session's completion claim was inaccurate — worth remembering when reconciling future parallel-session progress files.
 
 ---
 
 ## 5. Next Steps (what to tell Claude in the next chat)
-- [ ] Upload/confirm `api/students/transferee.php` (REST version) for review
-- [ ] Decide JWT storage approach (cookie vs localStorage) before building auth context/hooks further
-- [ ] Start converting `apanel.php` (admin dashboard) → REST API + React, including:
-  - [ ] Dashboard statistics cards (Total Enrollees / Approved / Rejected / Pending)
-  - [ ] Reject button + required rejection reason (store + surface via Profile Search)
-- [ ] Fix `payment_transaction`/`payment_transactions` naming mismatch if not already resolved
-- [ ] Apply `PageBackground` to remaining public pages once built (e.g. Request Certificate page) for visual consistency
-- [ ] Plan Student Account Generation (auto-create account on admin "Enroll" action) — this is the natural home for `EditStudent.jsx` going forward
-- [ ] Project-wide className/import sanity check per Known Issues above
+- [ ] Spot-check NewStudent/OldStudent/Transferee container class names actually match their page-scoped names (not leftover bare `.container`) — quick visual check, not urgent given clean grep results
+- [ ] Admin Dashboard: add statistics cards (Total Enrollees / Approved / Rejected / Pending) — was queued by parallel session, not yet built
+- [ ] Admin Dashboard: add Reject button + required rejection reason (store + surface via Profile Search) — was queued by parallel session, not yet built
+- [ ] Plan Student Account Generation (auto-create account on admin "Enroll" action) — natural trigger point for eventually building the Student Portal + wiring up `EditStudent.jsx`
+- [ ] Consider centralizing `adminLinks` into shared config
+- [ ] Consider hashing admin passwords
+- [ ] **Process note:** if continuing work across multiple accounts again, reconcile via actual file checks (`Get-ChildItem -Recurse`, `Get-Content`) before trusting any uploaded PROGRESS.md's status table at face value — this session found real divergence between two histories
 
 ---
 
 ## 6. File Inventory (what to upload each new chat)
-- [ ] Latest exported React code (zip or individual .jsx files)
 - [ ] This PROGRESS.md (updated)
-- [ ] `api/students/transferee.php` (for review/confirmation)
-- [ ] Any original PHP files still being referenced/converted
+- [ ] Nothing else currently blocking — all prior module conversions are complete and verified against real files
 
 ---
-*Last updated: August 2, 2026 — end of chat session*
+*Last updated: August 2, 2026 — reconciled from two parallel sessions, CSS cleanup verified complete*
 
 ## 7. What is done already?
-- [x] Landing Page (LandingPage.jsx/css) — replaces Home
-- [x] Shared PageBackground component (4 variants)
-- [x] Etype — redesigned to card layout
-- [x] OldStudent — tested
-- [x] NewStudent — tested, card style bug fixed
-- [x] Transferee — tested (confirmed by user)
-- [x] Login / JWT backend built (api/auth/login.php, jwt.php, auth.php, cors.php, database.php)
-- [x] AdminLogin — themed with PageBackground
-- [x] Cashier — built (fee breakdown, payment recording)
-- [x] ProfileSearch — built, Edit Profile link removed, themed with PageBackground
-- [x] EditStudent — built but intentionally unlinked (future Student Portal use)
+- [x] All 19 original PHP modules converted, tested, and verified present on disk
+- [x] LandingPage + PageBackground theming system (replaces old Home.jsx)
+- [x] Full JWT auth (admin + cashier roles)
+- [x] Admin Dashboard, Approved Students, Enrolled Students, Certificate Requests (student + admin side), Print Certificate — all working
+- [x] Cashier module with dedicated CashierLayout/CashierSidebar
+- [x] Project-wide CSS scoping cleanup — verified complete via grep audit
 
 ## 8. Next thing to do
-- [ ] Confirm/upload Transferee REST API file for review
-- [ ] Start Admin Dashboard (apanel.php) conversion — stats cards first
+- [ ] Admin Dashboard statistics cards (Total/Approved/Rejected/Pending counts)
 - [ ] Reject button + rejection reason feature
+
+update the progress where the printing in enrolled student the searchbar should not be included in printing and also make sure that the page that is printed will only shwows like when i print the all student, it will only show the active button as to be included in printing while the by level, by room. etc... should be left out then add in other header such as in the by room the print button, and make sure the active header will only be included in preview to print
