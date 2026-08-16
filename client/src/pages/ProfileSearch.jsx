@@ -9,10 +9,6 @@ export default function ProfileSearch() {
   const [lrn, setLrn] = useState("");
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
-  const [queueInfo, setQueueInfo] = useState(null);
-  const [balanceInfo, setBalanceInfo] = useState(null);
-  const [showQueueModal, setShowQueueModal] = useState(false);
-  const [showBalanceModal, setShowBalanceModal] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -27,30 +23,6 @@ export default function ProfileSearch() {
       setError(
         err.response?.data?.message || `No student found with LRN: ${lrn}`,
       );
-    }
-  };
-
-  const openQueueModal = async () => {
-    try {
-      const res = await axios.get(
-        `${API_BASE_URL}/students/queue-info.php?id=${data.student.id}&type=${data.student.mapped_type}`,
-      );
-      setQueueInfo(res.data.queue);
-      setShowQueueModal(true);
-    } catch (err) {
-      alert("Could not load queue information.");
-    }
-  };
-
-  const openBalanceModal = async () => {
-    try {
-      const res = await axios.get(
-        `${API_BASE_URL}/students/balance-info.php?lrn=${data.student.lrn}`,
-      );
-      setBalanceInfo(res.data);
-      setShowBalanceModal(true);
-    } catch (err) {
-      alert("Could not load balance information.");
     }
   };
 
@@ -112,57 +84,7 @@ export default function ProfileSearch() {
                 >
                   {data.student.status}
                 </span>
-                {data.student.status === "Approved" &&
-                  data.student.has_queue_info && (
-                    <>
-                      
-                       <a href="#"
-                        className="queue-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openQueueModal();
-                        }}
-                      >
-                        View Queue Number
-                      </a>
-                      
-                        <a href="#"
-                        className="balance-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openBalanceModal();
-                        }}
-                      >
-                        View Balance
-                      </a>
-                    </>
-                  )}
               </div>
-
-              {data.balance && (
-                <div className="info-item" style={{ marginTop: "10px" }}>
-                  <span className="info-label">Balance Status:</span>
-                  <span
-                    style={{
-                      color:
-                        data.balance.remaining_balance <= 0
-                          ? "green"
-                          : data.balance.remaining_balance < 500
-                            ? "orange"
-                            : "red",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    ₱ {Number(data.balance.remaining_balance).toFixed(2)}
-                  </span>
-                  <span
-                    style={{ fontSize: "12px", color: "#666", marginLeft: "5px" }}
-                  >
-                    (Last Updated:{" "}
-                    {new Date(data.balance.last_updated).toLocaleDateString()})
-                  </span>
-                </div>
-              )}
 
               <div className="info-row">
                 <div className="info-item">

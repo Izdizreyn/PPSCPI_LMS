@@ -86,6 +86,22 @@ export default function AdminQueuePage() {
                         {new Date(queue.enrollment_date).toLocaleDateString()}
                       </td>
                     </tr>
+                    <tr>
+                      <td>Status:</td>
+                      <td>
+                        <span
+                          style={{
+                            color:
+                              queue.status === "Settled" ? "green" : "orange",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {queue.status === "Settled"
+                            ? "Settled — Payment Complete"
+                            : "Active"}
+                        </span>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

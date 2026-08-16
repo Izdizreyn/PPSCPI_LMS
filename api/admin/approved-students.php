@@ -46,10 +46,17 @@ $output = array_map(function ($s) {
     ];
 }, $students);
 
+$enrolledResult = $conn->query("SELECT lrn FROM enrolled_students");
+$enrolledLrns = [];
+while ($row = $enrolledResult->fetch_assoc()) {
+    $enrolledLrns[] = $row['lrn'];
+}
+
 echo json_encode([
     "success" => true,
     "students" => $output,
     "balances" => $balancesMap,
+    "enrolled_lrns" => $enrolledLrns,
 ]);
 
 $conn->close();

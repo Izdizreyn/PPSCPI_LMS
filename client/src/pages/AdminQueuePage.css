@@ -72,3 +72,22 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+@media print {
+  .sidebar,
+  .toggle-btn,
+  .admin-queue .back-btn,
+  .admin-queue .print-btn {
+    display: none !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .admin-queue .queue-card,
+  .admin-queue .queue-card * {
+    visibility: visible;
+  }
+
+}
