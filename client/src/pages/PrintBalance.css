@@ -1,0 +1,127 @@
+.print-balance {
+  font-family: "Times New Roman", Times, serif;
+}
+
+.cert-error {
+  text-align: center;
+  padding: 40px;
+  font-family: sans-serif;
+  color: #721c24;
+}
+
+.balance-container {
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+  padding: 0.5in;
+  box-sizing: border-box;
+  position: relative;
+  background-color: white;
+  overflow: hidden;
+}
+
+.balance-header {
+  text-align: center;
+  margin-bottom: 0.4in;
+  position: relative;
+  z-index: 1;
+}
+
+.school-name {
+  font-size: 22pt;
+  font-weight: bold;
+  color: #800080;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.student-name {
+  font-size: 14pt;
+  margin-top: 5px;
+  position: relative;
+  z-index: 1;
+}
+
+.balance-table {
+  width: 100%;
+  font-size: 13pt;
+  margin-bottom: 0.4in;
+  position: relative;
+  z-index: 1;
+}
+
+.balance-table td {
+  padding: 6px 0;
+}
+
+.section-title {
+  font-size: 14pt;
+  color: #800080;
+  position: relative;
+  z-index: 1;
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11pt;
+  position: relative;
+  z-index: 1;
+}
+
+.transaction-table th,
+.transaction-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.no-payment {
+  font-size: 13pt;
+  position: relative;
+  z-index: 1;
+}
+
+.watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.08;
+  width: 6in;
+  height: 6in;
+  z-index: 0;
+}
+
+.print-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #800080;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 100;
+}
+
+.print-button:hover {
+  background-color: #600060;
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  .print-button {
+    display: none;
+  }
+}

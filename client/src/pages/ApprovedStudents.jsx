@@ -21,20 +21,18 @@ export default function ApprovedStudents() {
   const [activeTab, setActiveTab] = useState("all");
   const [students, setStudents] = useState([]);
   const [balances, setBalances] = useState({});
+  const [enrolledLrns, setEnrolledLrns] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [balanceModal, setBalanceModal] = useState(null);
 
   const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const res = await axios.get(
-        `${API_BASE_URL}/admin/approved-students.php`,
-        authHeaders,
-      );
+      const res = await axios.get(`${API_BASE_URL}/admin/approved-students.php`, authHeaders);
       setStudents(res.data.students);
       setBalances(res.data.balances);
+      setEnrolledLrns(res.data.enrolled_lrns);
       setLoading(false);
     })();
   }, []);
@@ -50,19 +48,13 @@ export default function ApprovedStudents() {
     );
   };
 
-  const openBalanceModal = async (lrn) => {
-    const res = await axios.get(
-      `${API_BASE_URL}/students/balance-detail.php?lrn=${lrn}`,
-    );
-    setBalanceModal(res.data);
-  };
-
-  if (loading)
+  if (loading) {
     return (
       <AdminLayout links={adminLinks}>
         <p>Loading...</p>
       </AdminLayout>
     );
+  }
 
   const renderTable = (list) => (
     <table className="student-table">
@@ -89,30 +81,29 @@ export default function ApprovedStudents() {
             <td>{s.type.charAt(0).toUpperCase() + s.type.slice(1)}</td>
             <td>{balanceCell(s.lrn)}</td>
             <td>
-              <Link
-                to={`/admin/queue?type=${s.type}&id=${s.id}`}
-                className="view-link"
-              >
+              <Link to={`/admin/queue?type=${s.type}&id=${s.id}`} className="view-link">
                 View Queue Number
               </Link>
               {" | "}
-              <a
-                href="#"
+              <Link
+                to={`/admin/print-balance?lrn=${s.lrn}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="view-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  openBalanceModal(s.lrn);
-                }}
               >
                 View Balance
-              </a>
-              {" | "}
-              <Link
-                to={`/admin/enroll?lrn=${s.lrn}&name=${encodeURIComponent(s.full_name)}&year=${s.year_level}&strand=${encodeURIComponent(s.strand || "")}`}
-                className="view-link"
-              >
-                Enroll
               </Link>
+              {!enrolledLrns.includes(s.lrn) && (
+                <>
+                  {" | "}
+                  <Link
+                    to={`/admin/enroll?lrn=${s.lrn}&name=${encodeURIComponent(s.full_name)}&year=${s.year_level}&strand=${encodeURIComponent(s.strand || "")}`}
+                    className="view-link"
+                  >
+                    Enroll
+                  </Link>
+                </>
+              )}
             </td>
           </tr>
         ))}
@@ -136,35 +127,22 @@ export default function ApprovedStudents() {
   return (
     <AdminLayout links={adminLinks}>
       <div className="approved-students">
-        <h1>Approved Students</h1>
+        <h1>Student Enrollment Overview</h1>
 
         <div className="tab">
-          <button
-            className={activeTab === "all" ? "active" : ""}
-            onClick={() => setActiveTab("all")}
-          >
+          <button className={activeTab === "all" ? "active" : ""} onClick={() => setActiveTab("all")}>
             All Students
           </button>
-          <button
-            className={activeTab === "year" ? "active" : ""}
-            onClick={() => setActiveTab("year")}
-          >
+          <button className={activeTab === "year" ? "active" : ""} onClick={() => setActiveTab("year")}>
             By Year Level
           </button>
-          <button
-            className={activeTab === "strand" ? "active" : ""}
-            onClick={() => setActiveTab("strand")}
-          >
+          <button className={activeTab === "strand" ? "active" : ""} onClick={() => setActiveTab("strand")}>
             By Strand
           </button>
         </div>
 
         {activeTab === "all" &&
-          (students.length > 0 ? (
-            renderTable(students)
-          ) : (
-            <p>No enrolled students found.</p>
-          ))}
+          (students.length > 0 ? renderTable(students) : <p>No enrolled students found.</p>)}
 
         {activeTab === "year" &&
           Object.keys(byYearLevel)
@@ -189,56 +167,6 @@ export default function ApprovedStudents() {
                 {renderTable(byStrand[strand])}
               </div>
             ))}
-
-        {balanceModal && (
-  <div className="modal" onClick={() => setBalanceModal(null)}>
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-      <span className="close" onClick={() => setBalanceModal(null)}>&times;</span>
-      {balanceModal.balance ? (
-        <>
-          <h2>Statement of Account</h2>
-          <table width="100%">
-            <tbody>
-              <tr><td><strong>Total Fees:</strong></td><td align="right">₱ {Number(balanceModal.balance.total_fees).toFixed(2)}</td></tr>
-              <tr><td><strong>Paid Amount:</strong></td><td align="right">₱ {Number(balanceModal.balance.paid_amount).toFixed(2)}</td></tr>
-              <tr><td><strong>Remaining Balance:</strong></td><td align="right">₱ {Number(balanceModal.balance.remaining_balance).toFixed(2)}</td></tr>
-            </tbody>
-          </table> 
-          {balanceModal.transactions.length > 0 && (
-            <>
-              <h3>Payment History</h3>
-              <table className="transaction-table">
-                <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt #</th></tr></thead>
-                <tbody>
-                  {balanceModal.transactions.map((t) => (
-                    <tr key={t.transaction_id}>
-                      <td>{new Date(t.payment_date).toLocaleDateString()}</td>
-                      <td>₱ {Number(t.amount).toFixed(2)}</td>
-                      <td>{t.payment_method}</td>
-                      <td>{t.receipt_number}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
-          <div className="balance-footer">
-            <button className="print-btn" onClick={() => window.print()}>
-              Print Statement
-            </button>
-          </div>
-        </>
-      ) : balanceModal.fee_breakdown ? (
-        <>
-          <h2>Applicable Fees</h2>
-          <p>No payments recorded yet. Total fees due: ₱ {Number(balanceModal.fee_breakdown.total).toFixed(2)}</p>
-        </>
-      ) : (
-        <p>No financial information found for this student.</p>
-      )}
-    </div>
-  </div>
-)}
       </div>
     </AdminLayout>
   );

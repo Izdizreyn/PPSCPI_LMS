@@ -16,6 +16,7 @@ import RequestCertificate from "./pages/RequestCertificate";
 import AdminRequests from "./pages/AdminRequests";
 import EnrolledStudents from "./pages/EnrolledStudents";
 import PrintCertificate from "./pages/PrintCertificate";
+import PrintBalance from "./pages/PrintBalance";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/profile-search" element={<ProfileSearch />} />
         <Route path="/request-certificate" element={<RequestCertificate />} />
         <Route path="/print-certificate" element={<PrintCertificate />} />
+        <Route path="/admin/print-balance" element={<PrintBalance />} />
 
         <Route
           path="/admin/dashboard"
