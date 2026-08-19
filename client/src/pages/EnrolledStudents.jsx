@@ -4,15 +4,15 @@ import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 import "./EnrolledStudents.css";
+import { adminLinks } from "../config/navLinks";
 
-const adminLinks = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: "🏠" },
-  { to: "/admin/students", label: "Students", icon: "👨‍🎓" },
-  { to: "/admin/enrolled", label: "Enrolled", icon: "📚" },
-  { to: "/admin/requests", label: "Requests", icon: "📩" },
+const LEVEL_ORDER = [
+  "Nursery",
+  "Kinder",
+  "Elementary",
+  "Junior High School",
+  "Senior High School",
 ];
-
-const LEVEL_ORDER = ["Nursery", "Kinder", "Elementary", "Junior High School", "Senior High School"];
 const levelSort = (a, b) => LEVEL_ORDER.indexOf(a) - LEVEL_ORDER.indexOf(b);
 
 export default function EnrolledStudents() {
@@ -27,7 +27,10 @@ export default function EnrolledStudents() {
 
   useEffect(() => {
     (async () => {
-      const res = await axios.get(`${API_BASE_URL}/admin/enrolled-students.php`, authHeaders);
+      const res = await axios.get(
+        `${API_BASE_URL}/admin/enrolled-students.php`,
+        authHeaders,
+      );
       setStudents(res.data.students);
       setRooms(res.data.rooms);
       setLoading(false);
@@ -101,22 +104,20 @@ export default function EnrolledStudents() {
   return (
     <AdminLayout links={adminLinks}>
       <div className="enrolled-students">
+        <h1>Enrolled Students</h1>
+
         <div className="page-header-row">
-          <div className="page-header-spacer" />
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search by name, LRN, room..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
           <button className="print-btn" onClick={() => window.print()}>
             Print List
           </button>
-        </div>
-
-        <h1>Enrolled Students</h1>
-
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search by name, LRN, room..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
         </div>
 
         <div className="tab">
@@ -170,7 +171,9 @@ export default function EnrolledStudents() {
                       <td>{s.strand}</td>
                       <td>{s.room}</td>
                       <td>{s.level}</td>
-                      <td>{new Date(s.enrollment_date).toLocaleDateString()}</td>
+                      <td>
+                        {new Date(s.enrollment_date).toLocaleDateString()}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

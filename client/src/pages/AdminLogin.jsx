@@ -6,6 +6,7 @@ import PageBackground from "../components/PageBackground";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
 import "./AdminLogin.css";
+import { EyeIcon, EyeOffIcon } from "../components/AdminIcons";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -19,7 +20,10 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/login.php`, { username, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/login.php`, {
+        username,
+        password,
+      });
       if (res.data.success) {
         login(res.data.token, res.data.user);
         if (res.data.user.role === "purple_admin") navigate("/admin/dashboard");
@@ -27,7 +31,9 @@ export default function AdminLogin() {
         else navigate("/admin/dashboard");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(
+        err.response?.data?.message || "Login failed. Please try again.",
+      );
     }
   };
 
@@ -39,7 +45,13 @@ export default function AdminLogin() {
           <p>Staff Login</p>
           {error && <p style={{ color: "red" }}>{error}</p>}
           <form onSubmit={handleSubmit}>
-            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
             <div className="password-container">
               <input
                 type={showPassword ? "text" : "password"}
@@ -49,10 +61,12 @@ export default function AdminLogin() {
                 required
               />
               {password.length > 0 && (
-                <i
-                  className={`fa-regular ${showPassword ? "fa-eye-slash" : "fa-eye"} toggle-password`}
+                <span
+                  className="toggle-password"
                   onClick={() => setShowPassword(!showPassword)}
-                ></i>
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </span>
               )}
             </div>
             <button type="submit">Login</button>

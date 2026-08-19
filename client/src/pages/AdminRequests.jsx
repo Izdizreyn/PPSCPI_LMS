@@ -5,13 +5,7 @@ import { API_BASE_URL } from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 import "./AdminRequests.css";
 import { Link } from "react-router-dom";
-
-const adminLinks = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: "🏠" },
-  { to: "/admin/students", label: "Students", icon: "👨‍🎓" },
-  { to: "/admin/enrolled", label: "Enrolled", icon: "📚" },
-  { to: "/admin/requests", label: "Requests", icon: "📩" },
-];
+import { adminLinks } from "../config/navLinks";
 
 export default function AdminRequests() {
   const { token } = useAuth();

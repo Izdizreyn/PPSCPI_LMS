@@ -5,13 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 import "./ApprovedStudents.css";
-
-const adminLinks = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: "🏠" },
-  { to: "/admin/students", label: "Students", icon: "👨‍🎓" },
-  { to: "/admin/enrolled", label: "Enrolled", icon: "📚" },
-  { to: "/admin/requests", label: "Requests", icon: "📩" },
-];
+import { adminLinks } from "../config/navLinks";
 
 const STRAND_ORDER = { STEM: 1, ABM: 2, HUMSS: 3, "": 4 };
 const strandSort = (a, b) => (STRAND_ORDER[a] ?? 5) - (STRAND_ORDER[b] ?? 5);
@@ -29,7 +23,10 @@ export default function ApprovedStudents() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/admin/approved-students.php`, authHeaders);
+      const res = await axios.get(
+        `${API_BASE_URL}/admin/approved-students.php`,
+        authHeaders,
+      );
       setStudents(res.data.students);
       setBalances(res.data.balances);
       setEnrolledLrns(res.data.enrolled_lrns);
@@ -81,7 +78,10 @@ export default function ApprovedStudents() {
             <td>{s.type.charAt(0).toUpperCase() + s.type.slice(1)}</td>
             <td>{balanceCell(s.lrn)}</td>
             <td>
-              <Link to={`/admin/queue?type=${s.type}&id=${s.id}`} className="view-link">
+              <Link
+                to={`/admin/queue?type=${s.type}&id=${s.id}`}
+                className="view-link"
+              >
                 View Queue Number
               </Link>
               {" | "}
@@ -130,19 +130,32 @@ export default function ApprovedStudents() {
         <h1>Student Enrollment Overview</h1>
 
         <div className="tab">
-          <button className={activeTab === "all" ? "active" : ""} onClick={() => setActiveTab("all")}>
+          <button
+            className={activeTab === "all" ? "active" : ""}
+            onClick={() => setActiveTab("all")}
+          >
             All Students
           </button>
-          <button className={activeTab === "year" ? "active" : ""} onClick={() => setActiveTab("year")}>
+          <button
+            className={activeTab === "year" ? "active" : ""}
+            onClick={() => setActiveTab("year")}
+          >
             By Year Level
           </button>
-          <button className={activeTab === "strand" ? "active" : ""} onClick={() => setActiveTab("strand")}>
+          <button
+            className={activeTab === "strand" ? "active" : ""}
+            onClick={() => setActiveTab("strand")}
+          >
             By Strand
           </button>
         </div>
 
         {activeTab === "all" &&
-          (students.length > 0 ? renderTable(students) : <p>No enrolled students found.</p>)}
+          (students.length > 0 ? (
+            renderTable(students)
+          ) : (
+            <p>No enrolled students found.</p>
+          ))}
 
         {activeTab === "year" &&
           Object.keys(byYearLevel)

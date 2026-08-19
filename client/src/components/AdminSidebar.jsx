@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 import "./AdminSidebar.css";
+import { LogoutIcon } from "./AdminIcons";
 
 export default function AdminSidebar({ links }) {
   const [expanded, setExpanded] = useState(false);
@@ -24,7 +25,10 @@ export default function AdminSidebar({ links }) {
         <ul>
           {links.map((link) => (
             <li key={link.to}>
-              <Link to={link.to} className={pathname === link.to ? "active" : ""}>
+              <Link
+                to={link.to}
+                className={pathname === link.to ? "active" : ""}
+              >
                 <span className="icon">{link.icon}</span>
                 <span className="label">{link.label}</span>
               </Link>
@@ -33,8 +37,16 @@ export default function AdminSidebar({ links }) {
         </ul>
         <ul className="logout">
           <li>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
-              <span className="icon">🚪</span>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+            >
+              <span className="icon">
+                <LogoutIcon />
+              </span>
               <span className="label">Logout</span>
             </a>
           </li>

@@ -4,14 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 import "./AdminDashboard.css";
-
-// NOTE: adjust these "to" paths to match your actual React Router routes
-const adminLinks = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: "🏠" },
-  { to: "/admin/students", label: "Students", icon: "👨‍🎓" },
-  { to: "/admin/enrolled", label: "Enrolled", icon: "📚" },
-  { to: "/admin/requests", label: "Requests", icon: "📩" },
-];
+import { adminLinks } from "../config/navLinks";
 
 const REQUIREMENT_LABELS = {
   form137_trans: "Form 137 (Transferee)",
@@ -29,7 +22,6 @@ const REQUIREMENT_LABELS = {
 function formatRequirementLabel(key) {
   return REQUIREMENT_LABELS[key] || "Unknown Document";
 }
-
 
 export default function AdminDashboard() {
   const { token, logout } = useAuth();
@@ -155,24 +147,30 @@ export default function AdminDashboard() {
           )}
 
           {details.requirements && (
-  <>
-    <h3>Requirements</h3>
-    <ul className="requirements-list">
-      {Object.entries(details.requirements)
-        .filter(([key, value]) => !key.startsWith("id_req_") && value)
-        .map(([key, value]) => {
-          const fileHref = value.replace(/\\/g, "/").replace(/^\/+/, "");
-          return (
-            <li key={key}>
-              <a href={`${API_BASE_URL}/${fileHref}`} target="_blank" rel="noreferrer">
-                {formatRequirementLabel(key)}
-              </a>
-            </li>
-          );
-        })}
-    </ul>
-  </>
-)}
+            <>
+              <h3>Requirements</h3>
+              <ul className="requirements-list">
+                {Object.entries(details.requirements)
+                  .filter(([key, value]) => !key.startsWith("id_req_") && value)
+                  .map(([key, value]) => {
+                    const fileHref = value
+                      .replace(/\\/g, "/")
+                      .replace(/^\/+/, "");
+                    return (
+                      <li key={key}>
+                        <a
+                          href={`${API_BASE_URL}/${fileHref}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {formatRequirementLabel(key)}
+                        </a>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </>
+          )}
 
           {student[`status${prefix}`] !== "Approved" ? (
             <button onClick={approveStudent} className="approve-btn">

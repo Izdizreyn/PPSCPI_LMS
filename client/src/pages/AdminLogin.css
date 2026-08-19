@@ -51,5 +51,11 @@
   right: 10px;
   transform: translateY(-50%);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #666;
 }
 
+.toggle-password:hover {
+  color: #333;
+}
