@@ -4,8 +4,9 @@ import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
 import CashierLayout from "../components/CashierLayout";
 import "./Cashier.css";
+import { CashierIcon } from "../components/AdminIcons";
 
-const cashierLinks = [{ to: "/cashier", label: "Dashboard", icon: "🧾" }];
+const cashierLinks = [{ to: "/cashier", label: "Dashboard", icon: <CashierIcon /> }];
 
 export default function Cashier() {
   const { token } = useAuth();
