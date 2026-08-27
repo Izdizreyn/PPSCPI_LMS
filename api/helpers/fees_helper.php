@@ -400,6 +400,24 @@ function recordStudentPayment($conn, $balance_id, $amount, $payment_method, $rec
     return recalculateBalance($conn, $balance_id);
 }
 
+function recordStudentPayments($conn, $balance_id, $payments, $payment_method, $receipt_number, $cashier_id, $remarks)
+{
+    foreach ($payments as $payment) {
+        $amount = (float) ($payment['amount'] ?? 0);
+        $fee_id = $payment['fee_id'] ?? null;
+
+        if ($amount <= 0 || $fee_id === null || $fee_id === '') {
+            return false;
+        }
+
+        if (!recordStudentPayment($conn, $balance_id, $amount, $payment_method, $receipt_number, $cashier_id, $remarks, $fee_id)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function getStudentBalancesMap($conn, $academic_year = null)
 {
     if ($academic_year === null) {

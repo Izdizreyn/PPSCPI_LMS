@@ -33,14 +33,14 @@
 | 5 | newstud.php | api/students/new.php | NewStudent.jsx | ✅ Done, tested | 4 file uploads |
 | 6 | trans.php | api/students/trans.php | Transferee.jsx | ✅ Done, tested | 5 file uploads |
 | 7 | profile_search.php | api/students/profile-search.php, queue-info.php, balance-info.php | ProfileSearch.jsx | ✅ Done, tested | `PageBackground variant="grid"`; Edit Profile intentionally omitted (deferred to future Student Portal) |
-| 8 | apanel.php | api/admin/students.php, student-details.php, approve.php | AdminDashboard.jsx | ✅ Done, tested | |
-| 9 | astudent.php | api/admin/approved-students.php, api/students/balance-detail.php, api/admin/enroll.php, queue-info.php | ApprovedStudents.jsx, **PrintBalance.jsx (new)**, AdminQueuePage.jsx, EnrollStudentPage.jsx | 🔄 In progress — balance view moved off-modal this session; code given, not yet tested | See Section 3 for full details of the flow change just made |
-| 10 | cashier.php | api/cashier/search-student.php, update-balance.php, record-payment.php | Cashier.jsx | 🔄 In progress — new auto-settle logic added last session | Uses dedicated `CashierLayout.jsx`/`CashierSidebar.jsx`; fixed `payment_transaction`→`payment_transactions` bug earlier |
+| 8 | apanel.php | api/admin/students.php, student-details.php, approve.php | AdminDashboard.jsx (`/admin/dashboard`, `/admin/applicants`) | 🔄 In progress — admin overview and separate applicant approval page implemented; browser testing pending | Dashboard shows live summary cards; applicant review table remains available at `/admin/applicants` and is linked in the sidebar |
+| 9 | astudent.php | api/admin/approved-students.php, api/students/balance-detail.php, api/admin/enroll.php, queue-info.php | ApprovedStudents.jsx, **PrintBalance.jsx**, AdminQueuePage.jsx, EnrollStudentPage.jsx | 🔄 In progress — approved-student overview, standalone balance page, queue history, and enrollment flow implemented; end-to-end testing pending | ApprovedStudents links to balance, queue, and enrollment actions |
+| 10 | cashier.php | api/cashier/search-student.php, update-balance.php, record-payment.php, payment-records.php, queue-dashboard.php | CashierDashboard.jsx, Cashier.jsx, CashierQueuePage.jsx | 🔄 In progress — one-use queue consumption is now transactional; browser/database test pending | Any partial or full payment requires an unused queue row, marks the latest row `Used`, and commits payment plus queue update together; dashboard shows all payments |
 | 11 | fees_helper.php | api/helpers/fees_helper.php | — | ✅ Copied as-is | |
 | 12 | enroll_student.php | api/admin/enroll.php | EnrollStudentPage.jsx | ✅ Done, tested | |
-| 13 | queue.php | api/students/queue-info.php | AdminQueuePage.jsx | 🔄 In progress — status display added last session | |
+| 13 | queue.php | api/students/queue-info.php, api/admin/queue-dashboard.php, api/cashier/queue-dashboard.php | AdminQueuePage.jsx, CashierQueuePage.jsx | 🔄 In progress — matching live dashboards and per-student queue history implemented; end-to-end data test pending | Dashboards poll every 10 seconds; statuses display `ACTIVE`/`USED`; admin detail displays history |
 | 14 | get_queue_info.php | api/students/queue-info.php | (shared w/ ProfileSearch modal) | ✅ Done, tested | |
-| 15 | get_balance_info.php | api/students/balance-info.php, balance-detail.php | ProfileSearch modal (unchanged) + **PrintBalance.jsx (new, replaces ApprovedStudents modal)** | 🔄 In progress | ApprovedStudents no longer uses a balance modal — see Section 3 |
+| 15 | get_balance_info.php | api/students/balance-info.php, balance-detail.php | ProfileSearch modal (unchanged) + **PrintBalance.jsx** | 🔄 In progress — standalone balance page implemented; end-to-end print/data testing pending | ApprovedStudents no longer uses a balance modal |
 | 16 | request_enrollment_certificate.php | api/students/request-certificate.php | RequestCertificate.jsx | ✅ Done, tested | |
 | 17 | admin_certificate_request.php | api/admin/certificate-requests.php, certificate-requests-update.php | AdminRequests.jsx | ✅ Done, tested | |
 | 18 | print_certificate.php | api/students/certificate.php | PrintCertificate.jsx | ✅ Done, tested | Currently uses `logo.png` as watermark substitute — see Section 4, now resolvable since `translogo.png` has arrived |
@@ -62,21 +62,21 @@
 - API base URL centralized in `client/src/config/api.js`
 
 ### Previous session — Approved Students / Queue flow rework
-Tied queue completion to **payment status**, not enrollment status. New `Settled` status added to `enrollment_schedule` (`ALTER TABLE` migration flagged, run manually — see prior session notes). `ApprovedStudents.jsx` header renamed to "Student Enrollment Overview"; "Enroll" link conditionally hidden once a student appears in `enrolled_students` (via new `enrolled_lrns` field from `approved-students.php`). `AdminQueuePage.jsx` displays `Active`/`Settled` status. Full detail retained in git history / prior PROGRESS.md version if needed.
+Queue lifecycle is tied to payment activity. Any successful cashier payment marks the current `enrollment_schedule` row as `Used`; the API temporarily falls back to legacy `Settled` schemas and dashboards normalize that value to `USED`. `ApprovedStudents.jsx` hides `Enroll` after a student appears in `enrolled_students`.
 
-### New this session — "View Balance" moved from in-page modal to dedicated print page
+### Implemented — "View Balance" moved from in-page modal to dedicated print page
 **Problem identified:** the "View Balance" action on `ApprovedStudents.jsx` opened an in-page modal (`balanceModal` state) with a watermark logo layered behind the statement using `position: absolute` + `z-index`. The watermark never rendered — root cause traced to the print flow's `visibility: hidden` / `visibility: visible` toggling on `body *` combined with the modal's own stacking context; this is the same architectural pattern that was already avoided on `PrintCertificate.jsx`, which prints as its own standalone page rather than a modal.
 
 **Decision:** replace the modal with a new standalone route/page, mirroring the existing `PrintCertificate.jsx` pattern exactly (own component, own CSS file, own `window.print()` button, watermark as a plain `<img>` positioned behind page content — no `visibility` hacks needed since the whole page IS the print target).
 
-**Implementation given this session (apply-and-test needed):**
+**Implementation completed:**
 1. **New file `PrintBalance.jsx`** (mirrors `PrintCertificate.jsx`) — reads `?lrn=` from the URL via `useSearchParams`, fetches `api/students/balance-detail.php?lrn=`, renders Statement of Account + Payment History, with `translogo.png` as a low-opacity (`0.08`) centered watermark behind the content.
 2. **New file `PrintBalance.css`** — 8.5in × 11in printable container, `@media print` rules matching `PrintCertificate.css`'s pattern (hide print button, `@page { size: letter; margin: 0; }`).
 3. **`ApprovedStudents.jsx` — modal fully removed.** Deleted `balanceModal` state, `openBalanceModal` function, and the entire modal JSX block. "View Balance" is now a plain `<Link to="/admin/print-balance?lrn=...">` opening in a new tab (`target="_blank"`).
 4. **`ApprovedStudents.css` — all modal/watermark/print CSS removed** (`.modal`, `.modal-content`, `.watermark-logo`, `.close`, `.transaction-table`, `.balance-footer`, `.print-btn`, and the page's `@media print` block) since none of it is used by this page anymore.
-5. **New route needed** in `App.jsx` (or wherever routes live): `<Route path="/admin/print-balance" element={<PrintBalance />} />` — **not yet added, flagged as a Next Step.**
+5. **Route registered:** `<Route path="/admin/print-balance" element={<PrintBalance />} />` is present in `App.jsx`.
 
-**Open question flagged to verify:** `balance-detail.php`'s response shape needs to be checked for a `student_name` (or equivalent) field — `PrintBalance.jsx` destructures `student_name` from the top-level response, but this may need adjusting to match whatever the endpoint actually returns (e.g. nested under `balance.full_name`).
+**Testing note:** `balance-detail.php` response shape and the standalone print flow still need browser verification against the live database.
 
 **Resulting resource note:** `translogo.png` has now been uploaded and placed at `src/assets/translogo.png`, and is in active use in `PrintBalance.jsx`. This resolves the blocker noted below for `PrintCertificate.jsx`, which currently substitutes `logo.png` — swapping it to `translogo.png` is now possible whenever convenient.
 
@@ -96,8 +96,16 @@ Select-String -Path "*.jsx" -Pattern 'className="[^"]*\bcontainer\b'
 ### ⚠️ OPEN: AdminSidebar rendering bug — status unconfirmed
 Reported on the Approved Students page: sidebar showed only a bare hamburger icon, no purple bar/logo/nav. Investigation ruled out CSS collision (`.sidebar` rule confirmed correct and singular, `CashierSidebar.css` confirmed non-colliding). Leading theory was stale Vite dev-server cache. **Not yet confirmed fixed or still reproducing** — needs follow-up: does it still happen after a clean `npm run dev` restart + hard browser refresh? If yes, get DevTools Elements/Styles panel output for the `.sidebar` div.
 
-### ✅ RESOLVED (architecturally): balance-statement watermark never rendered in the `ApprovedStudents.jsx` modal
-Root-caused to the modal + `visibility` print-toggle approach fighting the watermark's stacking context (see Section 3). Fixed by removing the modal entirely and rebuilding as a standalone `PrintBalance.jsx` page using the same print pattern already proven on `PrintCertificate.jsx`. **Still needs: route registration + on-disk testing** before this can be marked fully done.
+### ✅ RESOLVED: balance-statement watermark never rendered in the `ApprovedStudents.jsx` modal
+Root-caused to the modal + `visibility` print-toggle approach fighting the watermark's stacking context (see Section 3). Fixed by removing the modal entirely and rebuilding as a standalone `PrintBalance.jsx` page using the same print pattern already proven on `PrintCertificate.jsx`. Route registration is complete; browser/data/print verification remains.
+
+### ✅ Queue dashboard presentation updates
+- Admin and cashier live queue dashboards are wrapped in card containers with centered headers.
+- Admin queue history has dedicated table styling and displays date only, without time.
+- The queue detail print action is inside the queue card at the upper right; queue history is excluded from printing.
+- Admin live queue no longer displays refresh or updated-time controls; background polling remains active.
+- Admin and cashier queue summaries use matching `ACTIVE`/`USED` terminology.
+- Cashier dashboard is separated from Student Search and displays all student payment records in a readable card layout.
 
 ### Not yet actioned
 - Admin password stored/compared in plaintext — should move to `password_hash()`/`password_verify()`.
@@ -110,16 +118,18 @@ Root-caused to the modal + `visibility` print-toggle approach fighting the water
 ---
 
 ## 5. Next Steps (what to tell Claude in the next chat)
-- [ ] **Register the new route:** add `<Route path="/admin/print-balance" element={<PrintBalance />} />` to the router config — not yet done.
+- [x] **Register the balance route:** `<Route path="/admin/print-balance" element={<PrintBalance />} />` is registered in `App.jsx`.
 - [ ] **Verify `balance-detail.php` response shape** matches what `PrintBalance.jsx` expects (`balance`, `transactions`, `fee_breakdown`, `student_name`) — adjust destructuring if field names differ.
 - [ ] Test the new `PrintBalance.jsx` flow end to end: open from "View Balance" link, confirm data loads, confirm watermark renders on screen AND in print preview.
-- [ ] Apply and test the queue-status/Settled feature from the prior session: run the `ALTER TABLE` migration, verify `record-payment.php`'s auto-settle logic, confirm `ApprovedStudents.jsx`'s Enroll link correctly hides once a student is in `enrolled_students`, confirm `AdminQueuePage.jsx` shows the right status color/label.
+- [ ] Test cashier dashboard, Student Search, queue status, and live dashboards end to end: migrate `enrollment_schedule.status` to allow `Used`, verify auto-update after partial or full payment, and confirm both queue screens and history in the browser. The payment API temporarily falls back to legacy `Settled` and dashboards normalize it to `USED`.
 - [ ] Resolve or reconfirm the AdminSidebar rendering bug.
 - [ ] Fix mangled emoji in `AdminSidebar.jsx`.
 - [ ] Optional cleanup: swap `PrintCertificate.jsx`'s watermark from `logo.png` to the now-available `translogo.png`.
-- [ ] Admin Dashboard: statistics cards (Total/Approved/Rejected/Pending).
+- [x] Admin Dashboard: overview cards and shortcuts for applicants, approved students, live queue, enrolled students, and certificate requests.
+- [ ] Test the new admin overview cards and `/admin/applicants` review route in the browser.
 - [ ] Admin Dashboard: Reject button + required rejection reason.
-- [ ] Longer-term: plan Student Account Generation (auto-create login on admin "Enroll") — this is where `EditStudent.jsx` and a queue-number "request again" flow both eventually plug in.
+- [ ] Next queue lifecycle feature: after an approved student account is created, allow the student to request another queue number whenever the previous number is `Used`; retain every number in `enrollment_schedule` history and show it in admin live queue details.
+- [ ] Student Account Generation: auto-create login credentials when admin enrollment data is approved/enrolled, with secure password hashing and a student login flow.
 - [ ] Consider centralizing `adminLinks`; consider hashing admin passwords.
 
 ---
@@ -130,7 +140,7 @@ Root-caused to the modal + `visibility` print-toggle approach fighting the water
 - [ ] If `PrintBalance.jsx` testing surfaces issues: screenshot + `balance-detail.php` actual JSON response shape
 
 ---
-*Last updated: August 2026 — ApprovedStudents balance-view modal removed and replaced with standalone `PrintBalance.jsx`/`.css` (mirrors `PrintCertificate.jsx` pattern) to fix a watermark that never rendered inside the old modal; `translogo.png` now on disk and in active use; route registration + testing still pending.*
+*Last updated: August 2026 — Admin overview and applicant approval route are available; cashier dashboard/search/queue separation, editable multi-fee partial payments, immediate one-use `Used` queue transitions, matching live queue dashboards, styled date-only queue history, and print exclusions are implemented; browser/database end-to-end testing remains pending.*
 
 ## 7. What is done already?
 - [x] All 19 in-scope PHP modules converted, tested, and verified present on disk (item 20 intentionally deferred)
@@ -139,8 +149,16 @@ Root-caused to the modal + `visibility` print-toggle approach fighting the water
 - [x] Project-wide CSS scoping cleanup, including 2 late-discovered `.jsx`-level leaks
 - [x] EnrolledStudents print behavior fixed
 - [x] `translogo.png` uploaded and wired into a working print flow (`PrintBalance.jsx`)
+- [x] Admin overview dashboard with shortcut cards and separate applicant approval route
+- [x] Cashier dashboard with all student payments, Student Search, and Queue screens
+- [x] Multi-fee editable partial payments and immediate queue `Used` status updates
+- [x] Live admin/cashier queue dashboards with per-student queue history
 
 ## 8. Next thing to do
-- [ ] Register the `/admin/print-balance` route and test the new `PrintBalance.jsx` flow end to end (data + watermark)
-- [ ] Test the queue-Settled-status + hide-Enroll-if-already-enrolled feature end to end
+- [ ] Test admin overview and `/admin/applicants` approval workflow in the browser
+- [ ] Verify the cashier one-use `Active` to `Used` transition after partial or full SOA payment, including rejection when no unused queue remains
+- [ ] Test both live queue dashboards and per-student queue history against the database
+- [ ] Implement student login/account creation after enrollment approval
+- [ ] Implement student request-again queue number flow after a queue number is `Used`
+- [ ] Test the `PrintBalance.jsx` flow end to end (data + watermark)
 - [ ] Resolve AdminSidebar rendering bug (open/unconfirmed)

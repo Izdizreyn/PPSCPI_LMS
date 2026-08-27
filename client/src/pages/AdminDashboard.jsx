@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
 import AdminLayout from "../components/AdminLayout";
@@ -23,7 +24,7 @@ function formatRequirementLabel(key) {
   return REQUIREMENT_LABELS[key] || "Unknown Document";
 }
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ showApplicants = false }) {
   const { token, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("new");
   const [students, setStudents] = useState({
@@ -34,6 +35,13 @@ export default function AdminDashboard() {
   const [selected, setSelected] = useState(null);
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [overview, setOverview] = useState({
+    applicants: 0,
+    enrollmentOverview: 0,
+    queue: 0,
+    enrolled: 0,
+    requests: 0,
+  });
 
   const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
@@ -57,8 +65,36 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    loadStudents();
-  }, []);
+    if (!showApplicants) return undefined;
+
+    const loadId = window.setTimeout(loadStudents, 0);
+    return () => window.clearTimeout(loadId);
+  }, [showApplicants]);
+
+  useEffect(() => {
+    if (showApplicants) return;
+
+    Promise.all([
+      axios.get(`${API_BASE_URL}/admin/students.php`, authHeaders),
+      axios.get(`${API_BASE_URL}/admin/approved-students.php`, authHeaders),
+      axios.get(`${API_BASE_URL}/admin/queue-dashboard.php`, authHeaders),
+      axios.get(`${API_BASE_URL}/admin/enrolled-students.php`, authHeaders),
+      axios.get(`${API_BASE_URL}/admin/certificate-requests.php`, authHeaders),
+    ])
+      .then(([applicants, approved, queue, enrolled, requests]) => {
+        const applicantLists = [applicants.data.new, applicants.data.old, applicants.data.transferee];
+        setOverview({
+          applicants: applicantLists.reduce((total, list) => total + (list?.length || 0), 0),
+          enrollmentOverview: approved.data.students?.length || 0,
+          queue: queue.data.queue?.length || 0,
+          enrolled: enrolled.data.students?.length || 0,
+          requests: requests.data.requests?.length || 0,
+        });
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) logout();
+      });
+  }, [showApplicants, token]);
 
   const viewDetails = async (type, id) => {
     setSelected({ type, id });
@@ -82,6 +118,40 @@ export default function AdminDashboard() {
       loadStudents();
     }
   };
+
+  if (!showApplicants) {
+    const overviewCards = [
+      { title: "Applicants to Approve", count: overview.applicants, description: "Review pending enrollment applications", to: "/admin/applicants", className: "overview-card-applicants" },
+      { title: "Student Enrollment Overview", count: overview.enrollmentOverview, description: "Approved students and balances", to: "/admin/students", className: "overview-card-purple" },
+      { title: "Live Queue Dashboard", count: overview.queue, description: "Current enrollment queue numbers", to: "/admin/queue", className: "overview-card-gold" },
+      { title: "Enrolled Students", count: overview.enrolled, description: "Students assigned to rooms", to: "/admin/enrolled", className: "overview-card-green" },
+      { title: "Certificate Requests", count: overview.requests, description: "Requests waiting for review", to: "/admin/requests", className: "overview-card-blue" },
+    ];
+
+    return (
+      <AdminLayout links={adminLinks}>
+        <main className="admin-overview">
+          <header className="admin-overview-header">
+            <p className="admin-overview-eyebrow">Power Purple LMS</p>
+            <h1>Admin Dashboard</h1>
+            <p>Enrollment activity at a glance.</p>
+          </header>
+          <section className="admin-overview-grid" aria-label="Admin dashboard overview">
+            {overviewCards.map((card) => (
+              <article className={`admin-overview-card ${card.className}`} key={card.to}>
+                <div>
+                  <p className="admin-overview-card-title">{card.title}</p>
+                  <strong>{card.count}</strong>
+                  <p>{card.description}</p>
+                </div>
+                <Link to={card.to}>Open</Link>
+              </article>
+            ))}
+          </section>
+        </main>
+      </AdminLayout>
+    );
+  }
 
   if (loading) {
     return (
@@ -189,7 +259,7 @@ export default function AdminDashboard() {
   return (
     <AdminLayout links={adminLinks}>
       <div className="admin-dashboard admin-dashboard">
-        <h1>Enrollees</h1>
+        <h1>Applicants to Approve</h1>
         <div className="tab">
           {["new", "old", "transferee"].map((tab) => (
             <button

@@ -1,0 +1,154 @@
+.cashier-dashboard {
+  max-width: 1280px;
+  margin: 30px auto;
+  padding: 0 20px;
+  color: #252238;
+}
+
+.cashier-dashboard-header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.cashier-dashboard-card {
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+}
+
+.cashier-dashboard-header {
+  padding: 24px;
+}
+
+.cashier-eyebrow {
+  margin: 0 0 8px;
+  color: #8a4d8f;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cashier-dashboard h1 {
+  margin: 0;
+  font-family: sans-serif;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.cashier-dashboard-header p:not(.cashier-eyebrow) {
+  margin: 8px 0 0;
+  color: #6c687c;
+}
+
+.cashier-dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.cashier-action {
+  display: inline-block;
+  padding: 11px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cashier-action.primary {
+  background: #800080;
+  color: #fff;
+}
+
+.cashier-action.secondary {
+  border: 1px solid #800080;
+  color: #800080;
+}
+
+.cashier-records {
+  max-width: none;
+}
+
+.cashier-records .card-header {
+  background: #252238;
+}
+
+.cashier-records h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.cashier-records-table-wrap {
+  overflow-x: auto;
+}
+
+.cashier-records table {
+  width: 100%;
+  min-width: 850px;
+  table-layout: fixed;
+}
+
+.cashier-records th,
+.cashier-records td {
+  padding: 16px 18px;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+.cashier-records th:nth-child(1),
+.cashier-records td:nth-child(1) {
+  width: 19%;
+}
+
+.cashier-records th:nth-child(2),
+.cashier-records td:nth-child(2) {
+  width: 14%;
+}
+
+.cashier-records th:nth-child(3),
+.cashier-records td:nth-child(3) {
+  width: 22%;
+}
+
+.cashier-records th:nth-child(4),
+.cashier-records td:nth-child(4) {
+  width: 13%;
+}
+
+.cashier-records th:nth-child(5),
+.cashier-records td:nth-child(5) {
+  width: 16%;
+}
+
+.cashier-records th:nth-child(6),
+.cashier-records td:nth-child(6) {
+  width: 16%;
+}
+
+.cashier-records tbody tr {
+  border-bottom: 1px solid #e1dce5;
+}
+
+.cashier-records tbody tr:last-child {
+  border-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .cashier-dashboard-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cashier-dashboard-actions {
+    flex-direction: column;
+  }
+
+  .cashier-action {
+    text-align: center;
+  }
+}

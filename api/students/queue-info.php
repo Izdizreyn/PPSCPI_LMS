@@ -11,7 +11,7 @@ if (empty($studentType) || empty($studentId)) {
     exit();
 }
 
-$stmt = $conn->prepare("SELECT * FROM enrollment_schedule WHERE student_type = ? AND student_id = ?");
+$stmt = $conn->prepare("SELECT * FROM enrollment_schedule WHERE student_type = ? AND student_id = ? ORDER BY enrollment_date DESC");
 $stmt->bind_param("si", $studentType, $studentId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -22,7 +22,11 @@ if ($result->num_rows === 0) {
     exit();
 }
 
-$queue = $result->fetch_assoc();
+$queueHistory = [];
+while ($row = $result->fetch_assoc()) {
+    $queueHistory[] = $row;
+}
+$queue = $queueHistory[0];
 $stmt->close();
 
 // Also pull strand/year level for display — original queue.php needed this
@@ -46,6 +50,7 @@ if (isset($tableMap[$studentType])) {
 
 $queue['strand'] = $strand;
 $queue['year_level'] = $yearLevel;
+$queue['queue_history'] = $queueHistory;
 
 echo json_encode(["success" => true, "queue" => $queue]);
 $conn->close();

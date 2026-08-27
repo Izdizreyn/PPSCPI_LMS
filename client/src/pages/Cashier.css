@@ -155,3 +155,36 @@
 .back-btn:hover {
   background-color: #555;
 }
+
+.selected-fees {
+  margin-bottom: 14px;
+  padding: 12px;
+  background: #eef5ff;
+  border: 1px solid #9ec5fe;
+  border-radius: 6px;
+}
+
+.selected-fees-header,
+.selected-fee-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.selected-fee-row {
+  margin-top: 8px;
+}
+
+.selected-fee-row input {
+  width: 130px;
+  min-width: 130px;
+  padding: 8px;
+  border: 1px solid #9ec5fe;
+  border-radius: 4px;
+}
+
+.selected-fee-total {
+  margin: 12px 0 0;
+  font-weight: 700;
+}

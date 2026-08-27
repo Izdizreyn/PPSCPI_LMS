@@ -7,6 +7,7 @@ import Transferee from "./pages/Transferee";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Cashier from "./pages/Cashier";
+import CashierDashboard from "./pages/CashierDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProfileSearch from "./pages/ProfileSearch";
 import ApprovedStudents from "./pages/ApprovedStudents";
@@ -17,6 +18,7 @@ import AdminRequests from "./pages/AdminRequests";
 import EnrolledStudents from "./pages/EnrolledStudents";
 import PrintCertificate from "./pages/PrintCertificate";
 import PrintBalance from "./pages/PrintBalance";
+import CashierQueuePage from "./pages/CashierQueuePage";
 
 function App() {
   return (
@@ -41,12 +43,36 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/applicants"
+          element={
+            <ProtectedRoute allowedRoles={["purple_admin"]}>
+              <AdminDashboard showApplicants />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/cashier"
           element={
             <ProtectedRoute allowedRoles={["purple_cashier"]}>
+              <CashierDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cashier/search"
+          element={
+            <ProtectedRoute allowedRoles={["purple_cashier"]}>
               <Cashier />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cashier/queue"
+          element={
+            <ProtectedRoute allowedRoles={["purple_cashier"]}>
+              <CashierQueuePage />
             </ProtectedRoute>
           }
         />

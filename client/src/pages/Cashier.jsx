@@ -4,17 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
 import CashierLayout from "../components/CashierLayout";
 import "./Cashier.css";
-import { CashierIcon } from "../components/AdminIcons";
-
-const cashierLinks = [{ to: "/cashier", label: "Dashboard", icon: <CashierIcon /> }];
+import { cashierLinks } from "../config/navLinks";
 
 export default function Cashier() {
   const { token } = useAuth();
   const [lrn, setLrn] = useState("");
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
-  const [selectedFee, setSelectedFee] = useState(null);
-  const [amount, setAmount] = useState("");
+  const [selectedFees, setSelectedFees] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [receiptNumber, setReceiptNumber] = useState("");
   const [remarks, setRemarks] = useState("");
@@ -59,42 +56,56 @@ export default function Cashier() {
     setData(null);
     setLrn("");
     setError("");
-    setSelectedFee(null);
-    setAmount("");
+    setSelectedFees([]);
     setReceiptNumber("");
     setRemarks("");
   };
 
-  const selectFee = (fee) => {
-    setSelectedFee(fee.fee_id);
-    setAmount(fee.remaining.toFixed(2));
-    setRemarks(`Payment for ${fee.fee_name}`);
+  const toggleFee = (fee) => {
+    setSelectedFees((current) => {
+      const alreadySelected = current.some((selected) => selected.fee_id === fee.fee_id);
+      if (alreadySelected) {
+        return current.filter((selected) => selected.fee_id !== fee.fee_id);
+      }
+
+      return [...current, { ...fee, amount: fee.remaining.toFixed(2) }];
+    });
   };
 
-  const clearSelectedFee = () => {
-    setSelectedFee(null);
-    setAmount("");
+  const updateFeeAmount = (feeId, value) => {
+    setSelectedFees((current) => current.map((fee) => (
+      fee.fee_id === feeId ? { ...fee, amount: value } : fee
+    )));
+  };
+
+  const clearSelectedFees = () => {
+    setSelectedFees([]);
     setRemarks("");
   };
 
   const recordPayment = async (e) => {
     e.preventDefault();
+    if (selectedFees.length === 0) {
+      setError("Select at least one unpaid fee before recording a payment.");
+      return;
+    }
+
     try {
       await axios.post(
         `${API_BASE_URL}/cashier/record-payment.php`,
         {
           balance_id: data.balance.balance_id,
-          amount,
+          amount: selectedFees.reduce((total, fee) => total + Number(fee.amount || 0), 0),
           payment_method: paymentMethod,
           receipt_number: receiptNumber,
           remarks,
-          fee_id: selectedFee,
+          fee_id: selectedFees.length === 1 ? selectedFees[0].fee_id : null,
+          payments: selectedFees.map((fee) => ({ fee_id: fee.fee_id, amount: Number(fee.amount) })),
         },
         authHeaders,
       );
       alert("Payment recorded successfully.");
-      setSelectedFee(null);
-      setAmount("");
+      setSelectedFees([]);
       setReceiptNumber("");
       setRemarks("");
       const refreshed = await axios.get(
@@ -143,6 +154,9 @@ export default function Cashier() {
               </div>
               <div className="card-body">
                 <p>
+                  <strong>LRN:</strong> {data.student.lrn}
+                </p>
+                <p>
                   <strong>Name:</strong> {data.student.full_name}
                 </p>
                 <p>
@@ -164,8 +178,8 @@ export default function Cashier() {
                 {data.fee_statuses.map((fee) => (
                   <div
                     key={fee.fee_id}
-                    className={`fee-item ${fee.is_paid ? "paid" : "clickable"} ${selectedFee === fee.fee_id ? "selected" : ""}`}
-                    onClick={() => !fee.is_paid && selectFee(fee)}
+                    className={`fee-item ${fee.is_paid ? "paid" : "clickable"} ${selectedFees.some((selected) => selected.fee_id === fee.fee_id) ? "selected" : ""}`}
+                    onClick={() => !fee.is_paid && toggleFee(fee)}
                   >
                     <span>
                       {fee.fee_name} <small>({fee.category_name})</small>
@@ -203,28 +217,33 @@ export default function Cashier() {
 
                   <h6>Record New Payment</h6>
 
-                  {selectedFee && (
-                    <div className="selected-fee-badge active">
-                      Paying: {remarks} — ₱ {amount}
-                      <button
-                        type="button"
-                        className="btn-clear"
-                        onClick={clearSelectedFee}
-                      >
-                        Clear
-                      </button>
+                  {selectedFees.length > 0 && (
+                    <div className="selected-fees">
+                      <div className="selected-fees-header">
+                        <strong>Selected fees</strong>
+                        <button type="button" className="btn-clear" onClick={clearSelectedFees}>Clear</button>
+                      </div>
+                      {selectedFees.map((fee) => (
+                        <label className="selected-fee-row" key={fee.fee_id}>
+                          <span>{fee.fee_name}</span>
+                          <input
+                            type="number"
+                            min="0.01"
+                            max={fee.remaining}
+                            step="0.01"
+                            value={fee.amount}
+                            onChange={(e) => updateFeeAmount(fee.fee_id, e.target.value)}
+                            required
+                          />
+                        </label>
+                      ))}
+                      <p className="selected-fee-total">
+                        Total payment: ₱ {selectedFees.reduce((total, fee) => total + Number(fee.amount || 0), 0).toFixed(2)}
+                      </p>
                     </div>
                   )}
 
                   <form onSubmit={recordPayment} className="payment-form">
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      placeholder="Amount"
-                      required
-                    />
                     <select
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value)}
@@ -246,7 +265,7 @@ export default function Cashier() {
                       placeholder="Remarks"
                       required
                     />
-                    <button type="submit" className="btn-primary">
+                    <button type="submit" className="btn-primary" disabled={selectedFees.length === 0}>
                       Record Payment
                     </button>
                   </form>
