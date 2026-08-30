@@ -42,6 +42,7 @@ export default function CashierDashboard() {
         <div className="cashier-dashboard-card">
           <header className="cashier-dashboard-header">
             <div>
+              <p className="cashier-overview-eyebrow">Power Purple LMS</p>
               <h1>Cashier Dashboard</h1>
             </div>
             <div className="cashier-dashboard-actions">

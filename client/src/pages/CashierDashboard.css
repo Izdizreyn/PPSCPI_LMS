@@ -152,3 +152,12 @@
     text-align: center;
   }
 }
+
+.cashier-overview-eyebrow {
+    margin: 0 0 8px;
+    color: #800080;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}

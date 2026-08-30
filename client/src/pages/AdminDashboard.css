@@ -216,6 +216,16 @@ a:hover {
     color: #6c687c;
 }
 
+.admin-overview-card .admin-overview-card-batch {
+    display: block;
+    margin-top: 8px;
+    color: #8a4d8f;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
 .admin-overview-card a {
     align-self: flex-start;
     padding: 9px 14px;

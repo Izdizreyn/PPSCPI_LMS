@@ -6,6 +6,18 @@ require_once __DIR__ . '/../helpers/fees_helper.php';
 
 $user = requireRole(['purple_cashier']);
 
+$conn->query("CREATE TABLE IF NOT EXISTS queue_usage_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    queue_number VARCHAR(20) NOT NULL,
+    lrn VARCHAR(50) NOT NULL,
+    student_type VARCHAR(20) NOT NULL,
+    student_id INT NOT NULL,
+    balance_id INT DEFAULT NULL,
+    amount DECIMAL(12,2) DEFAULT 0.00,
+    recorded_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) NOT NULL DEFAULT 'Used'
+)");
+
 $input = json_decode(file_get_contents("php://input"), true);
 
 $balanceCheck = $conn->prepare("SELECT student_id, student_type, student_lrn FROM student_balances WHERE balance_id = ?");
@@ -74,6 +86,12 @@ if (is_array($payments) && count($payments) > 0) {
 
 if ($success) {
     if ($balanceRow) {
+        $queueLogStmt = $conn->prepare("INSERT INTO queue_usage_log (queue_number, lrn, student_type, student_id, balance_id, amount, recorded_at, status)
+            VALUES (?, ?, ?, ?, ?, ?, NOW(), 'Used')");
+        $queueLogStmt->bind_param("sssiid", $activeQueue['queue_number'], $studentLrn, $balanceRow['student_type'], $balanceRow['student_id'], $input['balance_id'], $input['amount'] ?? 0);
+        $queueLogStmt->execute();
+        $queueLogStmt->close();
+
         $update = $conn->prepare("UPDATE enrollment_schedule
             SET status = 'Used'
             WHERE lrn = ? AND (status IS NULL OR status NOT IN ('Used', 'Settled'))

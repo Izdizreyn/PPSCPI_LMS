@@ -9,6 +9,7 @@ import "./AdminQueuePage.css";
 export default function CashierQueuePage() {
   const { token, logout } = useAuth();
   const [queue, setQueue] = useState([]);
+  const [queueBatch, setQueueBatch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -18,6 +19,7 @@ export default function CashierQueuePage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setQueue(response.data.queue || []);
+      setQueueBatch(response.data.queue_batch || "");
       setError("");
     } catch (requestError) {
       if (requestError.response?.status === 401) logout();
@@ -44,7 +46,14 @@ export default function CashierQueuePage() {
       <div className="admin-queue dashboard-queue">
         <div className="queue-dashboard-card">
           <div className="queue-dashboard-heading cashier-queue-heading">
-            <h1>Queue Dashboard</h1>
+            <div>
+              <h1>Queue Dashboard</h1>
+            </div>
+
+            <div className="queue-batch-editor queue-batch-readonly" aria-live="polite">
+              <label>Queue Batch</label>
+              <div className="queue-batch-display">{queueBatch || "—"}</div>
+            </div>
           </div>
 
           <div className="queue-stats" aria-label="Queue summary">

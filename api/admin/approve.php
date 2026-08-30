@@ -44,21 +44,64 @@ if (!$student) {
     exit();
 }
 
-$today = date("Ymd");
-$sql_queue = "SELECT MAX(queue_number) as max_queue FROM enrollment_schedule WHERE queue_number LIKE ?";
-$likeParam = "$today%";
-$stmt = $conn->prepare($sql_queue);
-$stmt->bind_param("s", $likeParam);
-$stmt->execute();
-$row_queue = $stmt->get_result()->fetch_assoc();
-$stmt->close();
+$batchResult = $conn->query("SELECT * FROM queue_batch_settings WHERE batch_date = CURDATE() ORDER BY id DESC LIMIT 1");
+$queueBatch = date('Ymd') . '-001';
+$batchStart = date('Ymd') . '-001';
+$batchEnd = date('Ymd') . '-100';
 
-$sequence = 1;
-if ($row_queue['max_queue']) {
-    $parts = explode('-', $row_queue['max_queue']);
-    if (isset($parts[1])) $sequence = intval($parts[1]) + 1;
+if ($batchResult && $batchResult->num_rows > 0) {
+    $batchRow = $batchResult->fetch_assoc();
+    if (!empty($batchRow['queue_batch'])) {
+        $queueBatch = $batchRow['queue_batch'];
+    }
+    if (!empty($batchRow['batch_start'])) {
+        $batchStart = $batchRow['batch_start'];
+    }
+    if (!empty($batchRow['batch_end'])) {
+        $batchEnd = $batchRow['batch_end'];
+    }
+} else {
+    $fallbackStmt = $conn->prepare("SELECT * FROM queue_batch_settings ORDER BY batch_date DESC, id DESC LIMIT 1");
+    $fallbackStmt->execute();
+    $fallbackRow = $fallbackStmt->get_result()->fetch_assoc();
+    $fallbackStmt->close();
+
+    if ($fallbackRow && !empty($fallbackRow['batch_start'])) {
+        $batchStart = $fallbackRow['batch_start'];
+        $batchEnd = $fallbackRow['batch_end'];
+        $queueBatch = $batchStart;
+    }
 }
-$queue_number = $today . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+
+$queue_number = $queueBatch;
+
+if (preg_match('/^(\d{8})-(\d{3})$/', $queueBatch, $matches)) {
+    $currentSequence = intval($matches[2]);
+    if ($currentSequence >= 100) {
+        $queue_number = $matches[1] . '-100';
+    }
+}
+
+if (preg_match('/^(\d{8})-(\d{3})$/', $queueBatch, $matches)) {
+    $nextSequence = intval($matches[2]) + 1;
+    if ($nextSequence > 100) {
+        $nextSequence = 100;
+    }
+    $nextBatch = $matches[1] . '-' . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
+} else {
+    $nextBatch = $queueBatch;
+}
+
+$batchStmt = $conn->prepare("INSERT INTO queue_batch_history (batch_date, batch_start, batch_end, last_queue_number) VALUES (CURDATE(), ?, ?, ?)");
+$batchStmt->bind_param('sss', $batchStart, $batchEnd, $queue_number);
+$batchStmt->execute();
+$batchStmt->close();
+
+$updateBatchStmt = $conn->prepare("UPDATE queue_batch_settings SET queue_batch = ?, current_number = ?, batch_start = ?, batch_end = ? WHERE batch_date = CURDATE() ORDER BY id DESC LIMIT 1");
+$nextNumber = (int) substr($nextBatch, -3);
+$updateBatchStmt->bind_param('siis', $nextBatch, $nextNumber, $batchStart, $batchEnd);
+$updateBatchStmt->execute();
+$updateBatchStmt->close();
 
 $enrollee_name = $student["fname$prefix"] . ' ' . $student["mname$prefix"] . ' ' . $student["lname$prefix"];
 if (!empty($student["extname$prefix"])) $enrollee_name .= ' ' . $student["extname$prefix"];
