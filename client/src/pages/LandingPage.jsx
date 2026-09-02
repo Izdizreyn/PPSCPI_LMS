@@ -53,6 +53,10 @@ export default function LandingPage() {
               <span className="hero-btn-label">Staff</span>
               <span className="hero-btn-hint">Login to manage enrollment</span>
             </Link>
+            <Link to="/student-login" className="hero-btn hero-btn-student">
+              <span className="hero-btn-label">Student</span>
+              <span className="hero-btn-hint">Access your student portal</span>
+            </Link>
             <Link to="/enroll" className="hero-btn hero-btn-enrollee">
               <span className="hero-btn-label">Enrollee</span>
               <span className="hero-btn-hint">Start your enrollment</span>

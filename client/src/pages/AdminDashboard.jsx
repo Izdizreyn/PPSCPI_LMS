@@ -39,6 +39,7 @@ export default function AdminDashboard({ showApplicants = false }) {
     applicants: 0,
     enrollmentOverview: 0,
     queue: 0,
+    queueBatch: "",
     enrolled: 0,
     requests: 0,
   });
@@ -87,6 +88,7 @@ export default function AdminDashboard({ showApplicants = false }) {
           applicants: applicantLists.reduce((total, list) => total + (list?.length || 0), 0),
           enrollmentOverview: approved.data.students?.length || 0,
           queue: queue.data.queue?.length || 0,
+          queueBatch: queue.data.queue_batch || "",
           enrolled: enrolled.data.students?.length || 0,
           requests: requests.data.requests?.length || 0,
         });
@@ -123,7 +125,7 @@ export default function AdminDashboard({ showApplicants = false }) {
     const overviewCards = [
       { title: "Applicants to Approve", count: overview.applicants, description: "Review pending enrollment applications", to: "/admin/applicants", className: "overview-card-applicants" },
       { title: "Student Enrollment Overview", count: overview.enrollmentOverview, description: "Approved students and balances", to: "/admin/students", className: "overview-card-purple" },
-      { title: "Live Queue Dashboard", count: overview.queue, description: "Current enrollment queue numbers", to: "/admin/queue", className: "overview-card-gold" },
+      { title: "Live Queue Dashboard", count: overview.queue, description: overview.queueBatch ? `Current queue batch: ${overview.queueBatch}` : "Current enrollment queue numbers", to: "/admin/queue", className: "overview-card-gold" },
       { title: "Enrolled Students", count: overview.enrolled, description: "Students assigned to rooms", to: "/admin/enrolled", className: "overview-card-green" },
       { title: "Certificate Requests", count: overview.requests, description: "Requests waiting for review", to: "/admin/requests", className: "overview-card-blue" },
     ];
@@ -134,7 +136,6 @@ export default function AdminDashboard({ showApplicants = false }) {
           <header className="admin-overview-header">
             <p className="admin-overview-eyebrow">Power Purple LMS</p>
             <h1>Admin Dashboard</h1>
-            <p>Enrollment activity at a glance.</p>
           </header>
           <section className="admin-overview-grid" aria-label="Admin dashboard overview">
             {overviewCards.map((card) => (

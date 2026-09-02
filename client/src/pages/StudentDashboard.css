@@ -1,0 +1,210 @@
+.student-dashboard {
+  min-height: 100vh;
+  background-color: #B6C2D9;
+  padding-bottom: 40px;
+  margin-left: 80px;
+  transition: margin-left 0.3s ease;
+}
+
+.student-dashboard.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #333;
+}
+
+.student-content {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card h2,
+.card h3 {
+  margin-top: 0;
+  color: #800080;
+  border-bottom: 2px solid #800080;
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
+
+.welcome-card {
+  grid-column: 1 / -1;
+  background: white;
+  color: #333;
+}
+
+.welcome-card h2 {
+  color: #800080;
+}
+
+.welcome-card p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.queue-details,
+.balance-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.queue-details p,
+.balance-details p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  font-size: 14px;
+}
+
+.label {
+  font-weight: 600;
+  color: #666;
+}
+
+.value {
+  color: #333;
+  font-weight: 500;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status.active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.used {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.balance-card .btn-secondary {
+  margin-top: 15px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s;
+  text-align: left;
+}
+
+.btn-primary {
+  background-color: #800080;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #600060;
+  transform: translateX(5px);
+}
+
+.btn-secondary {
+  background-color: #f0f0f0;
+  color: #800080;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+.info-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-card li {
+  padding: 10px 0;
+  padding-left: 25px;
+  position: relative;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.info-card li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #800080;
+  font-weight: bold;
+}
+
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c00;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .student-dashboard {
+    margin-left: 80px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .welcome-card {
+    grid-column: 1;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .student-content {
+    padding: 15px;
+}

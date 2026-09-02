@@ -15,10 +15,83 @@ export default function AdminQueuePage() {
   const [dashboardQueue, setDashboardQueue] = useState([]);
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState("");
+  const [queueBatch, setQueueBatch] = useState("");
+  const [queueBatchStartInput, setQueueBatchStartInput] = useState("");
+  const [queueBatchEndInput, setQueueBatchEndInput] = useState("");
+  const [previousBatches, setPreviousBatches] = useState([]);
+  const [batchSaving, setBatchSaving] = useState(false);
+  const [batchError, setBatchError] = useState("");
   const { token, logout } = useAuth();
 
   const type = searchParams.get("type");
   const id = searchParams.get("id");
+
+  const loadQueueBatch = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/admin/queue-batch.php`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const nextBatch = res.data.batch || "";
+      const startValue = res.data.batch_start || nextBatch.split(" to ")[0] || "";
+      const endValue = res.data.batch_end || nextBatch.split(" to ")[1] || startValue;
+      setQueueBatch(nextBatch);
+      setQueueBatchStartInput(startValue);
+      setQueueBatchEndInput(endValue);
+      setPreviousBatches(res.data.history || []);
+      setBatchError("");
+    } catch (err) {
+      if (err.response?.status === 401) logout();
+      setBatchError("Queue batch could not be loaded.");
+    }
+  }, [logout, token]);
+
+  const saveQueueBatch = useCallback(async () => {
+    const startValue = queueBatchStartInput.trim();
+    const endValue = queueBatchEndInput.trim();
+    const isStartValid = /^\d{8}-\d{3}$/i.test(startValue);
+    const isEndValid = /^\d{8}-\d{3}$/i.test(endValue);
+
+    if (!isStartValid || !isEndValid) {
+      setBatchError("Queue batch range must use YYYYMMDD-### for both start and end values.");
+      setQueueBatchStartInput(queueBatchStartInput || queueBatch.split(" to ")[0] || "");
+      setQueueBatchEndInput(queueBatchEndInput || queueBatch.split(" to ")[1] || queueBatchStartInput || "");
+      return;
+    }
+
+    if (startValue > endValue) {
+      setBatchError("The queue batch start value must be earlier than or equal to the end value.");
+      return;
+    }
+
+    const trimmed = `${startValue} to ${endValue}`;
+
+    try {
+      setBatchSaving(true);
+      const res = await axios.put(
+        `${API_BASE_URL}/admin/queue-batch.php`,
+        { batch: trimmed },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setQueueBatch(res.data.batch || trimmed);
+      setQueueBatchStartInput(res.data.batch_start || startValue);
+      setQueueBatchEndInput(res.data.batch_end || endValue);
+      setBatchError("");
+    } catch (err) {
+      if (err.response?.status === 401) logout();
+      setBatchError(err.response?.data?.message || "Queue batch could not be updated.");
+      setQueueBatchStartInput(queueBatch.split(" to ")[0] || "");
+      setQueueBatchEndInput(queueBatch.split(" to ")[1] || "");
+    } finally {
+      setBatchSaving(false);
+    }
+  }, [logout, queueBatch, queueBatchEndInput, queueBatchStartInput, token]);
+
+  const handleQueueBatchKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveQueueBatch();
+    }
+  };
 
   const loadDashboard = useCallback(async () => {
     try {
@@ -26,6 +99,10 @@ export default function AdminQueuePage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDashboardQueue(res.data.queue || []);
+      setQueueBatch(res.data.queue_batch || "");
+      setQueueBatchStartInput(res.data.batch_start || (res.data.queue_batch || "").split(" to ")[0] || "");
+      setQueueBatchEndInput(res.data.batch_end || (res.data.queue_batch || "").split(" to ")[1] || "");
+      setPreviousBatches(res.data.history || []);
       setDashboardError("");
     } catch (err) {
       if (err.response?.status === 401) logout();
@@ -36,28 +113,25 @@ export default function AdminQueuePage() {
   }, [logout, token]);
 
   useEffect(() => {
-    if (!type || !id) {
-      const initialRefreshId = window.setTimeout(loadDashboard, 0);
-      const intervalId = window.setInterval(loadDashboard, 10000);
-      return () => {
-        window.clearTimeout(initialRefreshId);
-        window.clearInterval(intervalId);
-      };
-    }
+  if (!type || !id) {
+    loadQueueBatch();
+    loadDashboard();
+    return;
+  }
 
-    (async () => {
-      try {
-        const res = await axios.get(
-          `${API_BASE_URL}/students/queue-info.php?type=${type}&id=${id}`,
-        );
-        setQueue(res.data.queue);
-      } catch {
-        setQueue(null);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [loadDashboard, type, id]);
+  (async () => {
+    try {
+      const res = await axios.get(
+        `${API_BASE_URL}/students/queue-info.php?type=${type}&id=${id}`
+      );
+      setQueue(res.data.queue);
+    } catch {
+      setQueue(null);
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, [loadDashboard, loadQueueBatch, type, id]);
 
   if (!type || !id) {
     const activeCount = dashboardQueue.filter((item) => item.status !== "Used").length;
@@ -67,14 +141,67 @@ export default function AdminQueuePage() {
       <AdminLayout links={adminLinks}>
         <div className="admin-queue dashboard-queue">
           <div className="queue-dashboard-card">
-            <div>
-              <h1>Live Queue Dashboard</h1>
+            <div className="queue-dashboard-heading">
+              <div>
+                <h1>Live Queue Dashboard</h1>
+              </div>
+
+              <div className="queue-batch-editor" aria-live="polite">
+                <label>Queue Batch</label>
+                <div className="queue-batch-control">
+                  <input
+                    id="admin-queue-batch-start"
+                    className="queue-batch-input"
+                    type="text"
+                    value={queueBatchStartInput}
+                    onChange={(event) => setQueueBatchStartInput(event.target.value)}
+                    onBlur={saveQueueBatch}
+                    onKeyDown={handleQueueBatchKeyDown}
+                    disabled={batchSaving}
+                    aria-label="Queue batch start"
+                    placeholder="YYYYMMDD-###"
+                  />
+                  <span className="queue-batch-separator">-</span>
+                  <input
+                    id="admin-queue-batch-end"
+                    className="queue-batch-input"
+                    type="text"
+                    value={queueBatchEndInput}
+                    onChange={(event) => setQueueBatchEndInput(event.target.value)}
+                    onBlur={saveQueueBatch}
+                    onKeyDown={handleQueueBatchKeyDown}
+                    disabled={batchSaving}
+                    aria-label="Queue batch end"
+                    placeholder="YYYYMMDD-###"
+                  />
+                  <button type="button" className="queue-batch-btn" onClick={saveQueueBatch} disabled={batchSaving}>
+                    {batchSaving ? "Saving..." : "Save"}
+                  </button>
+                </div>
+                {batchError ? <small className="queue-batch-error">{batchError}</small> : null}
+              </div>
             </div>
 
             <div className="queue-stats" aria-label="Queue summary">
             <div><strong>{dashboardQueue.length}</strong><span>Total queued</span></div>
             <div><strong>{activeCount}</strong><span>Active</span></div>
             <div><strong>{usedCount}</strong><span>Used</span></div>
+          </div>
+
+          <div className="queue-history-panel">
+            <h3>Previous Queue Batches</h3>
+            {previousBatches.length === 0 ? (
+              <p className="queue-empty subtle-empty">No previous queue batches saved yet.</p>
+            ) : (
+              <ul className="previous-batch-list">
+                {previousBatches.map((batchItem, index) => (
+                  <li key={`${batchItem.batch_date || index}-${batchItem.batch_start || index}`}>
+                    <strong>{batchItem.batch_start} to {batchItem.batch_end}</strong>
+                    <small>Last used: {batchItem.last_queue_number || batchItem.batch_start}</small>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {dashboardError ? <p className="queue-error">{dashboardError}</p> : null}

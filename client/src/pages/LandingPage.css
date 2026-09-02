@@ -22,6 +22,17 @@
 .wave-3 { stroke: rgba(255, 255, 255, 0.10); }
 .wave-4 { stroke: rgba(255, 255, 255, 0.22); }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .hero-inner {
   position: relative;
   z-index: 1;
@@ -32,6 +43,7 @@
   grid-template-columns: 1.3fr 0.9fr;
   gap: 60px;
   align-items: center;
+  animation: slideIn 0.3s ease-out;
 }
 
 .hero-text { color: white; }
@@ -92,6 +104,16 @@
 .hero-btn-staff {
   background-color: white;
   color: #6a2ea0;
+}
+
+.hero-btn-student {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.hero-btn-student:hover {
+  border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 .hero-btn-enrollee {

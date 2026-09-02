@@ -170,7 +170,7 @@ a:hover {
 
 .admin-overview-header h1 {
     margin: 0;
-    color: #252238;
+    color: #800080;
     font-family: sans-serif;
     font-size: 2em;
     font-weight: bold;
@@ -214,6 +214,16 @@ a:hover {
 .admin-overview-card p:last-child {
     margin: 6px 0 0;
     color: #6c687c;
+}
+
+.admin-overview-card .admin-overview-card-batch {
+    display: block;
+    margin-top: 8px;
+    color: #8a4d8f;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .admin-overview-card a {

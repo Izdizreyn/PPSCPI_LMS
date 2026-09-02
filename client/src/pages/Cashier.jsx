@@ -63,7 +63,9 @@ export default function Cashier() {
 
   const toggleFee = (fee) => {
     setSelectedFees((current) => {
-      const alreadySelected = current.some((selected) => selected.fee_id === fee.fee_id);
+      const alreadySelected = current.some(
+        (selected) => selected.fee_id === fee.fee_id,
+      );
       if (alreadySelected) {
         return current.filter((selected) => selected.fee_id !== fee.fee_id);
       }
@@ -73,9 +75,11 @@ export default function Cashier() {
   };
 
   const updateFeeAmount = (feeId, value) => {
-    setSelectedFees((current) => current.map((fee) => (
-      fee.fee_id === feeId ? { ...fee, amount: value } : fee
-    )));
+    setSelectedFees((current) =>
+      current.map((fee) =>
+        fee.fee_id === feeId ? { ...fee, amount: value } : fee,
+      ),
+    );
   };
 
   const clearSelectedFees = () => {
@@ -95,12 +99,18 @@ export default function Cashier() {
         `${API_BASE_URL}/cashier/record-payment.php`,
         {
           balance_id: data.balance.balance_id,
-          amount: selectedFees.reduce((total, fee) => total + Number(fee.amount || 0), 0),
+          amount: selectedFees.reduce(
+            (total, fee) => total + Number(fee.amount || 0),
+            0,
+          ),
           payment_method: paymentMethod,
           receipt_number: receiptNumber,
           remarks,
           fee_id: selectedFees.length === 1 ? selectedFees[0].fee_id : null,
-          payments: selectedFees.map((fee) => ({ fee_id: fee.fee_id, amount: Number(fee.amount) })),
+          payments: selectedFees.map((fee) => ({
+            fee_id: fee.fee_id,
+            amount: Number(fee.amount),
+          })),
         },
         authHeaders,
       );
@@ -122,26 +132,32 @@ export default function Cashier() {
     <CashierLayout links={cashierLinks}>
       <div className="cashier-container">
         {!data ? (
-          <div className="card">
-            <div className="card-header">
-              <h5>Search Student</h5>
+          <>
+            <div className="card">
+              <div className="card-body">
+                <header className="cashier-search-header">
+                  <div>
+                    <h1>Search Student</h1>
+                  </div>
+
+                  <form onSubmit={searchStudent} className="search-form">
+                    <input
+                      type="text"
+                      value={lrn}
+                      onChange={(e) => setLrn(e.target.value)}
+                      placeholder="Learner Reference Number (LRN)"
+                      required
+                    />
+                    <button type="submit" className="btn-primary">
+                      Search
+                    </button>
+                  </form>
+
+                  {error && <p className="error-text">{error}</p>}
+                </header>
+              </div>
             </div>
-            <div className="card-body">
-              <form onSubmit={searchStudent} className="search-form">
-                <input
-                  type="text"
-                  value={lrn}
-                  onChange={(e) => setLrn(e.target.value)}
-                  placeholder="Learner Reference Number (LRN)"
-                  required
-                />
-                <button type="submit" className="btn-primary">
-                  Search
-                </button>
-              </form>
-              {error && <p className="error-text">{error}</p>}
-            </div>
-          </div>
+          </>
         ) : (
           <>
             <button className="back-btn" onClick={backToSearch}>
@@ -221,7 +237,13 @@ export default function Cashier() {
                     <div className="selected-fees">
                       <div className="selected-fees-header">
                         <strong>Selected fees</strong>
-                        <button type="button" className="btn-clear" onClick={clearSelectedFees}>Clear</button>
+                        <button
+                          type="button"
+                          className="btn-clear"
+                          onClick={clearSelectedFees}
+                        >
+                          Clear
+                        </button>
                       </div>
                       {selectedFees.map((fee) => (
                         <label className="selected-fee-row" key={fee.fee_id}>
@@ -232,13 +254,21 @@ export default function Cashier() {
                             max={fee.remaining}
                             step="0.01"
                             value={fee.amount}
-                            onChange={(e) => updateFeeAmount(fee.fee_id, e.target.value)}
+                            onChange={(e) =>
+                              updateFeeAmount(fee.fee_id, e.target.value)
+                            }
                             required
                           />
                         </label>
                       ))}
                       <p className="selected-fee-total">
-                        Total payment: ₱ {selectedFees.reduce((total, fee) => total + Number(fee.amount || 0), 0).toFixed(2)}
+                        Total payment: ₱{" "}
+                        {selectedFees
+                          .reduce(
+                            (total, fee) => total + Number(fee.amount || 0),
+                            0,
+                          )
+                          .toFixed(2)}
                       </p>
                     </div>
                   )}
@@ -265,7 +295,11 @@ export default function Cashier() {
                       placeholder="Remarks"
                       required
                     />
-                    <button type="submit" className="btn-primary" disabled={selectedFees.length === 0}>
+                    <button
+                      type="submit"
+                      className="btn-primary"
+                      disabled={selectedFees.length === 0}
+                    >
                       Record Payment
                     </button>
                   </form>
