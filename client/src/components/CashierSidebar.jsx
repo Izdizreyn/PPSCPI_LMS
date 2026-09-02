@@ -12,7 +12,7 @@ export default function CashierSidebar({ links }) {
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       logout();
-      navigate("/");
+      navigate("/", {replace: true});
     }
   };
 

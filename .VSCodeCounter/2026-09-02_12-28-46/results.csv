@@ -1,0 +1,114 @@
+"filename", "language", "JavaScript JSX", "JavaScript", "PostCSS", "JSON", "HTML", "Markdown", "XML", "PHP", "comment", "blank", "total"
+"e:\wamp64\www\ppscpi_lms\api\admin\approve.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 136, 2, 24, 162
+"e:\wamp64\www\ppscpi_lms\api\admin\approved-students.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 51, 0, 11, 62
+"e:\wamp64\www\ppscpi_lms\api\admin\certificate-requests-update.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 29, 0, 8, 37
+"e:\wamp64\www\ppscpi_lms\api\admin\certificate-requests.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 12, 0, 3, 15
+"e:\wamp64\www\ppscpi_lms\api\admin\enroll.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 93, 0, 16, 109
+"e:\wamp64\www\ppscpi_lms\api\admin\enrolled-students.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 17, 0, 4, 21
+"e:\wamp64\www\ppscpi_lms\api\admin\queue-batch.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 227, 0, 35, 262
+"e:\wamp64\www\ppscpi_lms\api\admin\queue-dashboard.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 160, 0, 18, 178
+"e:\wamp64\www\ppscpi_lms\api\admin\student-details.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 55, 0, 13, 68
+"e:\wamp64\www\ppscpi_lms\api\admin\students.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 33, 0, 4, 37
+"e:\wamp64\www\ppscpi_lms\api\auth\login.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 44, 1, 10, 55
+"e:\wamp64\www\ppscpi_lms\api\auth\student-change-password.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 55, 6, 17, 78
+"e:\wamp64\www\ppscpi_lms\api\auth\student-login.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 48, 1, 11, 60
+"e:\wamp64\www\ppscpi_lms\api\auth\student-register.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 67, 7, 13, 87
+"e:\wamp64\www\ppscpi_lms\api\cashier\payment-records.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 46, 0, 6, 52
+"e:\wamp64\www\ppscpi_lms\api\cashier\queue-dashboard.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 148, 0, 17, 165
+"e:\wamp64\www\ppscpi_lms\api\cashier\record-payment.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 115, 0, 17, 132
+"e:\wamp64\www\ppscpi_lms\api\cashier\search-student.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 87, 0, 13, 100
+"e:\wamp64\www\ppscpi_lms\api\cashier\update-balance.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 22, 0, 4, 26
+"e:\wamp64\www\ppscpi_lms\api\composer.json", "JSON", 0, 0, 0, 5, 0, 0, 0, 0, 0, 1, 6
+"e:\wamp64\www\ppscpi_lms\api\composer.lock", "JSON", 0, 0, 0, 85, 0, 0, 0, 0, 0, 1, 86
+"e:\wamp64\www\ppscpi_lms\api\config\cors.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 10, 1, 2, 13
+"e:\wamp64\www\ppscpi_lms\api\config\database.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 15, 1, 4, 20
+"e:\wamp64\www\ppscpi_lms\api\config\jwt.example.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 26, 2, 7, 35
+"e:\wamp64\www\ppscpi_lms\api\helpers\fees_helper.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 394, 5, 91, 490
+"e:\wamp64\www\ppscpi_lms\api\middleware\auth.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 49, 2, 14, 65
+"e:\wamp64\www\ppscpi_lms\api\migration.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 33, 3, 5, 41
+"e:\wamp64\www\ppscpi_lms\api\students\balance-detail.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 51, 0, 8, 59
+"e:\wamp64\www\ppscpi_lms\api\students\balance-info.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 30, 2, 7, 39
+"e:\wamp64\www\ppscpi_lms\api\students\certificate.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 44, 1, 9, 54
+"e:\wamp64\www\ppscpi_lms\api\students\new.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 119, 1, 21, 141
+"e:\wamp64\www\ppscpi_lms\api\students\old.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 108, 5, 20, 133
+"e:\wamp64\www\ppscpi_lms\api\students\profile-search.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 118, 1, 17, 136
+"e:\wamp64\www\ppscpi_lms\api\students\queue-info.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 46, 1, 9, 56
+"e:\wamp64\www\ppscpi_lms\api\students\request-certificate.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 89, 2, 14, 105
+"e:\wamp64\www\ppscpi_lms\api\students\trans.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 121, 5, 21, 147
+"e:\wamp64\www\ppscpi_lms\client\README.md", "Markdown", 0, 0, 0, 0, 0, 9, 0, 0, 0, 8, 17
+"e:\wamp64\www\ppscpi_lms\client\eslint.config.js", "JavaScript", 0, 20, 0, 0, 0, 0, 0, 0, 0, 2, 22
+"e:\wamp64\www\ppscpi_lms\client\index.html", "HTML", 0, 0, 0, 0, 13, 0, 0, 0, 0, 1, 14
+"e:\wamp64\www\ppscpi_lms\client\package-lock.json", "JSON", 0, 0, 0, 2822, 0, 0, 0, 0, 0, 1, 2823
+"e:\wamp64\www\ppscpi_lms\client\package.json", "JSON", 0, 0, 0, 29, 0, 0, 0, 0, 0, 1, 30
+"e:\wamp64\www\ppscpi_lms\client\public\favicon.svg", "XML", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"e:\wamp64\www\ppscpi_lms\client\public\icons.svg", "XML", 0, 0, 0, 0, 0, 0, 24, 0, 0, 1, 25
+"e:\wamp64\www\ppscpi_lms\client\src\App.css", "PostCSS", 0, 0, 156, 0, 0, 0, 0, 0, 0, 31, 187
+"e:\wamp64\www\ppscpi_lms\client\src\App.jsx", "JavaScript JSX", 140, 0, 0, 0, 0, 0, 0, 0, 0, 7, 147
+"e:\wamp64\www\ppscpi_lms\client\src\assets\react.svg", "XML", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"e:\wamp64\www\ppscpi_lms\client\src\assets\vite.svg", "XML", 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 2
+"e:\wamp64\www\ppscpi_lms\client\src\components\AdminIcons.jsx", "JavaScript JSX", 138, 0, 0, 0, 0, 0, 0, 0, 1, 8, 147
+"e:\wamp64\www\ppscpi_lms\client\src\components\AdminLayout.css", "PostCSS", 0, 0, 9, 0, 0, 0, 0, 0, 0, 1, 10
+"e:\wamp64\www\ppscpi_lms\client\src\components\AdminLayout.jsx", "JavaScript JSX", 10, 0, 0, 0, 0, 0, 0, 0, 0, 1, 11
+"e:\wamp64\www\ppscpi_lms\client\src\components\AdminSidebar.css", "PostCSS", 0, 0, 65, 0, 0, 0, 0, 0, 0, 10, 75
+"e:\wamp64\www\ppscpi_lms\client\src\components\AdminSidebar.jsx", "JavaScript JSX", 50, 0, 0, 0, 0, 0, 0, 0, 0, 4, 54
+"e:\wamp64\www\ppscpi_lms\client\src\components\CashierLayout.css", "PostCSS", 0, 0, 9, 0, 0, 0, 0, 0, 0, 1, 10
+"e:\wamp64\www\ppscpi_lms\client\src\components\CashierLayout.jsx", "JavaScript JSX", 10, 0, 0, 0, 0, 0, 0, 0, 0, 1, 11
+"e:\wamp64\www\ppscpi_lms\client\src\components\CashierSidebar.css", "PostCSS", 0, 0, 62, 0, 0, 0, 0, 0, 0, 10, 72
+"e:\wamp64\www\ppscpi_lms\client\src\components\CashierSidebar.jsx", "JavaScript JSX", 50, 0, 0, 0, 0, 0, 0, 0, 0, 4, 54
+"e:\wamp64\www\ppscpi_lms\client\src\components\Navbar.css", "PostCSS", 0, 0, 37, 0, 0, 0, 0, 0, 0, 6, 43
+"e:\wamp64\www\ppscpi_lms\client\src\components\PageBackground.css", "PostCSS", 0, 0, 33, 0, 0, 0, 0, 0, 0, 4, 37
+"e:\wamp64\www\ppscpi_lms\client\src\components\PageBackground.jsx", "JavaScript JSX", 46, 0, 0, 0, 0, 0, 0, 0, 0, 5, 51
+"e:\wamp64\www\ppscpi_lms\client\src\components\ProtectedRoute.jsx", "JavaScript JSX", 13, 0, 0, 0, 0, 0, 0, 0, 0, 5, 18
+"e:\wamp64\www\ppscpi_lms\client\src\components\StudentSidebar.css", "PostCSS", 0, 0, 68, 0, 0, 0, 0, 0, 0, 12, 80
+"e:\wamp64\www\ppscpi_lms\client\src\components\StudentSidebar.jsx", "JavaScript JSX", 68, 0, 0, 0, 0, 0, 0, 0, 0, 8, 76
+"e:\wamp64\www\ppscpi_lms\client\src\components\navbar.jsx", "JavaScript JSX", 28, 0, 0, 0, 0, 0, 0, 0, 0, 3, 31
+"e:\wamp64\www\ppscpi_lms\client\src\config\api.js", "JavaScript", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"e:\wamp64\www\ppscpi_lms\client\src\config\navLinks.jsx", "JavaScript JSX", 21, 0, 0, 0, 0, 0, 0, 0, 1, 3, 25
+"e:\wamp64\www\ppscpi_lms\client\src\context\AuthContext.jsx", "JavaScript JSX", 36, 0, 0, 0, 0, 0, 0, 0, 0, 8, 44
+"e:\wamp64\www\ppscpi_lms\client\src\index.css", "PostCSS", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 5
+"e:\wamp64\www\ppscpi_lms\client\src\main.jsx", "JavaScript JSX", 12, 0, 0, 0, 0, 0, 0, 0, 0, 2, 14
+"e:\wamp64\www\ppscpi_lms\client\src\pages\AdminDashboard.css", "PostCSS", 0, 0, 226, 0, 0, 0, 0, 0, 0, 41, 267
+"e:\wamp64\www\ppscpi_lms\client\src\pages\AdminDashboard.jsx", "JavaScript JSX", 302, 0, 0, 0, 0, 0, 0, 0, 0, 24, 326
+"e:\wamp64\www\ppscpi_lms\client\src\pages\AdminLogin.css", "PostCSS", 0, 0, 65, 0, 0, 0, 0, 0, 0, 8, 73
+"e:\wamp64\www\ppscpi_lms\client\src\pages\AdminLogin.jsx", "JavaScript JSX", 75, 0, 0, 0, 0, 0, 0, 0, 0, 4, 79
+"e:\wamp64\www\ppscpi_lms\client\src\pages\AdminQueuePage.css", "PostCSS", 0, 0, 448, 0, 0, 0, 0, 0, 0, 75, 523
+"e:\wamp64\www\ppscpi_lms\client\src\pages\AdminQueuePage.jsx", "JavaScript JSX", 332, 0, 0, 0, 0, 0, 0, 0, 0, 21, 353
+"e:\wamp64\www\ppscpi_lms\client\src\pages\AdminRequests.css", "PostCSS", 0, 0, 74, 0, 0, 0, 0, 0, 0, 12, 86
+"e:\wamp64\www\ppscpi_lms\client\src\pages\AdminRequests.jsx", "JavaScript JSX", 129, 0, 0, 0, 0, 0, 0, 0, 0, 10, 139
+"e:\wamp64\www\ppscpi_lms\client\src\pages\ApprovedStudents.css", "PostCSS", 0, 0, 79, 0, 0, 0, 0, 0, 0, 14, 93
+"e:\wamp64\www\ppscpi_lms\client\src\pages\ApprovedStudents.jsx", "JavaScript JSX", 172, 0, 0, 0, 0, 0, 0, 0, 0, 15, 187
+"e:\wamp64\www\ppscpi_lms\client\src\pages\Cashier.css", "PostCSS", 0, 0, 215, 0, 0, 0, 0, 0, 0, 35, 250
+"e:\wamp64\www\ppscpi_lms\client\src\pages\Cashier.jsx", "JavaScript JSX", 325, 0, 0, 0, 0, 0, 0, 0, 0, 22, 347
+"e:\wamp64\www\ppscpi_lms\client\src\pages\CashierDashboard.css", "PostCSS", 0, 0, 135, 0, 0, 0, 0, 0, 0, 28, 163
+"e:\wamp64\www\ppscpi_lms\client\src\pages\CashierDashboard.jsx", "JavaScript JSX", 86, 0, 0, 0, 0, 0, 0, 0, 0, 6, 92
+"e:\wamp64\www\ppscpi_lms\client\src\pages\CashierQueuePage.jsx", "JavaScript JSX", 91, 0, 0, 0, 0, 0, 0, 0, 0, 9, 100
+"e:\wamp64\www\ppscpi_lms\client\src\pages\ChangePassword.css", "PostCSS", 0, 0, 156, 0, 0, 0, 0, 0, 0, 27, 183
+"e:\wamp64\www\ppscpi_lms\client\src\pages\ChangePassword.jsx", "JavaScript JSX", 154, 0, 0, 0, 0, 0, 0, 0, 0, 15, 169
+"e:\wamp64\www\ppscpi_lms\client\src\pages\EnrollStudentPage.css", "PostCSS", 0, 0, 71, 0, 0, 0, 0, 0, 0, 12, 83
+"e:\wamp64\www\ppscpi_lms\client\src\pages\EnrollStudentPage.jsx", "JavaScript JSX", 108, 0, 0, 0, 0, 0, 0, 0, 0, 11, 119
+"e:\wamp64\www\ppscpi_lms\client\src\pages\EnrolledStudents.css", "PostCSS", 0, 0, 141, 0, 0, 0, 0, 0, 0, 24, 165
+"e:\wamp64\www\ppscpi_lms\client\src\pages\EnrolledStudents.jsx", "JavaScript JSX", 308, 0, 0, 0, 0, 0, 0, 0, 0, 19, 327
+"e:\wamp64\www\ppscpi_lms\client\src\pages\Etype.css", "PostCSS", 0, 0, 69, 0, 0, 0, 0, 0, 0, 9, 78
+"e:\wamp64\www\ppscpi_lms\client\src\pages\Etype.jsx", "JavaScript JSX", 44, 0, 0, 0, 0, 0, 0, 0, 0, 4, 48
+"e:\wamp64\www\ppscpi_lms\client\src\pages\LandingPage.css", "PostCSS", 0, 0, 199, 0, 0, 0, 0, 0, 0, 33, 232
+"e:\wamp64\www\ppscpi_lms\client\src\pages\LandingPage.jsx", "JavaScript JSX", 84, 0, 0, 0, 0, 0, 0, 0, 0, 8, 92
+"e:\wamp64\www\ppscpi_lms\client\src\pages\NewStudent.css", "PostCSS", 0, 0, 80, 0, 0, 0, 0, 0, 0, 11, 91
+"e:\wamp64\www\ppscpi_lms\client\src\pages\NewStudent.jsx", "JavaScript JSX", 457, 0, 0, 0, 0, 0, 0, 0, 0, 27, 484
+"e:\wamp64\www\ppscpi_lms\client\src\pages\OldStudent.css", "PostCSS", 0, 0, 85, 0, 0, 0, 0, 0, 1, 13, 99
+"e:\wamp64\www\ppscpi_lms\client\src\pages\OldStudent.jsx", "JavaScript JSX", 407, 0, 0, 0, 0, 0, 0, 0, 0, 25, 432
+"e:\wamp64\www\ppscpi_lms\client\src\pages\PrintBalance.css", "PostCSS", 0, 0, 112, 0, 0, 0, 0, 0, 0, 15, 127
+"e:\wamp64\www\ppscpi_lms\client\src\pages\PrintBalance.jsx", "JavaScript JSX", 94, 0, 0, 0, 0, 0, 0, 0, 0, 10, 104
+"e:\wamp64\www\ppscpi_lms\client\src\pages\PrintCertificate.css", "PostCSS", 0, 0, 137, 0, 0, 0, 0, 0, 0, 17, 154
+"e:\wamp64\www\ppscpi_lms\client\src\pages\PrintCertificate.jsx", "JavaScript JSX", 74, 0, 0, 0, 0, 0, 0, 0, 0, 14, 88
+"e:\wamp64\www\ppscpi_lms\client\src\pages\ProfileSearch.css", "PostCSS", 0, 0, 202, 0, 0, 0, 0, 0, 0, 33, 235
+"e:\wamp64\www\ppscpi_lms\client\src\pages\ProfileSearch.jsx", "JavaScript JSX", 208, 0, 0, 0, 0, 0, 0, 0, 0, 15, 223
+"e:\wamp64\www\ppscpi_lms\client\src\pages\RequestCertificate.css", "PostCSS", 0, 0, 64, 0, 0, 0, 0, 0, 0, 11, 75
+"e:\wamp64\www\ppscpi_lms\client\src\pages\RequestCertificate.jsx", "JavaScript JSX", 158, 0, 0, 0, 0, 0, 0, 0, 0, 16, 174
+"e:\wamp64\www\ppscpi_lms\client\src\pages\StudentDashboard.css", "PostCSS", 0, 0, 177, 0, 0, 0, 0, 0, 0, 34, 211
+"e:\wamp64\www\ppscpi_lms\client\src\pages\StudentDashboard.jsx", "JavaScript JSX", 142, 0, 0, 0, 0, 0, 0, 0, 7, 16, 165
+"e:\wamp64\www\ppscpi_lms\client\src\pages\StudentLogin.css", "PostCSS", 0, 0, 133, 0, 0, 0, 0, 0, 0, 21, 154
+"e:\wamp64\www\ppscpi_lms\client\src\pages\StudentLogin.jsx", "JavaScript JSX", 90, 0, 0, 0, 0, 0, 0, 0, 0, 10, 100
+"e:\wamp64\www\ppscpi_lms\client\src\pages\Transferee.css", "PostCSS", 0, 0, 80, 0, 0, 0, 0, 0, 0, 11, 91
+"e:\wamp64\www\ppscpi_lms\client\src\pages\Transferee.jsx", "JavaScript JSX", 471, 0, 0, 0, 0, 0, 0, 0, 0, 27, 498
+"e:\wamp64\www\ppscpi_lms\client\vite.config.js", "JavaScript", 0, 5, 0, 0, 0, 0, 0, 0, 1, 2, 8
+"Total", "-", 4933, 26, 3392, 2941, 13, 9, 27, 2698, 60, 1458, 15557
