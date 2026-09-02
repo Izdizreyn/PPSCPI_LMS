@@ -113,32 +113,25 @@ export default function AdminQueuePage() {
   }, [logout, token]);
 
   useEffect(() => {
-    if (!type || !id) {
-      loadQueueBatch();
-      const initialRefreshId = window.setTimeout(loadDashboard, 0);
-      const intervalId = window.setInterval(() => {
-        loadQueueBatch();
-        loadDashboard();
-      }, 10000);
-      return () => {
-        window.clearTimeout(initialRefreshId);
-        window.clearInterval(intervalId);
-      };
-    }
+  if (!type || !id) {
+    loadQueueBatch();
+    loadDashboard();
+    return;
+  }
 
-    (async () => {
-      try {
-        const res = await axios.get(
-          `${API_BASE_URL}/students/queue-info.php?type=${type}&id=${id}`,
-        );
-        setQueue(res.data.queue);
-      } catch {
-        setQueue(null);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [loadDashboard, loadQueueBatch, type, id]);
+  (async () => {
+    try {
+      const res = await axios.get(
+        `${API_BASE_URL}/students/queue-info.php?type=${type}&id=${id}`
+      );
+      setQueue(res.data.queue);
+    } catch {
+      setQueue(null);
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, [loadDashboard, loadQueueBatch, type, id]);
 
   if (!type || !id) {
     const activeCount = dashboardQueue.filter((item) => item.status !== "Used").length;
