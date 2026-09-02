@@ -106,9 +106,33 @@ $updateBatchStmt->close();
 $enrollee_name = $student["fname$prefix"] . ' ' . $student["mname$prefix"] . ' ' . $student["lname$prefix"];
 if (!empty($student["extname$prefix"])) $enrollee_name .= ' ' . $student["extname$prefix"];
 $lrn = $student["lrn$prefix"];
+$email = $student["email$prefix"];
+$default_password = 'ppscpi123';
+$hashed_password = password_hash($default_password, PASSWORD_BCRYPT);
 
 $conn->begin_transaction();
 try {
+    // Create student account if it doesn't exist
+    $checkStmt = $conn->prepare("SELECT id_student FROM students WHERE lrn = ?");
+    $checkStmt->bind_param("s", $lrn);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    $student_account_id = null;
+    
+    if ($checkResult->num_rows === 0) {
+        // Student account doesn't exist, create it
+        $insertStmt = $conn->prepare("INSERT INTO students (email_student, password_student, lrn, full_name, role, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
+        $role = 'purple_student';
+        $insertStmt->bind_param("sssss", $email, $hashed_password, $lrn, $enrollee_name, $role);
+        $insertStmt->execute();
+        $student_account_id = $insertStmt->insert_id;
+        $insertStmt->close();
+    } else {
+        $accountRow = $checkResult->fetch_assoc();
+        $student_account_id = $accountRow['id_student'];
+    }
+    $checkStmt->close();
+
     $stmt = $conn->prepare("INSERT INTO enrollment_schedule (queue_number, enrollment_date, enrollee_name, lrn, student_type, student_id) VALUES (?, NOW(), ?, ?, ?, ?)");
     $stmt->bind_param("ssssi", $queue_number, $enrollee_name, $lrn, $type, $id);
     $stmt->execute();
@@ -125,6 +149,9 @@ try {
         "success" => true,
         "message" => "Student enrollment approved successfully!",
         "queue_number" => $queue_number,
+        "student_account_created" => true,
+        "student_email" => $email,
+        "default_password" => $default_password
     ]);
 } catch (Exception $e) {
     $conn->rollback();

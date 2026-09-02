@@ -19,6 +19,9 @@ import EnrolledStudents from "./pages/EnrolledStudents";
 import PrintCertificate from "./pages/PrintCertificate";
 import PrintBalance from "./pages/PrintBalance";
 import CashierQueuePage from "./pages/CashierQueuePage";
+import StudentLogin from "./pages/StudentLogin";
+import StudentDashboard from "./pages/StudentDashboard";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   return (
@@ -30,6 +33,7 @@ function App() {
         <Route path="/enroll/new" element={<NewStudent />} />
         <Route path="/enroll/transferee" element={<Transferee />} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/student-login" element={<StudentLogin />} />
         <Route path="/profile-search" element={<ProfileSearch />} />
         <Route path="/request-certificate" element={<RequestCertificate />} />
         <Route path="/print-certificate" element={<PrintCertificate />} />
@@ -117,6 +121,23 @@ function App() {
     </ProtectedRoute>
   }
 />
+
+        <Route
+          path="/student/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["purple_student"]}>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/change-password"
+          element={
+            <ProtectedRoute allowedRoles={["purple_student"]}>
+              <ChangePassword />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

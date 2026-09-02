@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
@@ -6,7 +5,6 @@ import "./AdminSidebar.css";
 import { LogoutIcon } from "./AdminIcons";
 
 export default function AdminSidebar({ links }) {
-  const [expanded, setExpanded] = useState(false);
   const { pathname } = useLocation();
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -19,46 +17,37 @@ export default function AdminSidebar({ links }) {
   };
 
   return (
-    <>
-      <div className={`sidebar ${expanded ? "expanded" : ""}`}>
-        <img src={logo} alt="logo" />
-        <ul>
-          {links.map((link) => (
-            <li key={link.to}>
-              <Link
-                to={link.to}
-                className={pathname === link.to ? "active" : ""}
-              >
-                <span className="icon">{link.icon}</span>
-                <span className="label">{link.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <ul className="logout">
-          <li>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleLogout();
-              }}
+    <div className="sidebar">
+      <img src={logo} alt="logo" />
+      <ul>
+        {links.map((link) => (
+          <li key={link.to}>
+            <Link
+              to={link.to}
+              className={pathname === link.to ? "active" : ""}
             >
-              <span className="icon">
-                <LogoutIcon />
-              </span>
-              <span className="label">Logout</span>
-            </a>
+              <span className="icon">{link.icon}</span>
+              <span className="label">{link.label}</span>
+            </Link>
           </li>
-        </ul>
-      </div>
-      <button
-        className="toggle-btn"
-        style={{ left: expanded ? "310px" : "90px" }}
-        onClick={() => setExpanded(!expanded)}
-      >
-        ☰
-      </button>
-    </>
+        ))}
+      </ul>
+      <ul className="logout">
+        <li>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handleLogout();
+            }}
+          >
+            <span className="icon">
+              <LogoutIcon />
+            </span>
+            <span className="label">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
   );
 }

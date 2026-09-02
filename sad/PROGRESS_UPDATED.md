@@ -42,10 +42,14 @@
 | 14 | get_queue_info.php | api/students/queue-info.php | (shared w/ ProfileSearch modal) | ✅ Done, tested | |
 | 15 | get_balance_info.php | api/students/balance-info.php, balance-detail.php | ProfileSearch modal (unchanged) + **PrintBalance.jsx** | 🔄 In progress — standalone balance page implemented; end-to-end print/data testing pending | ApprovedStudents no longer uses a balance modal |
 | 16 | request_enrollment_certificate.php | api/students/request-certificate.php | RequestCertificate.jsx | ✅ Done, tested | |
-| 17 | admin_certificate_request.php | api/admin/certificate-requests.php, certificate-requests-update.php | AdminRequests.jsx | ✅ Done, tested | |
+| 17 | admin_certificate_request.php | api/admin/certificate-requests.php, certificate-requests-update.php | AdminRequests.jsx | ⚠️ Partially done | Approve button works; **Reject button missing** — needs implementation with required reason field; see Section 4 |
 | 18 | print_certificate.php | api/students/certificate.php | PrintCertificate.jsx | ✅ Done, tested | Currently uses `logo.png` as watermark substitute — see Section 4, now resolvable since `translogo.png` has arrived |
 | 19 | enrolled_list.php | api/admin/enrolled-students.php | EnrolledStudents.jsx | ✅ Done, tested | Print UX fixed: search bar hidden from print, print button added to all 4 tabs, only active tab prints |
 | 20 | edit_student.php | — | EditStudent.jsx | ⏳ Not present on disk | Intentionally deferred — home is the future Student Portal |
+| 21 | student_login.php | api/auth/student-login.php, api/auth/student-change-password.php | **StudentLogin.jsx**, **StudentDashboard.jsx**, **ChangePassword.jsx** | 🔄 In progress | Auto-account creation on admin approval; JWT auth; student portal with sidebar, queue/balance display; 400 error on queue-info fetch needs investigation |
+| 22 | N/A (new) | — | **StudentSidebar.jsx** | ✅ Done | Dark #333 background, white SVG icons, hover-to-expand (80px → 300px), labels show on hover |
+| 23 | N/A (new) | — | **Navbar.jsx** | ✅ Updated | Added `/student-login` link in navLinks array |
+| 24 | N/A (new) | — | **AdminSidebar.jsx, CashierSidebar.jsx** | ✅ Updated | Converted from click-toggle (`useState` + button) to hover-to-expand; removed hamburger buttons; labels shown on `:hover` |
 
 **Status legend:** ✅ Done | 🔄 In progress | ⏳ Not started | ⚠️ Blocked
 
@@ -64,7 +68,97 @@
 ### Previous session — Approved Students / Queue flow rework
 Queue lifecycle is tied to payment activity. Any successful cashier payment marks the current `enrollment_schedule` row as `Used`; the API temporarily falls back to legacy `Settled` schemas and dashboards normalize that value to `USED`. `ApprovedStudents.jsx` hides `Enroll` after a student appears in `enrolled_students`.
 
-### Implemented — "View Balance" moved from in-page modal to dedicated print page
+### Implemented — Sidebar hover-to-expand behavior (Admin, Cashier, Student)
+**Decision:** Convert all three sidebar layouts from click-toggle hamburger buttons to automatic hover-expand behavior for better UX.
+
+**Implementation completed:**
+1. **Removed state management:** Deleted `useState` and `expanded` state from `AdminSidebar.jsx`, `CashierSidebar.jsx`, and `StudentSidebar.jsx`.
+2. **Removed hamburger buttons:** Deleted the `<button className="toggle-btn">☰</button>` element and all toggle button CSS from all three CSS files.
+3. **Added hover-expand:** Changed all `.expanded` classes to `:hover` pseudo-classes:
+   - `.sidebar:hover { width: 300px; }` (Admin)
+   - `.cashier-sidebar:hover { width: 300px; }` (Cashier)
+   - `.student-sidebar:hover { width: 300px; }` (Student)
+4. **Labels show on hover:** Updated label display rules to use `:hover`:
+   - `.sidebar:hover .label { display: inline; }`
+   - Similar for cashier and student sidebars
+5. **Styling consistency:** All sidebars now have:
+   - Background: **#333** (dark gray/charcoal)
+   - Default width: **80px** (collapsed)
+   - Hover width: **300px** (expanded)
+   - Icons: white SVG (Dashboard, Lock, Exit)
+   - Active state: **#800080** (purple) background
+   - Hover state (non-active): **#ddd** background with black text
+
+**Result:** Sidebars now expand automatically on hover and collapse on mouse leave — cleaner UX with no hamburger clutter.
+
+### Implemented — Student Portal & Auto-Account Creation
+**Decision:** Create a complete student login and account management system with auto-generated credentials on admin approval.
+
+**Implementation completed:**
+1. **StudentLogin.jsx** — Public student login form
+   - Email + password input with visibility toggle
+   - Posts to `api/auth/student-login.php`
+   - Stores JWT token via `useAuth` context
+   - Redirects to `/student/dashboard` on success
+   - Uses `PageBackground variant="grid"` for consistent theming
+
+2. **StudentDashboard.jsx** — Student portal home
+   - Integrated `StudentSidebar` (hover-to-expand)
+   - Displays welcome card, queue status, balance, quick actions, and profile info
+   - Fetches from `api/students/queue-info.php` and `api/students/balance-info.php`
+   - Background color: **#B6C2D9** (light blue-gray)
+   - Card headers: **#800080** (purple)
+   - Welcome card: plain white background
+
+3. **ChangePassword.jsx** — Secure password update
+   - Requires current password verification
+   - Posts to `api/auth/student-change-password.php` with Bearer token
+   - Validates new password length (6+ characters)
+   - Uses bcrypt hashing on backend
+
+4. **StudentSidebar.jsx** — Student-specific navigation
+   - 3 navigation items: Dashboard, Change Password, Logout
+   - Custom SVG icons (house, lock, exit) with white fill
+   - Dark **#333** background matching admin/cashier sidebars
+   - Hover-to-expand layout (80px → 300px)
+   - Active route highlighting with **#800080** background
+
+5. **Auto-account creation on admin approval**
+   - Modified `api/admin/approve.php` to create student accounts automatically
+   - Extracts student email from applicant data
+   - Generates bcrypt hash of default password: `ppscpi123`
+   - Creates entry in `students` table with:
+     - `email_student` (unique, indexed)
+     - `password_student` (bcrypt hashed)
+     - `lrn` (unique, indexed)
+     - `full_name`
+     - `role: 'purple_student'`
+   - Returns response with `student_account_created: true` and account details
+
+6. **Protected routes for student portal**
+   - Routes require `purple_student` role via `ProtectedRoute` component
+   - `/student-login` — public route
+   - `/student/dashboard` — protected (requires purple_student role)
+   - `/student/change-password` — protected (requires purple_student role)
+
+7. **Navbar integration**
+   - Added `/student-login` link to `Navbar.jsx` navLinks array
+   - Placed after "Student Enroll" entry for logical flow
+
+**Color scheme for student portal:**
+- Background: **#B6C2D9** (light blue-gray)
+- Primary accent (headers): **#800080** (purple)
+- Cards/content: white
+- Sidebar: **#333** (dark)
+
+### Improved — Sidebar label visibility
+**Decision:** Ensure sidebar labels are always readable.
+
+**Implementation:**
+1. **Added explicit `color: white;` to all sidebar labels** to ensure they display in white when expanded
+2. Updated all three sidebars (Admin, Cashier, Student) `.label` CSS rules to include `color: white;`
+
+
 **Problem identified:** the "View Balance" action on `ApprovedStudents.jsx` opened an in-page modal (`balanceModal` state) with a watermark logo layered behind the statement using `position: absolute` + `z-index`. The watermark never rendered — root cause traced to the print flow's `visibility: hidden` / `visibility: visible` toggling on `body *` combined with the modal's own stacking context; this is the same architectural pattern that was already avoided on `PrintCertificate.jsx`, which prints as its own standalone page rather than a modal.
 
 **Decision:** replace the modal with a new standalone route/page, mirroring the existing `PrintCertificate.jsx` pattern exactly (own component, own CSS file, own `window.print()` button, watermark as a plain `<img>` positioned behind page content — no `visibility` hacks needed since the whole page IS the print target).
@@ -93,6 +187,67 @@ cd "E:\wamp64\www\ppscpi_lms\client\src\pages"
 Select-String -Path "*.jsx" -Pattern 'className="[^"]*\bcontainer\b'
 ```
 
+### ⚠️ OPEN: AdminRequests.jsx missing reject functionality
+**Issue:** The Approve button works for certificate requests, but the Reject button is missing entirely.
+
+**Required implementation:**
+- Add Reject button to `AdminRequests.jsx` for each request row
+- When clicked, show a modal/dialog requiring admin to enter a **rejection reason** (text field)
+- Post to a new backend endpoint: `api/admin/certificate-requests-reject.php` with:
+  - `request_id`
+  - `rejection_reason` (required, min length validation)
+- Mark the request status as `REJECTED` in database
+- Refresh the request list after rejection
+- Show success toast/notification
+
+**Current state:** Only Approve functionality is present; Reject is completely absent from the UI.
+
+### ⚠️ OPEN: AdminQueuePage.jsx — duplicate key warnings in React console
+**Issue:** Console warnings about non-unique keys for enrollment queue entries:
+```
+Encountered two children with the same key, `2026-08-30-20260830-012`. 
+Keys should be unique so that components maintain their identity across updates.
+```
+
+**Observed keys:** `2026-08-30-20260830-012`, `2026-08-31-20260831-001` (and others) appearing as duplicates
+
+**Root cause:** The current queue item key is likely based on date + enrollment_schedule ID, but multiple students can enroll on the same date with sequential IDs, causing collisions. The key format suggests `{date}-{timestamp}-{sequence}`, but the sequence number alone is not unique across dates.
+
+**Required fix:**
+- Use a fully unique identifier as the key, such as:
+  - `enrollment_schedule.id` (database primary key, guaranteed unique)
+  - `${enrollment_schedule.id}-${student_lrn}` (composite unique key)
+  - UUID or timestamp-based unique value from backend
+- Do NOT use `index` in the `.map()` as a key (React anti-pattern)
+
+**Current behavior:** Warnings only; functionality appears to work despite the warnings, but React reconciliation could be unstable.
+
+### ⚠️ OPEN: StudentDashboard.jsx — 400 errors when fetching queue-info.php
+**Issue:** Student dashboard fails to load queue status with repeated 400 errors:
+```
+Failed to load resource: the server responded with a status of 400 (Bad Request)
+/ppscpi_lms/api/students/queue-info.php?lrn=2024-1212:1
+
+Error fetching student data: AxiosError: Request failed with status code 400
+```
+
+**Observed LRN format:** `2024-1212:1` (appears to have a colon, suggesting format mismatch or encoding issue)
+
+**Root causes to investigate:**
+- LRN parameter encoding issue (colon may need URL encoding as `%3A`)
+- Backend `queue-info.php` validation rejecting LRN format (check regex/validation rules)
+- Student object or JWT payload LRN field not matching expected format
+- CORS or auth header issue (check JWT token in request headers)
+
+**Current behavior:** Dashboard shows error messages; queue and balance data fail to load; error repeats on every fetch cycle.
+
+**Required fix:**
+1. Verify LRN format in JWT token payload matches what `queue-info.php` expects
+2. Check `queue-info.php` for LRN validation rules (length, allowed characters)
+3. Add request logging on backend to see the exact LRN value being received
+4. Test endpoint directly with curl/Postman using the same LRN format
+5. Add more detailed error logging in `StudentDashboard.jsx` to capture full API response
+
 ### ⚠️ OPEN: AdminSidebar rendering bug — status unconfirmed
 Reported on the Approved Students page: sidebar showed only a bare hamburger icon, no purple bar/logo/nav. Investigation ruled out CSS collision (`.sidebar` rule confirmed correct and singular, `CashierSidebar.css` confirmed non-colliding). Leading theory was stale Vite dev-server cache. **Not yet confirmed fixed or still reproducing** — needs follow-up: does it still happen after a clean `npm run dev` restart + hard browser refresh? If yes, get DevTools Elements/Styles panel output for the `.sidebar` div.
 
@@ -118,19 +273,20 @@ Root-caused to the modal + `visibility` print-toggle approach fighting the water
 ---
 
 ## 5. Next Steps (what to tell Claude in the next chat)
-- [x] **Register the balance route:** `<Route path="/admin/print-balance" element={<PrintBalance />} />` is registered in `App.jsx`.
-- [ ] **Verify `balance-detail.php` response shape** matches what `PrintBalance.jsx` expects (`balance`, `transactions`, `fee_breakdown`, `student_name`) — adjust destructuring if field names differ.
-- [ ] Test the new `PrintBalance.jsx` flow end to end: open from "View Balance" link, confirm data loads, confirm watermark renders on screen AND in print preview.
-- [ ] Test cashier dashboard, Student Search, queue status, and live dashboards end to end: migrate `enrollment_schedule.status` to allow `Used`, verify auto-update after partial or full payment, and confirm both queue screens and history in the browser. The payment API temporarily falls back to legacy `Settled` and dashboards normalize it to `USED`.
-- [ ] Resolve or reconfirm the AdminSidebar rendering bug.
-- [ ] Fix mangled emoji in `AdminSidebar.jsx`.
-- [ ] Optional cleanup: swap `PrintCertificate.jsx`'s watermark from `logo.png` to the now-available `translogo.png`.
-- [x] Admin Dashboard: overview cards and shortcuts for applicants, approved students, live queue, enrolled students, and certificate requests.
-- [ ] Test the new admin overview cards and `/admin/applicants` review route in the browser.
-- [ ] Admin Dashboard: Reject button + required rejection reason.
-- [ ] Next queue lifecycle feature: after an approved student account is created, allow the student to request another queue number whenever the previous number is `Used`; retain every number in `enrollment_schedule` history and show it in admin live queue details.
-- [ ] Student Account Generation: auto-create login credentials when admin enrollment data is approved/enrolled, with secure password hashing and a student login flow.
-- [ ] Consider centralizing `adminLinks`; consider hashing admin passwords.
+- [ ] **Fix StudentDashboard 400 errors:** Investigate LRN format mismatch in JWT token vs. queue-info.php validation; verify parameter encoding and backend validation rules
+- [ ] **Fix AdminQueuePage duplicate key warnings:** Replace queue item keys with unique identifiers (use `enrollment_schedule.id` or composite key)
+- [ ] **Implement AdminRequests reject button:** Add UI button + modal with required rejection reason field; create backend endpoint `certificate-requests-reject.php`
+- [ ] **Test student login end-to-end:** Admin approves applicant → auto-account creation → student logs in → dashboard loads with correct queue/balance data
+- [ ] **Test StudentSidebar hover behavior:** Verify expand/collapse on hover works smoothly; confirm labels display in white; test on mobile/responsive
+- [ ] **Fix mangled emoji in `AdminSidebar.jsx`:** Re-paste the logout and hamburger icon characters (if still present from previous code)
+- [ ] **Verify student account creation in database:** After admin approval, check `students` table for new row with correct email/LRN/hashed password
+- [ ] **Test ChangePassword flow:** Student changes password → new password works on next login
+- [ ] **Test student portal color scheme:** Verify #B6C2D9 background, #800080 headers, white cards render as designed
+- [ ] **Optional cleanup:** Swap `PrintCertificate.jsx`'s watermark from `logo.png` to the now-available `translogo.png`
+- [x] **Navbar updated:** Student Login link added
+- [x] **Sidebar behavior updated:** All three sidebars converted to hover-to-expand (no hamburger buttons)
+- [x] **Student portal created:** StudentLogin, StudentDashboard, ChangePassword, StudentSidebar implemented
+- [x] **Auto-account creation implemented:** Backend endpoint modified to create student accounts on admin approval
 
 ---
 
@@ -140,7 +296,7 @@ Root-caused to the modal + `visibility` print-toggle approach fighting the water
 - [ ] If `PrintBalance.jsx` testing surfaces issues: screenshot + `balance-detail.php` actual JSON response shape
 
 ---
-*Last updated: August 2026 — Admin overview and applicant approval route are available; cashier dashboard/search/queue separation, editable multi-fee partial payments, immediate one-use `Used` queue transitions, matching live queue dashboards, styled date-only queue history, and print exclusions are implemented; browser/database end-to-end testing remains pending.*
+*Last updated: September 2026 — Student portal fully implemented with StudentLogin, StudentDashboard, ChangePassword, and StudentSidebar; auto-account creation on admin approval with bcrypt hashing; all sidebars converted to hover-to-expand behavior; Navbar updated with Student Login link. Known issues: StudentDashboard 400 errors on queue-info fetch (LRN format mismatch?); AdminQueuePage duplicate key warnings; AdminRequests reject button missing. End-to-end testing and bug fixes pending.*
 
 ## 7. What is done already?
 - [x] All 19 in-scope PHP modules converted, tested, and verified present on disk (item 20 intentionally deferred)
@@ -153,12 +309,20 @@ Root-caused to the modal + `visibility` print-toggle approach fighting the water
 - [x] Cashier dashboard with all student payments, Student Search, and Queue screens
 - [x] Multi-fee editable partial payments and immediate queue `Used` status updates
 - [x] Live admin/cashier queue dashboards with per-student queue history
+- [x] **NEW:** Student portal (StudentLogin, StudentDashboard, ChangePassword, StudentSidebar)
+- [x] **NEW:** Auto-account creation on admin approval with bcrypt password hashing
+- [x] **NEW:** All sidebars converted to hover-to-expand behavior (no hamburger buttons)
+- [x] **NEW:** Navbar updated with Student Login link
+- [x] **NEW:** Student-specific color scheme (#B6C2D9 background, #800080 headers)
 
-## 8. Next thing to do
-- [ ] Test admin overview and `/admin/applicants` approval workflow in the browser
-- [ ] Verify the cashier one-use `Active` to `Used` transition after partial or full SOA payment, including rejection when no unused queue remains
-- [ ] Test both live queue dashboards and per-student queue history against the database
-- [ ] Implement student login/account creation after enrollment approval
-- [ ] Implement student request-again queue number flow after a queue number is `Used`
-- [ ] Test the `PrintBalance.jsx` flow end to end (data + watermark)
-- [ ] Resolve AdminSidebar rendering bug (open/unconfirmed)
+## 8. Next thing to do (Priority order)
+1. **🔴 URGENT:** Fix StudentDashboard 400 errors — queue-info.php endpoint rejecting LRN parameter; blocks entire student portal testing
+2. **🔴 URGENT:** Fix AdminQueuePage duplicate key warnings — use unique identifiers (enrollment_schedule.id) instead of date-based keys
+3. **🟠 HIGH:** Implement AdminRequests reject button + rejection reason modal; currently no way to reject certificate requests
+4. **🟠 HIGH:** End-to-end test student login flow: admin approval → account creation → student login → dashboard loads
+5. **🟡 MEDIUM:** Test StudentSidebar hover behavior on desktop and mobile
+6. **🟡 MEDIUM:** Verify student account password change flow works after first login
+7. **🟡 MEDIUM:** Verify auto-account creation stores correct hashed password (test by logging in with default password `ppscpi123`)
+8. **🟢 LOW:** Optional: Swap `PrintCertificate.jsx` watermark to `translogo.png`
+9. **🟢 LOW:** Consider centralizing `adminLinks` array across admin pages
+10. **🟢 LOW:** Consider implementing admin password hashing (currently plaintext)
