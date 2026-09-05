@@ -48,7 +48,7 @@ export default function ChangePassword() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (res.data.success) {
@@ -59,7 +59,8 @@ export default function ChangePassword() {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Failed to change password. Please try again."
+        err.response?.data?.message ||
+          "Failed to change password. Please try again.",
       );
     } finally {
       setLoading(false);

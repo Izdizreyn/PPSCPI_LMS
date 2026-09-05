@@ -21,7 +21,7 @@ export default function StudentDashboard() {
         // Fetch queue info using LRN
         if (user?.lrn) {
           const queueRes = await axios.get(
-            `${API_BASE_URL}/students/queue-info.php?lrn=${user.lrn}`
+            `${API_BASE_URL}/students/queue-info.php?lrn=${user.lrn}`,
           );
           if (queueRes.data.success) {
             setQueueInfo(queueRes.data.data);
@@ -29,7 +29,7 @@ export default function StudentDashboard() {
 
           // Fetch balance info
           const balanceRes = await axios.get(
-            `${API_BASE_URL}/students/balance-info.php?lrn=${user.lrn}`
+            `${API_BASE_URL}/students/balance-info.php?lrn=${user.lrn}`,
           );
           if (balanceRes.data.success) {
             setBalanceInfo(balanceRes.data.data);
@@ -74,8 +74,12 @@ export default function StudentDashboard() {
           {/* Welcome Card */}
           <div className="card welcome-card">
             <h2>Welcome, {studentInfo?.full_name || "Student"}!</h2>
-            <p>LRN: <strong>{studentInfo?.lrn}</strong></p>
-            <p>Email: <strong>{studentInfo?.email}</strong></p>
+            <p>
+              LRN: <strong>{studentInfo?.lrn}</strong>
+            </p>
+            <p>
+              Email: <strong>{studentInfo?.email}</strong>
+            </p>
           </div>
 
           {/* Queue Status Card */}
@@ -136,10 +140,16 @@ export default function StudentDashboard() {
               <button onClick={handleEditProfile} className="btn-primary">
                 📝 Edit Profile
               </button>
-              <button onClick={handleRequestCertificate} className="btn-primary">
+              <button
+                onClick={handleRequestCertificate}
+                className="btn-primary"
+              >
                 📄 Request Certificate
               </button>
-              <button onClick={() => navigate("/student/upload-files")} className="btn-primary">
+              <button
+                onClick={() => navigate("/student/upload-files")}
+                className="btn-primary"
+              >
                 📤 Upload Files
               </button>
             </div>

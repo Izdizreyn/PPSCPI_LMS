@@ -78,7 +78,8 @@ export default function ProfileSearch() {
                 <span className="info-label">Status:</span>
                 <span
                   style={{
-                    color: data.student.status === "Approved" ? "green" : "orange",
+                    color:
+                      data.student.status === "Approved" ? "green" : "orange",
                     fontWeight: "bold",
                   }}
                 >
@@ -127,16 +128,19 @@ export default function ProfileSearch() {
                   {data.student.birthday}
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Gender:</span> {data.student.gender}
+                  <span className="info-label">Gender:</span>{" "}
+                  {data.student.gender}
                 </div>
               </div>
 
               <div className="info-row">
                 <div className="info-item">
-                  <span className="info-label">Phone:</span> {data.student.phone}
+                  <span className="info-label">Phone:</span>{" "}
+                  {data.student.phone}
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Email:</span> {data.student.email}
+                  <span className="info-label">Email:</span>{" "}
+                  {data.student.email}
                 </div>
               </div>
 
@@ -190,7 +194,8 @@ export default function ProfileSearch() {
                     </div>
                     <div className="info-item">
                       <span className="info-label">Phone:</span>{" "}
-                      {data.parent[`parent_phone_${data.student.type}`] ?? "N/A"}
+                      {data.parent[`parent_phone_${data.student.type}`] ??
+                        "N/A"}
                     </div>
                   </div>
                 </>
@@ -204,10 +209,16 @@ export default function ProfileSearch() {
                   .filter(([key, value]) => !key.startsWith("id_req_") && value)
                   .map(([key, value]) => {
                     const label = requirementLabels[key] || "Unknown Document";
-                    const fileHref = value.replace(/\\/g, "/").replace(/^\/+/, "");
+                    const fileHref = value
+                      .replace(/\\/g, "/")
+                      .replace(/^\/+/, "");
                     return (
                       <li key={key}>
-                        <a href={`${API_BASE_URL}/${fileHref}`} target="_blank" rel="noreferrer">
+                        <a
+                          href={`${API_BASE_URL}/${fileHref}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           {label}
                         </a>
                       </li>

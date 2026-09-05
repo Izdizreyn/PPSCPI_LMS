@@ -52,7 +52,10 @@
   text-decoration: none;
   color: white;
   box-sizing: border-box;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
 .etype-btn:hover {
@@ -67,9 +70,15 @@
   flex-shrink: 0;
 }
 
-.etype-btn-old { background-color: #800080; }
-.etype-btn-new { background-color: #d5b121; }
-.etype-btn-trans { background-color: #2c3e50; }
+.etype-btn-old {
+  background-color: #800080;
+}
+.etype-btn-new {
+  background-color: #d5b121;
+}
+.etype-btn-trans {
+  background-color: #2c3e50;
+}
 
 @media (max-width: 480px) {
   .etype-card {

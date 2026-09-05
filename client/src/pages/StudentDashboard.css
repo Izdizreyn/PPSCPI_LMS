@@ -1,6 +1,6 @@
 .student-dashboard {
   min-height: 100vh;
-  background-color: #B6C2D9;
+  background-color: #b6c2d9;
   padding-bottom: 40px;
   margin-left: 80px;
   transition: margin-left 0.3s ease;
@@ -31,7 +31,9 @@
   border-radius: 10px;
   padding: 25px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .card:hover {
@@ -207,4 +209,5 @@
 
   .student-content {
     padding: 15px;
+  }
 }

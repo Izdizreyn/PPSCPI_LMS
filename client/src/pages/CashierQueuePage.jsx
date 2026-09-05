@@ -15,9 +15,12 @@ export default function CashierQueuePage() {
 
   const loadQueue = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/cashier/queue-dashboard.php`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${API_BASE_URL}/cashier/queue-dashboard.php`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setQueue(response.data.queue || []);
       setQueueBatch(response.data.queue_batch || "");
       setError("");
@@ -50,48 +53,80 @@ export default function CashierQueuePage() {
               <h1>Queue Dashboard</h1>
             </div>
 
-            <div className="queue-batch-editor queue-batch-readonly" aria-live="polite">
+            <div
+              className="queue-batch-editor queue-batch-readonly"
+              aria-live="polite"
+            >
               <label>Queue Batch</label>
               <div className="queue-batch-display">{queueBatch || "—"}</div>
             </div>
           </div>
 
           <div className="queue-stats" aria-label="Queue summary">
-          <div><strong>{queue.length}</strong><span>Total queued</span></div>
-          <div><strong>{activeCount}</strong><span>Active</span></div>
-          <div><strong>{usedCount}</strong><span>Used</span></div>
-        </div>
-
-        {error ? <p className="queue-error">{error}</p> : null}
-        {loading && queue.length === 0 ? (
-          <p className="queue-empty">Loading queue...</p>
-        ) : queue.length === 0 ? (
-          <p className="queue-empty">No students are currently in the queue.</p>
-        ) : (
-            <div className="queue-table-wrap">
-            <table className="queue-dashboard-table">
-              <thead>
-                <tr><th>Queue</th><th>Student</th><th>Type</th><th>Level</th><th>Status</th></tr>
-              </thead>
-              <tbody>
-                {queue.map((item) => (
-                  <tr key={`${item.student_type}-${item.student_id}`}>
-                    <td className="queue-code">{item.queue_number}</td>
-                    <td><strong>{item.enrollee_name}</strong><small>{item.lrn}</small></td>
-                    <td>{item.student_type}</td>
-                    <td>{item.year_level || "N/A"}<small>{item.strand || "N/A"}</small></td>
-                    <td>
-                      <span className={`queue-status ${item.status === "Used" ? "settled" : "active"}`}>
-                        {item.status === "Used" ? "USED" : "ACTIVE"}
-                      </span>
-                      {item.status === "Used" && <small className="queue-recommendation">Request another queue number for your next payment.</small>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div>
+              <strong>{queue.length}</strong>
+              <span>Total queued</span>
+            </div>
+            <div>
+              <strong>{activeCount}</strong>
+              <span>Active</span>
+            </div>
+            <div>
+              <strong>{usedCount}</strong>
+              <span>Used</span>
+            </div>
           </div>
-        )}
+
+          {error ? <p className="queue-error">{error}</p> : null}
+          {loading && queue.length === 0 ? (
+            <p className="queue-empty">Loading queue...</p>
+          ) : queue.length === 0 ? (
+            <p className="queue-empty">
+              No students are currently in the queue.
+            </p>
+          ) : (
+            <div className="queue-table-wrap">
+              <table className="queue-dashboard-table">
+                <thead>
+                  <tr>
+                    <th>Queue</th>
+                    <th>Student</th>
+                    <th>Type</th>
+                    <th>Level</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {queue.map((item) => (
+                    <tr key={`${item.student_type}-${item.student_id}`}>
+                      <td className="queue-code">{item.queue_number}</td>
+                      <td>
+                        <strong>{item.enrollee_name}</strong>
+                        <small>{item.lrn}</small>
+                      </td>
+                      <td>{item.student_type}</td>
+                      <td>
+                        {item.year_level || "N/A"}
+                        <small>{item.strand || "N/A"}</small>
+                      </td>
+                      <td>
+                        <span
+                          className={`queue-status ${item.status === "Used" ? "settled" : "active"}`}
+                        >
+                          {item.status === "Used" ? "USED" : "ACTIVE"}
+                        </span>
+                        {item.status === "Used" && (
+                          <small className="queue-recommendation">
+                            Request another queue number for your next payment.
+                          </small>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </CashierLayout>

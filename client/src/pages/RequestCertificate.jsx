@@ -36,7 +36,10 @@ export default function RequestCertificate() {
     }
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/students/request-certificate.php`, payload);
+      const res = await axios.post(
+        `${API_BASE_URL}/students/request-certificate.php`,
+        payload,
+      );
       if (res.data.success) {
         setSuccessMessage(res.data.message);
         setNeedsManualEntry(false);
@@ -46,7 +49,9 @@ export default function RequestCertificate() {
       if (data?.student_not_found) {
         setNeedsManualEntry(true);
       }
-      setErrorMessage(data?.message || "Something went wrong. Please try again.");
+      setErrorMessage(
+        data?.message || "Something went wrong. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -58,8 +63,12 @@ export default function RequestCertificate() {
       <div className="request-certificate-form">
         <h1>Request Certificate of Enrollment</h1>
 
-        {successMessage && <div className="alert alert-success">{successMessage}</div>}
-        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+        {successMessage && (
+          <div className="alert alert-success">{successMessage}</div>
+        )}
+        {errorMessage && (
+          <div className="alert alert-danger">{errorMessage}</div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -165,8 +174,14 @@ export default function RequestCertificate() {
         </form>
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <p><strong>Note:</strong> Only officially enrolled students can request a Certificate of Enrollment.</p>
-          <p>Processing may take 1-2 working days. You will need to pick up your certificate at the registrar's office.</p>
+          <p>
+            <strong>Note:</strong> Only officially enrolled students can request
+            a Certificate of Enrollment.
+          </p>
+          <p>
+            Processing may take 1-2 working days. You will need to pick up your
+            certificate at the registrar's office.
+          </p>
         </div>
       </div>
     </>

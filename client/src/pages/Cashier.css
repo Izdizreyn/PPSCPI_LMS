@@ -137,7 +137,9 @@
 .fee-item.clickable {
   cursor: pointer;
   border-color: #cfe2ff;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .fee-item.clickable:hover {

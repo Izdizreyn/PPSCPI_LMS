@@ -83,9 +83,16 @@ export default function AdminDashboard({ showApplicants = false }) {
       axios.get(`${API_BASE_URL}/admin/certificate-requests.php`, authHeaders),
     ])
       .then(([applicants, approved, queue, enrolled, requests]) => {
-        const applicantLists = [applicants.data.new, applicants.data.old, applicants.data.transferee];
+        const applicantLists = [
+          applicants.data.new,
+          applicants.data.old,
+          applicants.data.transferee,
+        ];
         setOverview({
-          applicants: applicantLists.reduce((total, list) => total + (list?.length || 0), 0),
+          applicants: applicantLists.reduce(
+            (total, list) => total + (list?.length || 0),
+            0,
+          ),
           enrollmentOverview: approved.data.students?.length || 0,
           queue: queue.data.queue?.length || 0,
           queueBatch: queue.data.queue_batch || "",
@@ -123,11 +130,43 @@ export default function AdminDashboard({ showApplicants = false }) {
 
   if (!showApplicants) {
     const overviewCards = [
-      { title: "Applicants to Approve", count: overview.applicants, description: "Review pending enrollment applications", to: "/admin/applicants", className: "overview-card-applicants" },
-      { title: "Student Enrollment Overview", count: overview.enrollmentOverview, description: "Approved students and balances", to: "/admin/students", className: "overview-card-purple" },
-      { title: "Live Queue Dashboard", count: overview.queue, description: overview.queueBatch ? `Current queue batch: ${overview.queueBatch}` : "Current enrollment queue numbers", to: "/admin/queue", className: "overview-card-gold" },
-      { title: "Enrolled Students", count: overview.enrolled, description: "Students assigned to rooms", to: "/admin/enrolled", className: "overview-card-green" },
-      { title: "Certificate Requests", count: overview.requests, description: "Requests waiting for review", to: "/admin/requests", className: "overview-card-blue" },
+      {
+        title: "Applicants to Approve",
+        count: overview.applicants,
+        description: "Review pending enrollment applications",
+        to: "/admin/applicants",
+        className: "overview-card-applicants",
+      },
+      {
+        title: "Student Enrollment Overview",
+        count: overview.enrollmentOverview,
+        description: "Approved students and balances",
+        to: "/admin/students",
+        className: "overview-card-purple",
+      },
+      {
+        title: "Live Queue Dashboard",
+        count: overview.queue,
+        description: overview.queueBatch
+          ? `Current queue batch: ${overview.queueBatch}`
+          : "Current enrollment queue numbers",
+        to: "/admin/queue",
+        className: "overview-card-gold",
+      },
+      {
+        title: "Enrolled Students",
+        count: overview.enrolled,
+        description: "Students assigned to rooms",
+        to: "/admin/enrolled",
+        className: "overview-card-green",
+      },
+      {
+        title: "Certificate Requests",
+        count: overview.requests,
+        description: "Requests waiting for review",
+        to: "/admin/requests",
+        className: "overview-card-blue",
+      },
     ];
 
     return (
@@ -137,9 +176,15 @@ export default function AdminDashboard({ showApplicants = false }) {
             <p className="admin-overview-eyebrow">Power Purple LMS</p>
             <h1>Admin Dashboard</h1>
           </header>
-          <section className="admin-overview-grid" aria-label="Admin dashboard overview">
+          <section
+            className="admin-overview-grid"
+            aria-label="Admin dashboard overview"
+          >
             {overviewCards.map((card) => (
-              <article className={`admin-overview-card ${card.className}`} key={card.to}>
+              <article
+                className={`admin-overview-card ${card.className}`}
+                key={card.to}
+              >
                 <div>
                   <p className="admin-overview-card-title">{card.title}</p>
                   <strong>{card.count}</strong>

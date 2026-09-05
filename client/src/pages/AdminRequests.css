@@ -73,9 +73,15 @@
   color: white;
 }
 
-.admin-requests .button-success { background-color: #28a745; }
-.admin-requests .button-danger { background-color: #dc3545; }
-.admin-requests .button-primary { background-color: #800080; }
+.admin-requests .button-success {
+  background-color: #28a745;
+}
+.admin-requests .button-danger {
+  background-color: #dc3545;
+}
+.admin-requests .button-primary {
+  background-color: #800080;
+}
 
 .admin-requests .alert {
   padding: 12px;

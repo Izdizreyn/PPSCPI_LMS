@@ -23,7 +23,7 @@
 
 .enrolled-students .print-btn {
   flex: 0 0 auto;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 8px 16px;
   border: none;
@@ -132,7 +132,6 @@
 }
 
 @media print {
-
   .sidebar,
   .toggle-btn,
   .enrolled-students .search-container,

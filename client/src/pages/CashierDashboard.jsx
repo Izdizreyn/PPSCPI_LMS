@@ -15,9 +15,12 @@ export default function CashierDashboard() {
 
   const loadPaymentRecords = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/cashier/payment-records.php`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${API_BASE_URL}/cashier/payment-records.php`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setPaymentRecords(response.data.records || []);
       setError("");
     } catch {
@@ -46,8 +49,12 @@ export default function CashierDashboard() {
               <h1>Cashier Dashboard</h1>
             </div>
             <div className="cashier-dashboard-actions">
-              <Link className="cashier-action primary" to="/cashier/search">Search Student</Link>
-              <Link className="cashier-action secondary" to="/cashier/queue">Queue Numbers</Link>
+              <Link className="cashier-action primary" to="/cashier/search">
+                Search Student
+              </Link>
+              <Link className="cashier-action secondary" to="/cashier/queue">
+                Queue Numbers
+              </Link>
             </div>
           </header>
 
@@ -65,17 +72,28 @@ export default function CashierDashboard() {
                 <div className="cashier-records-table-wrap">
                   <table>
                     <thead>
-                      <tr><th>Date</th><th>LRN</th><th>Student</th><th>Amount</th><th>Receipt #</th><th>Remaining</th></tr>
+                      <tr>
+                        <th>Date</th>
+                        <th>LRN</th>
+                        <th>Student</th>
+                        <th>Amount</th>
+                        <th>Receipt #</th>
+                        <th>Remaining</th>
+                      </tr>
                     </thead>
                     <tbody>
                       {paymentRecords.map((record) => (
                         <tr key={record.transaction_id}>
-                          <td>{new Date(record.payment_date).toLocaleString()}</td>
+                          <td>
+                            {new Date(record.payment_date).toLocaleString()}
+                          </td>
                           <td>{record.lrn}</td>
                           <td>{record.full_name || "Unknown student"}</td>
                           <td>₱ {Number(record.amount).toFixed(2)}</td>
                           <td>{record.receipt_number}</td>
-                          <td>₱ {Number(record.remaining_balance).toFixed(2)}</td>
+                          <td>
+                            ₱ {Number(record.remaining_balance).toFixed(2)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

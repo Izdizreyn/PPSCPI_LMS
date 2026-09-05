@@ -14,10 +14,15 @@ export default function PrintCertificate() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/students/certificate.php?id=${id}`);
+        const res = await axios.get(
+          `${API_BASE_URL}/students/certificate.php?id=${id}`,
+        );
         setData(res.data);
       } catch (err) {
-        setError(err.response?.data?.message || "Certificate request not found or not approved.");
+        setError(
+          err.response?.data?.message ||
+            "Certificate request not found or not approved.",
+        );
       }
     })();
   }, [id]);
@@ -30,7 +35,8 @@ export default function PrintCertificate() {
     return <div className="cert-error">Loading...</div>;
   }
 
-  const { request, school, certificate_number, current_date, school_year } = data;
+  const { request, school, certificate_number, current_date, school_year } =
+    data;
 
   return (
     <div className="print-certificate">
@@ -54,22 +60,23 @@ export default function PrintCertificate() {
           <p>To Whom It May Concern:</p>
           <p>
             {"\u00A0".repeat(10)}This is to certify that{" "}
-            <strong>{request.full_name.toUpperCase()}</strong> with Learner Reference
-            Number (LRN) <strong>{request.lrn}</strong> is officially enrolled as a
-            student of <strong>Power Purple College of Southern Philippines Inc.</strong>{" "}
+            <strong>{request.full_name.toUpperCase()}</strong> with Learner
+            Reference Number (LRN) <strong>{request.lrn}</strong> is officially
+            enrolled as a student of{" "}
+            <strong>Power Purple College of Southern Philippines Inc.</strong>{" "}
             for the Academic Year <strong>{school_year}</strong>.
           </p>
 
           <p>
-            This certification is issued upon the request of the above-named student
-            for <strong>{request.purpose}</strong> and for whatever legal purpose it
-            may serve.
+            This certification is issued upon the request of the above-named
+            student for <strong>{request.purpose}</strong> and for whatever
+            legal purpose it may serve.
           </p>
 
           <p>
-            Issued this <strong>{current_date}</strong> at Power Purple College of
-            Southern Philippines Inc., Tuazon Subdivision Poblacion, Polomolok,
-            Philippines.
+            Issued this <strong>{current_date}</strong> at Power Purple College
+            of Southern Philippines Inc., Tuazon Subdivision Poblacion,
+            Polomolok, Philippines.
           </p>
         </div>
 
@@ -81,7 +88,9 @@ export default function PrintCertificate() {
           <p className="signature-title">School Principal</p>
         </div>
 
-        <div className="certificate-number">Certificate No: {certificate_number}</div>
+        <div className="certificate-number">
+          Certificate No: {certificate_number}
+        </div>
       </div>
     </div>
   );

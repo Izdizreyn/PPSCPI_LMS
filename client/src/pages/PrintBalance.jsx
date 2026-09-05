@@ -14,7 +14,9 @@ export default function PrintBalance() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/students/balance-detail.php?lrn=${lrn}`);
+        const res = await axios.get(
+          `${API_BASE_URL}/students/balance-detail.php?lrn=${lrn}`,
+        );
         setData(res.data);
       } catch (err) {
         setError(err.response?.data?.message || "Balance record not found.");
@@ -51,16 +53,28 @@ export default function PrintBalance() {
             <table className="balance-table">
               <tbody>
                 <tr>
-                  <td><strong>Total Fees:</strong></td>
-                  <td align="right">₱ {Number(balance.total_fees).toFixed(2)}</td>
+                  <td>
+                    <strong>Total Fees:</strong>
+                  </td>
+                  <td align="right">
+                    ₱ {Number(balance.total_fees).toFixed(2)}
+                  </td>
                 </tr>
                 <tr>
-                  <td><strong>Paid Amount:</strong></td>
-                  <td align="right">₱ {Number(balance.paid_amount).toFixed(2)}</td>
+                  <td>
+                    <strong>Paid Amount:</strong>
+                  </td>
+                  <td align="right">
+                    ₱ {Number(balance.paid_amount).toFixed(2)}
+                  </td>
                 </tr>
                 <tr>
-                  <td><strong>Remaining Balance:</strong></td>
-                  <td align="right">₱ {Number(balance.remaining_balance).toFixed(2)}</td>
+                  <td>
+                    <strong>Remaining Balance:</strong>
+                  </td>
+                  <td align="right">
+                    ₱ {Number(balance.remaining_balance).toFixed(2)}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -93,10 +107,13 @@ export default function PrintBalance() {
           </>
         ) : fee_breakdown ? (
           <p className="no-payment">
-            No payments recorded yet. Total fees due: ₱ {Number(fee_breakdown.total).toFixed(2)}
+            No payments recorded yet. Total fees due: ₱{" "}
+            {Number(fee_breakdown.total).toFixed(2)}
           </p>
         ) : (
-          <p className="no-payment">No financial information found for this student.</p>
+          <p className="no-payment">
+            No financial information found for this student.
+          </p>
         )}
       </div>
     </div>
