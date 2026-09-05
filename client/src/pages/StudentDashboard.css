@@ -127,6 +127,9 @@
 
 .btn-primary,
 .btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 12px 16px;
   border: none;
   border-radius: 5px;
@@ -135,6 +138,10 @@
   font-weight: 600;
   transition: all 0.3s;
   text-align: left;
+}
+
+.action-icon {
+  flex-shrink: 0;
 }
 
 .btn-primary {
