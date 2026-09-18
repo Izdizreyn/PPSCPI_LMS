@@ -54,7 +54,7 @@ export default function AdminRequests() {
   return (
     <AdminLayout links={adminLinks}>
       <div className="admin-requests">
-        <h1>Certificate of Enrollment Requests</h1>
+        <h1>Document Requests</h1>
 
         {message && <div className="alert">{message}</div>}
 

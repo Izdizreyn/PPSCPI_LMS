@@ -37,6 +37,14 @@ export default function OldStudent() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // LRN lookup / auto-fill state
+  const [lookupMode, setLookupMode] = useState(true);
+  const [lookupLrn, setLookupLrn] = useState("");
+  const [lookupBirthday, setLookupBirthday] = useState("");
+  const [lookupError, setLookupError] = useState("");
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [foundRecord, setFoundRecord] = useState(null);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -88,6 +96,78 @@ export default function OldStudent() {
     }));
   };
 
+  const handleLookup = async (e) => {
+    e.preventDefault();
+    setLookupError("");
+    setFoundRecord(null);
+    setLookupLoading(true);
+    try {
+      const res = await axios.get(
+        `${API_BASE_URL}/students/lookup-old-student.php`,
+        { params: { lrn: lookupLrn, birthday: lookupBirthday } },
+      );
+      setFoundRecord(res.data.data);
+    } catch (err) {
+      setLookupError(
+        err.response?.data?.message ||
+          "No matching record found. Please fill out the form manually.",
+      );
+    } finally {
+      setLookupLoading(false);
+    }
+  };
+
+  const computeAge = (birthday) => {
+    if (!birthday) return "";
+    const birthdate = new Date(birthday);
+    const today = new Date();
+    let age = today.getFullYear() - birthdate.getFullYear();
+    const monthDiff = today.getMonth() - birthdate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthdate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  };
+
+  const confirmFoundRecord = () => {
+    const secMatchesPrimary =
+      !!foundRecord.prim_add && foundRecord.sec_add === foundRecord.prim_add;
+
+    setFormData((prev) => ({
+      ...prev,
+      lrn_old: foundRecord.lrn || "",
+      fname_old: foundRecord.fname || "",
+      mname_old: foundRecord.mname || "",
+      lname_old: foundRecord.lname || "",
+      extname_old: foundRecord.extname || "",
+      birthday_old: foundRecord.birthday || "",
+      age_old: computeAge(foundRecord.birthday),
+      gender_old: foundRecord.gender || "",
+      phone_old: foundRecord.phone || "",
+      email_old: foundRecord.email || "",
+      prim_add_old: foundRecord.prim_add || "",
+      sec_add_old: foundRecord.sec_add || "",
+      zip_code_old: foundRecord.zip_code || "",
+      parent_name_old: foundRecord.parent_name || "",
+      parent_phone_old: foundRecord.parent_phone || "",
+      parent_rel_old: foundRecord.parent_rel || "",
+      parent_add_old: foundRecord.parent_add || "",
+      // Year level/strand intentionally left blank — student is enrolling
+      // for a NEW year, so this should be chosen fresh, not carried over.
+    }));
+    setSameAsPrimary((prev) => ({ ...prev, sec: secMatchesPrimary }));
+    setLookupMode(false);
+  };
+
+  const skipLookup = () => {
+    setFoundRecord(null);
+    setLookupError("");
+    setLookupMode(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -132,10 +212,98 @@ export default function OldStudent() {
       <div className="old-student-form">
         <h2>Pre-Enrollment Form for Old Student</h2>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {lookupMode ? (
+          <div className="lrn-lookup-section">
+            <p className="lookup-hint">
+              Enter your LRN and birth date to auto-fill your information
+              from your previous enrollment.
+            </p>
 
-        <form onSubmit={handleSubmit}>
-          <h3>Student Information</h3>
+            {!foundRecord ? (
+              <form onSubmit={handleLookup} className="lookup-form">
+                <div className="form-group">
+                  <label>Learner Reference Number (LRN):</label>
+                  <input
+                    type="text"
+                    value={lookupLrn}
+                    onChange={(e) => setLookupLrn(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Birth Date:</label>
+                  <input
+                    type="date"
+                    value={lookupBirthday}
+                    onChange={(e) => setLookupBirthday(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {lookupError && <p style={{ color: "red" }}>{lookupError}</p>}
+
+                <input
+                  type="submit"
+                  value={lookupLoading ? "Searching..." : "Search"}
+                  disabled={lookupLoading}
+                />
+
+                <button
+                  type="button"
+                  className="skip-lookup-btn"
+                  onClick={skipLookup}
+                >
+                  I don't have my LRN handy — fill out manually
+                </button>
+              </form>
+            ) : (
+              <div className="lookup-confirm-card">
+                <h3>Is this you?</h3>
+                <p>
+                  <strong>
+                    {foundRecord.fname} {foundRecord.mname} {foundRecord.lname}
+                  </strong>
+                </p>
+                <p>LRN: {foundRecord.lrn}</p>
+                <p>
+                  Last Year Level: {foundRecord.last_year_level}
+                  {foundRecord.last_strand ? ` - ${foundRecord.last_strand}` : ""}
+                </p>
+                <div className="lookup-confirm-actions">
+                  <button
+                    type="button"
+                    className="confirm-yes-btn"
+                    onClick={confirmFoundRecord}
+                  >
+                    Yes, this is me
+                  </button>
+                  <button
+                    type="button"
+                    className="skip-lookup-btn"
+                    onClick={skipLookup}
+                  >
+                    Not me — fill out manually
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="form-back-row">
+              <button
+                type="button"
+                className="back-to-lookup-btn"
+                onClick={() => setLookupMode(true)}
+              >
+                ← Back to LRN Search
+              </button>
+            </div>
+
+            {error && <p style={{ color: "red" }}>{error}</p>}
+
+            <form onSubmit={handleSubmit}>
+              <h3>Student Information</h3>
 
           <div className="form-row">
             <div className="form-group">
@@ -419,12 +587,14 @@ export default function OldStudent() {
             />
           </div>
 
-          <input
-            type="submit"
-            value={submitting ? "Submitting..." : "Proceed"}
-            disabled={submitting}
-          />
-        </form>
+              <input
+                type="submit"
+                value={submitting ? "Submitting..." : "Proceed"}
+                disabled={submitting}
+              />
+            </form>
+          </>
+        )}
       </div>
     </>
   );

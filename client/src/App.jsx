@@ -22,6 +22,7 @@ import CashierQueuePage from "./pages/CashierQueuePage";
 import StudentLogin from "./pages/StudentLogin";
 import StudentDashboard from "./pages/StudentDashboard";
 import ChangePassword from "./pages/ChangePassword";
+import AdminOldStudentImport from "./pages/AdminOldStudentImport";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/request-certificate" element={<RequestCertificate />} />
         <Route path="/print-certificate" element={<PrintCertificate />} />
         <Route path="/admin/print-balance" element={<PrintBalance />} />
+        <Route path="/admin/import-old-student" element={<AdminOldStudentImport />} />
 
         <Route
           path="/admin/dashboard"

@@ -75,7 +75,7 @@ export default function ApprovedStudents() {
             <td>{s.gender}</td>
             <td>{s.year_level}</td>
             <td>{s.strand}</td>
-            <td>{s.type.charAt(0).toUpperCase() + s.type.slice(1)}</td>
+            <td>{s.type.charAt(0).toUpperCase() + s.type.slice(1)}</td> 
             <td>{balanceCell(s.lrn)}</td>
             <td>
               <Link

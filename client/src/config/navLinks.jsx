@@ -15,6 +15,7 @@ export const adminLinks = [
   { to: "/admin/queue", label: "Queue", icon: <QueueIcon /> },
   { to: "/admin/enrolled", label: "Enrolled", icon: <EnrolledIcon /> },
   { to: "/admin/requests", label: "Requests", icon: <RequestsIcon /> },
+  { to: "/admin/import-old-student", label: "Import Old Student Records", icon: <StudentsIcon /> },
 ];
 
 export const cashierLinks = [
