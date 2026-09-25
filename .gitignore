@@ -14,5 +14,7 @@ api/.env
 
 # Secrets
 api/config/jwt.php
+api/config/sms.php
+api/config/database.php
 ppscpi_lms/sad
 ppscpi_lms/.VSCodeCounter
