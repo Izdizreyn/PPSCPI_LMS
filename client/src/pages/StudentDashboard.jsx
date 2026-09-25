@@ -1,10 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../config/api";
 import StudentSidebar from "../components/StudentSidebar";
 import "./StudentDashboard.css";
+
+function formatMoney(value) {
+  const n = parseFloat(value);
+  return isNaN(n) ? "0.00" : n.toFixed(2);
+}
 
 function ActionIcon() {
   return (
@@ -23,59 +28,114 @@ function ActionIcon() {
 }
 
 export default function StudentDashboard() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const [studentInfo, setStudentInfo] = useState(null);
   const [queueInfo, setQueueInfo] = useState(null);
   const [balanceInfo, setBalanceInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [queueHistory, setQueueHistory] = useState([]);
+  const [generating, setGenerating] = useState(false);
+  const [queueMessage, setQueueMessage] = useState("");
+
+  const loadQueueHistory = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        `${API_BASE_URL}/students/queue-history.php`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (res.data.success) setQueueHistory(res.data.queues);
+    } catch (err) {
+      console.error("Failed to load queue history:", err);
+    }
+  }, [token]);
 
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        // Fetch queue info using LRN
         if (user?.lrn) {
-          const queueRes = await axios.get(
-            `${API_BASE_URL}/students/queue-info.php?lrn=${user.lrn}`,
-          );
-          if (queueRes.data.success) {
-            setQueueInfo(queueRes.data.data);
-          }
+  try {
+    const queueRes = await axios.get(
+      `${API_BASE_URL}/students/queue-info.php`,
+      { params: { lrn: user.lrn } },
+    );
+    if (queueRes.data.success) {
+      setQueueInfo(queueRes.data.queue);
+    }
+  } catch (err) {
+    // 404 here just means "no active queue yet" — not a real error,
+    // so don't let it fall into the outer catch's setError().
+    if (err.response?.status !== 404) throw err;
+  }
+}
 
-          // Fetch balance info
+        if (user?.lrn) {
           const balanceRes = await axios.get(
-            `${API_BASE_URL}/students/balance-info.php?lrn=${user.lrn}`,
+            `${API_BASE_URL}/students/balance-info.php`,
+            { params: { lrn: user.lrn } },
           );
           if (balanceRes.data.success) {
-            setBalanceInfo(balanceRes.data.data);
+            setBalanceInfo(balanceRes.data.balance);
           }
         }
 
         setStudentInfo(user);
+        loadQueueHistory();
       } catch (err) {
         console.error("Error fetching student data:", err);
-        setError("Failed to load student information");
+        console.error("Backend response:", err.response?.data);
+        setError(
+          err.response?.data?.message || "Failed to load student information",
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    if (user) {
-      fetchStudentData();
-    }
-  }, [user]);
+    if (user) fetchStudentData();
+  }, [user, loadQueueHistory]);
 
   const handleEditProfile = () => {
     navigate("/student/edit-profile");
   };
 
-  const handleRequestCertificate = () => {
-    navigate("/request-certificate");
-  };
 
   const handleViewBalance = () => {
-    navigate(`/admin/print-balance?lrn=${user?.lrn}`);
+    const url = `/admin/print-balance?lrn=${user?.lrn}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleRequestDocument = () => {
+  navigate("/request-document");
+};
+
+  const generateQueue = async () => {
+    setGenerating(true);
+    setQueueMessage("");
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/students/generate-queue.php`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      setQueueMessage(res.data.message);
+
+      if (res.data.success && res.data.queue) {
+        setQueueInfo(res.data.queue); // ← no second GET needed
+      }
+
+      loadQueueHistory();
+    } catch (err) {
+      setQueueMessage(
+        err.response?.data?.message || "Failed to generate queue number.",
+      );
+    } finally {
+      setGenerating(false);
+    }
   };
 
   if (loading) {
@@ -99,29 +159,80 @@ export default function StudentDashboard() {
           </div>
 
           {/* Queue Status Card */}
-          {queueInfo && (
-            <div className="card queue-card">
-              <h3>Queue Status</h3>
-              <div className="queue-details">
-                <p>
-                  <span className="label">Queue Number:</span>
-                  <span className="value">{queueInfo.queue_number}</span>
-                </p>
-                <p>
-                  <span className="label">Status:</span>
-                  <span className={`status ${queueInfo.status?.toLowerCase()}`}>
-                    {queueInfo.status}
-                  </span>
-                </p>
-                <p>
-                  <span className="label">Enrollment Date:</span>
-                  <span className="value">
-                    {new Date(queueInfo.enrollment_date).toLocaleDateString()}
-                  </span>
-                </p>
-              </div>
-            </div>
-          )}
+          {queueInfo && queueInfo.status !== "Used" ? (
+  <div className="card queue-card">
+    <h3>Queue Status</h3>
+    <div className="queue-details">
+      <p>
+        <span className="label">Queue Number:</span>
+        <span className="value">{queueInfo.queue_number}</span>
+      </p>
+      <p>
+        <span className="label">Status:</span>
+        <span className={`status ${queueInfo.status?.toLowerCase()}`}>
+          {queueInfo.status}
+        </span>
+      </p>
+      <p>
+        <span className="label">Enrollment Date:</span>
+        <span className="value">
+          {new Date(queueInfo.enrollment_date).toLocaleDateString()}
+        </span>
+      </p>
+    </div>
+  </div>
+) : (
+  <div className="card queue-card">
+    <h3>Queue Status</h3>
+    {queueInfo?.status === "Used" && (
+      <p>
+        Your last queue number (<strong>{queueInfo.queue_number}</strong>)
+        has already been used for a payment.
+      </p>
+    )}
+    <p>You don't have an active queue number.</p>
+    <button
+      onClick={generateQueue}
+      className="btn-primary"
+      disabled={generating}
+    >
+      {generating ? "Generating..." : "Generate Queue Number"}
+    </button>
+    {queueMessage && <p className="queue-message">{queueMessage}</p>}
+  </div>
+)}
+
+          {/* Queue History Card */}
+          <div className="card queue-history-card">
+            <h3>Queue History</h3>
+            {queueHistory.length === 0 ? (
+              <p>No queue history yet.</p>
+            ) : (
+              queueHistory.map((q) => (
+                <div key={q.id_sched} className="queue-history-item">
+                  <p>
+                    <strong>{q.queue_number}</strong> —{" "}
+                    <span className={`status ${q.status?.toLowerCase()}`}>
+                      {q.status}
+                    </span>
+                  </p>
+                  <p className="queue-history-date">
+                    {new Date(q.enrollment_date).toLocaleDateString()}
+                  </p>
+                  {q.transactions.length > 0 && (
+                    <ul className="queue-history-transactions">
+                      {q.transactions.map((t) => (
+                        <li key={t.id}>
+                          ₱{Number(t.amount).toFixed(2)} —{" "}
+                          {new Date(t.recorded_at).toLocaleDateString()}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
 
           {/* Balance Card */}
           {balanceInfo && (
@@ -129,19 +240,23 @@ export default function StudentDashboard() {
               <h3>Account Balance</h3>
               <div className="balance-details">
                 <p>
-                  <span className="label">Total Balance:</span>
+                  <span className="label">Total Fees:</span>
                   <span className="value">
-                    ₱{parseFloat(balanceInfo.total_balance).toFixed(2)}
+                    ₱{formatMoney(balanceInfo.total_fees)}
                   </span>
                 </p>
-                {balanceInfo.remaining_balance !== undefined && (
-                  <p>
-                    <span className="label">Remaining:</span>
-                    <span className="value">
-                      ₱{parseFloat(balanceInfo.remaining_balance).toFixed(2)}
-                    </span>
-                  </p>
-                )}
+                <p>
+                  <span className="label">Paid:</span>
+                  <span className="value">
+                    ₱{formatMoney(balanceInfo.paid_amount)}
+                  </span>
+                </p>
+                <p>
+                  <span className="label">Remaining:</span>
+                  <span className="value">
+                    ₱{formatMoney(balanceInfo.remaining_balance)}
+                  </span>
+                </p>
                 <button onClick={handleViewBalance} className="btn-secondary">
                   View Detailed Statement
                 </button>
@@ -153,22 +268,19 @@ export default function StudentDashboard() {
           <div className="card actions-card">
             <h3>Quick Actions</h3>
             <div className="action-buttons">
-              <button onClick={handleEditProfile} className="btn-primary">
-                <ActionIcon /> Edit Profile
-              </button>
-              <button
-                onClick={handleRequestCertificate}
-                className="btn-primary"
-              >
-                <ActionIcon /> Request Certificate
-              </button>
-              <button
-                onClick={() => navigate("/student/upload-files")}
-                className="btn-primary"
-              >
-                <ActionIcon /> Upload Files
-              </button>
-            </div>
+  <button onClick={handleEditProfile} className="btn-primary">
+    <ActionIcon /> Edit Profile
+  </button>
+  <button onClick={handleRequestDocument} className="btn-primary">
+    <ActionIcon /> Request Document
+  </button>
+  <button
+    onClick={() => navigate("/student/upload-files")}
+    className="btn-primary"
+  >
+    <ActionIcon /> Upload Files
+  </button>
+</div>
           </div>
 
           {/* Information Card */}

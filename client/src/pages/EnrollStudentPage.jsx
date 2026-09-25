@@ -25,35 +25,48 @@ export default function EnrollStudentPage() {
   const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
-    (async () => {
+  (async () => {
+    try {
       const res = await axios.get(
         `${API_BASE_URL}/admin/enroll.php?year=${year}&strand=${strand}`,
-        authHeaders,
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      setRooms(res.data.rooms);
-    })();
-  }, [year, strand]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage(null);
-    setSubmitting(true);
-    try {
-      const res = await axios.post(
-        `${API_BASE_URL}/admin/enroll.php`,
-        { lrn, name, year, strand, room_id: selectedRoom },
-        authHeaders,
-      );
-      setMessage({ type: "success", text: res.data.message });
+      setRooms(res.data?.rooms || []);
     } catch (err) {
-      setMessage({
-        type: "danger",
-        text: err.response?.data?.message || "Failed to enroll student.",
-      });
-    } finally {
-      setSubmitting(false);
+      console.error("Failed to load rooms:", err);
+      setRooms([]);
     }
-  };
+  })();
+}, [year, strand, token]);
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (submitting) return; // hard guard against double-fire
+  setMessage(null);
+  setSubmitting(true);
+  try {
+    const res = await axios.post(
+      `${API_BASE_URL}/admin/enroll.php`,
+      { lrn, name, year, strand, room_id: selectedRoom },
+      authHeaders,
+    );
+
+    setMessage({ type: "success", text: res.data.message });
+
+    const smsNote = res.data.sms_sent
+      ? "An SMS notification was sent to the student."
+      : `SMS notification was not sent (${res.data.sms_message || "no reason given"}).`;
+
+    window.alert(`${res.data.message}\n\n${smsNote}`);
+  } catch (err) {
+    setMessage({
+      type: "danger",
+      text: err.response?.data?.message || "Failed to enroll student.",
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <AdminLayout links={adminLinks}>

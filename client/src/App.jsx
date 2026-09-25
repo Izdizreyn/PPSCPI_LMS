@@ -10,13 +10,13 @@ import Cashier from "./pages/Cashier";
 import CashierDashboard from "./pages/CashierDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProfileSearch from "./pages/ProfileSearch";
+import RequestDocument from "./pages/RequestDocument";
 import ApprovedStudents from "./pages/ApprovedStudents";
 import AdminQueuePage from "./pages/AdminQueuePage";
 import EnrollStudentPage from "./pages/EnrollStudentPage";
-import RequestCertificate from "./pages/RequestCertificate";
 import AdminRequests from "./pages/AdminRequests";
 import EnrolledStudents from "./pages/EnrolledStudents";
-import PrintCertificate from "./pages/PrintCertificate";
+import PrintDocumentRequest from "./pages/PrintDocumentRequest";
 import PrintBalance from "./pages/PrintBalance";
 import CashierQueuePage from "./pages/CashierQueuePage";
 import StudentLogin from "./pages/StudentLogin";
@@ -35,12 +35,34 @@ function App() {
         <Route path="/enroll/transferee" element={<Transferee />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/student-login" element={<StudentLogin />} />
-        <Route path="/profile-search" element={<ProfileSearch />} />
-        <Route path="/request-certificate" element={<RequestCertificate />} />
-        <Route path="/print-certificate" element={<PrintCertificate />} />
-        <Route path="/admin/print-balance" element={<PrintBalance />} />
-        <Route path="/admin/import-old-student" element={<AdminOldStudentImport />} />
+<Route path="/profile-search" element={<ProfileSearch />} />
+<Route path="/print-document" element={<PrintDocumentRequest />} />
+<Route path="/request-document" element={<RequestDocument />} />
+<Route path="/admin/print-balance" element={<PrintBalance />} />
+        <Route
+          path="/admin/import-old-student"
+          element={<AdminOldStudentImport />}
+        />
 
+        {/* ── Student routes (all protected, only ONE dashboard route) ── */}
+        <Route
+          path="/student/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["purple_student"]}>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/change-password"
+          element={
+            <ProtectedRoute allowedRoles={["purple_student"]}>
+              <ChangePassword />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ── Admin / Cashier routes ── */}
         <Route
           path="/admin/dashboard"
           element={
@@ -57,7 +79,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/cashier"
           element={
@@ -106,37 +127,19 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
-  path="/admin/requests"
-  element={
-    <ProtectedRoute allowedRoles={["purple_admin"]}>
-      <AdminRequests />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/admin/enrolled"
-  element={
-    <ProtectedRoute allowedRoles={["purple_admin"]}>
-      <EnrolledStudents />
-    </ProtectedRoute>
-  }
-/>
-
-        <Route
-          path="/student/dashboard"
+          path="/admin/requests"
           element={
-            <ProtectedRoute allowedRoles={["purple_student"]}>
-              <StudentDashboard />
+            <ProtectedRoute allowedRoles={["purple_admin"]}>
+              <AdminRequests />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/student/change-password"
+          path="/admin/enrolled"
           element={
-            <ProtectedRoute allowedRoles={["purple_student"]}>
-              <ChangePassword />
+            <ProtectedRoute allowedRoles={["purple_admin"]}>
+              <EnrolledStudents />
             </ProtectedRoute>
           }
         />

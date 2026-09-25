@@ -72,38 +72,42 @@ export default function AdminDashboard({ showApplicants = false }) {
     return () => window.clearTimeout(loadId);
   }, [showApplicants]);
 
-  useEffect(() => {
-    if (showApplicants) return;
+useEffect(() => {
+  if (showApplicants) return;
 
-    Promise.all([
-      axios.get(`${API_BASE_URL}/admin/students.php`, authHeaders),
-      axios.get(`${API_BASE_URL}/admin/approved-students.php`, authHeaders),
-      axios.get(`${API_BASE_URL}/admin/queue-dashboard.php`, authHeaders),
-      axios.get(`${API_BASE_URL}/admin/enrolled-students.php`, authHeaders),
-      axios.get(`${API_BASE_URL}/admin/certificate-requests.php`, authHeaders),
-    ])
-      .then(([applicants, approved, queue, enrolled, requests]) => {
-        const applicantLists = [
-          applicants.data.new,
-          applicants.data.old,
-          applicants.data.transferee,
-        ];
-        setOverview({
-          applicants: applicantLists.reduce(
-            (total, list) => total + (list?.length || 0),
-            0,
-          ),
-          enrollmentOverview: approved.data.students?.length || 0,
-          queue: queue.data.queue?.length || 0,
-          queueBatch: queue.data.queue_batch || "",
-          enrolled: enrolled.data.students?.length || 0,
-          requests: requests.data.requests?.length || 0,
-        });
-      })
-      .catch((err) => {
-        if (err.response?.status === 401) logout();
+  Promise.all([
+    axios.get(`${API_BASE_URL}/admin/students.php`, authHeaders),
+    axios.get(`${API_BASE_URL}/admin/approved-students.php`, authHeaders),
+    axios.get(`${API_BASE_URL}/admin/queue-dashboard.php`, authHeaders),
+    axios.get(`${API_BASE_URL}/admin/enrolled-students.php`, authHeaders),
+    axios.get(`${API_BASE_URL}/admin/document-requests.php`, authHeaders),
+  ])
+    .then(([applicants, approved, queue, enrolled, requests]) => {
+      const applicantLists = [
+        applicants.data.new,
+        applicants.data.old,
+        applicants.data.transferee,
+      ];
+      const pendingRequests = (requests.data.requests || []).filter(
+        (r) => r.status === "Pending",
+      ).length;
+
+      setOverview({
+        applicants: applicantLists.reduce(
+          (total, list) => total + (list?.length || 0),
+          0,
+        ),
+        enrollmentOverview: approved.data.students?.length || 0,
+        queue: queue.data.queue?.length || 0,
+        queueBatch: queue.data.queue_batch || "",
+        enrolled: enrolled.data.students?.length || 0,
+        requests: pendingRequests,
       });
-  }, [showApplicants, token]);
+    })
+    .catch((err) => {
+      if (err.response?.status === 401) logout();
+    });
+}, [showApplicants, token]);
 
   const viewDetails = async (type, id) => {
     setSelected({ type, id });
@@ -161,12 +165,12 @@ export default function AdminDashboard({ showApplicants = false }) {
         className: "overview-card-green",
       },
       {
-        title: "Certificate Requests",
-        count: overview.requests,
-        description: "Requests waiting for review",
-        to: "/admin/requests",
-        className: "overview-card-blue",
-      },
+  title: "Document Requests",
+  count: overview.requests,
+  description: "Requests waiting for review",
+  to: "/admin/requests",
+  className: "overview-card-blue",
+},
     ];
 
     return (

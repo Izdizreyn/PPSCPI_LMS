@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 import "./StudentSidebar.css";
@@ -6,6 +6,12 @@ import "./StudentSidebar.css";
 const DashboardIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="white">
     <path d="M341.8 72.6C329.5 61.2 310.5 61.2 298.3 72.6L74.3 280.6C64.7 289.6 61.5 303.5 66.3 315.7C71.1 327.9 82.8 336 96 336L112 336L112 512C112 547.3 140.7 576 176 576L464 576C499.3 576 528 547.3 528 512L528 336L544 336C557.2 336 569 327.9 573.8 315.7C578.6 303.5 575.4 289.5 565.8 280.6L341.8 72.6zM264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320zM208 496C208 451.8 243.8 416 288 416L352 416C396.2 416 432 451.8 432 496C432 504.8 424.8 512 416 512L224 512C215.2 512 208 504.8 208 496z"/>
+  </svg>
+);
+
+const DocumentIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="white">
+    <path d="M192 64C156.7 64 128 92.7 128 128L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 245.3C512 228.3 505.3 212 493.3 200L376 82.7C364 70.7 347.7 64 330.7 64L192 64zM320 96L320 208C320 234.5 341.5 256 368 256L480 256L480 512C480 529.7 465.7 544 448 544L192 544C174.3 544 160 529.7 160 512L160 128C160 110.3 174.3 96 192 96L320 96zM352 100L476 224L368 224C358.1 224 352 217.9 352 208L352 100zM208 320C199.2 320 192 327.2 192 336C192 344.8 199.2 352 208 352L432 352C440.8 352 448 344.8 448 336C448 327.2 440.8 320 432 320L208 320zM208 400C199.2 400 192 407.2 192 416C192 424.8 199.2 432 208 432L432 432C440.8 432 448 424.8 448 416C448 407.2 440.8 400 432 400L208 400z"/>
   </svg>
 );
 
@@ -22,19 +28,19 @@ const LogoutIcon = () => (
 );
 
 export default function StudentSidebar() {
-  const { pathname } = useLocation();
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       logout();
-      navigate("/", {replace: true});
+      navigate("/", { replace: true });
     }
   };
 
   const links = [
     { to: "/student/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
+    { to: "/request-document", label: "Request Document", icon: <DocumentIcon /> },
     { to: "/student/change-password", label: "Change Password", icon: <PasswordIcon /> },
   ];
 
@@ -43,21 +49,22 @@ export default function StudentSidebar() {
       <img src={logo} alt="logo" />
       <ul>
         {links.map((link) => (
-          <li key={link.to}>
-            <Link
+          <li key={link.label}>
+            <NavLink
               to={link.to}
-              className={pathname === link.to ? "active" : ""}
+              end
+              className={({ isActive }) => (isActive ? "active" : "")}
             >
               <span className="icon">{link.icon}</span>
               <span className="label">{link.label}</span>
-            </Link>
+            </NavLink>
           </li>
         ))}
       </ul>
       <ul className="logout">
         <li>
-          <a
-            href="#"
+          
+          <a href="#"
             onClick={(e) => {
               e.preventDefault();
               handleLogout();

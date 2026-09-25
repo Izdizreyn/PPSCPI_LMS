@@ -69,27 +69,45 @@ if ($count > 0) {
 }
 
 // File upload handler
+// File upload handler
 function uploadFile($fileInput, $destinationFolder = __DIR__ . '/../uploads/')
 {
-    if (isset($_FILES[$fileInput]) && $_FILES[$fileInput]['error'] == 0) {
-        if (!is_dir($destinationFolder)) {
-            mkdir($destinationFolder, 0755, true);
-        }
-        $filename = basename($_FILES[$fileInput]["name"]);
-        $targetFilePath = $destinationFolder . time() . "_" . $filename;
-        move_uploaded_file($_FILES[$fileInput]["tmp_name"], $targetFilePath);
-        return "uploads/" . basename($targetFilePath);
+    if (!isset($_FILES[$fileInput])) {
+        return ['path' => null, 'error' => 'No file field named "' . $fileInput . '" was received. $_FILES = ' . json_encode($_FILES)];
     }
-    return null;
+
+    if ($_FILES[$fileInput]['error'] !== 0) {
+        $phpUploadErrors = [
+            1 => 'File exceeds the server\'s upload_max_filesize limit.',
+            2 => 'File exceeds the form\'s MAX_FILE_SIZE limit.',
+            3 => 'File was only partially uploaded.',
+            4 => 'No file was selected.',
+            6 => 'Missing a temporary upload folder on the server.',
+            7 => 'Failed to write file to disk.',
+            8 => 'A PHP extension stopped the file upload.',
+        ];
+        $code = $_FILES[$fileInput]['error'];
+        return ['path' => null, 'error' => ($phpUploadErrors[$code] ?? "Upload failed (error code $code).")];
+    }
+
+    if (!is_dir($destinationFolder)) {
+        mkdir($destinationFolder, 0755, true);
+    }
+    $filename = basename($_FILES[$fileInput]["name"]);
+    $targetFilePath = $destinationFolder . time() . "_" . $filename;
+    move_uploaded_file($_FILES[$fileInput]["tmp_name"], $targetFilePath);
+    return ['path' => "uploads/" . basename($targetFilePath), 'error' => null];
 }
 
-$id_pic_old = uploadFile('id_pic_old');
+$uploadResult = uploadFile('id_pic_old');
 
-if (!$id_pic_old) {
+if (!$uploadResult['path']) {
     http_response_code(400);
-    echo json_encode(["success" => false, "message" => "2x2 ID photo is required."]);
+    echo json_encode(["success" => false, "message" => "2x2 ID photo upload failed: " . $uploadResult['error']]);
     exit();
 }
+
+$id_pic_old = $uploadResult['path'];
 
 $conn->begin_transaction();
 

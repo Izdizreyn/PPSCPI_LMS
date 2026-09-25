@@ -4,15 +4,27 @@ require_once __DIR__ . '/../config/database.php';
 
 $studentType = $_GET['type'] ?? '';
 $studentId = $_GET['id'] ?? '';
+$lrn = $_GET['lrn'] ?? '';
 
-if (empty($studentType) || empty($studentId)) {
+if (!empty($lrn)) {
+    // Lookup by LRN — used by the student portal, since the JWT only
+    // carries lrn, not student_type/student_id.
+    $stmt = $conn->prepare(
+        "SELECT * FROM enrollment_schedule WHERE lrn = ? ORDER BY enrollment_date DESC"
+    );
+    $stmt->bind_param("s", $lrn);
+} elseif (!empty($studentType) && !empty($studentId)) {
+    // Lookup by type+id — used by the admin queue page.
+    $stmt = $conn->prepare(
+        "SELECT * FROM enrollment_schedule WHERE student_type = ? AND student_id = ? ORDER BY enrollment_date DESC"
+    );
+    $stmt->bind_param("si", $studentType, $studentId);
+} else {
     http_response_code(400);
-    echo json_encode(["success" => false, "message" => "type and id are required."]);
+    echo json_encode(["success" => false, "message" => "Provide either lrn, or both type and id."]);
     exit();
 }
 
-$stmt = $conn->prepare("SELECT * FROM enrollment_schedule WHERE student_type = ? AND student_id = ? ORDER BY enrollment_date DESC");
-$stmt->bind_param("si", $studentType, $studentId);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -28,6 +40,13 @@ while ($row = $result->fetch_assoc()) {
 }
 $queue = $queueHistory[0];
 $stmt->close();
+
+// If the lookup was by LRN, derive type/id from the most recent row so the
+// strand/year-level lookup below still works the same way it always has.
+if (empty($studentType) || empty($studentId)) {
+    $studentType = $queue['student_type'];
+    $studentId = $queue['student_id'];
+}
 
 // Also pull strand/year level for display — original queue.php needed this
 $tableMap = ['new' => ['new_student_info', 'id_new', '_new'], 'old' => ['old_student_info', 'id_old', '_old'], 'transferee' => ['transferee_info', 'id_trans', '_trans']];
@@ -47,7 +66,6 @@ if (isset($tableMap[$studentType])) {
     }
     $stmt->close();
 }
-
 $queue['strand'] = $strand;
 $queue['year_level'] = $yearLevel;
 $queue['queue_history'] = $queueHistory;

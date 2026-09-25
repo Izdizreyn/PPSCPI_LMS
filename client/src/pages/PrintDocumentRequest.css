@@ -1,4 +1,6 @@
-.certificate-page {
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap');
+
+.print-certificate {
   font-family: "Times New Roman", Times, serif;
 }
 
@@ -10,10 +12,10 @@
 }
 
 .certificate-container {
-  width: 8.5in;
-  height: 11in;
+  width: 210mm;
+  min-height: 297mm;
   margin: 0 auto;
-  padding: 0.5in;
+  padding: 20mm;
   border: 2px solid #333;
   box-sizing: border-box;
   position: relative;
@@ -22,59 +24,84 @@
 }
 
 .certificate-header {
-  text-align: center;
-  margin-bottom: 0.5in;
+  margin-bottom: 12mm;
   position: relative;
   z-index: 1;
 }
 
-.logo {
-  width: 1.5in;
-  height: auto;
-  margin-bottom: 0.2in;
-  position: relative;
-  z-index: 1;
+.corner-logo {
+  width: 24mm;
+  height: 24mm;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4mm;
+  width: fit-content;
+  margin: 0 auto;
+}
+.header-text {
+  text-align: center;
 }
 
 .school-name {
-  font-size: 24pt;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 17pt;
   font-weight: bold;
+  text-transform: uppercase;
   color: #800080;
   margin: 0;
-  position: relative;
-  z-index: 1;
+  line-height: 1.25;
 }
 
 .school-address {
-  font-size: 12pt;
-  margin: 5px 0;
-  position: relative;
-  z-index: 1;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 10.5pt;
+  font-style: italic;
+  margin: 5px 0 0;
 }
 
 .certificate-title {
-  font-size: 28pt;
-  font-weight: bold;
-  margin: 0.5in 0;
+  font-family: "Cinzel", "Times New Roman", serif;
+  font-size: 20pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 10mm 0;
   text-align: center;
   color: #800080;
-  text-decoration: underline;
+  letter-spacing: 1px;
   position: relative;
   z-index: 1;
 }
 
 .certificate-body {
-  font-size: 14pt;
-  line-height: 1.5;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12pt;
+  line-height: 1.6;
   text-align: justify;
-  margin-bottom: 1in;
+  margin-bottom: 15mm;
   position: relative;
   z-index: 1;
 }
 
+.certificate-body p:first-child {
+  font-weight: bold;
+  font-size: 11.5pt;
+}
+
+.certificate-body u {
+  text-decoration: none;
+  border-bottom: 1px solid #333;
+  padding: 0 4px;
+  font-weight: bold;
+}
+
 .certificate-footer {
   text-align: center;
-  margin-top: 1in;
+  margin-top: 15mm;
   position: relative;
   z-index: 1;
 }
@@ -87,18 +114,21 @@
 }
 
 .signature-name {
+  font-family: "Times New Roman", Times, serif;
   font-weight: bold;
-  font-size: 14pt;
+  font-size: 11.5pt;
 }
 
 .signature-title {
-  font-size: 12pt;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 10.5pt;
 }
 
 .certificate-number {
   position: absolute;
-  bottom: 0.5in;
-  left: 0.5in;
+  bottom: 12mm;
+  left: 20mm;
+  font-family: "Times New Roman", Times, serif;
   font-size: 10pt;
   color: #333;
   z-index: 1;
@@ -109,10 +139,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  opacity: 0.08;
-  width: 6in;
-  height: 6in;
+  width: 140mm;
+  height: 140mm;
   z-index: 0;
+  object-fit: contain;
 }
 
 .print-button {
@@ -135,15 +165,12 @@
 
 @media print {
   @page {
-    size: letter;
+    size: A4;
     margin: 0;
   }
   body {
     margin: 0;
     padding: 0;
-  }
-  body * {
-    visibility: visible !important;
   }
   .certificate-container {
     border: none;
