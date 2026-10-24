@@ -10,13 +10,13 @@ if (!empty($lrn)) {
     // Lookup by LRN — used by the student portal, since the JWT only
     // carries lrn, not student_type/student_id.
     $stmt = $conn->prepare(
-        "SELECT * FROM enrollment_schedule WHERE lrn = ? ORDER BY enrollment_date DESC"
+        "SELECT * FROM enrollment_schedule WHERE lrn = ? ORDER BY enrollment_date DESC LIMIT 3"
     );
     $stmt->bind_param("s", $lrn);
 } elseif (!empty($studentType) && !empty($studentId)) {
     // Lookup by type+id — used by the admin queue page.
     $stmt = $conn->prepare(
-        "SELECT * FROM enrollment_schedule WHERE student_type = ? AND student_id = ? ORDER BY enrollment_date DESC"
+        "SELECT * FROM enrollment_schedule WHERE student_type = ? AND student_id = ? ORDER BY enrollment_date DESC LIMIT 3"
     );
     $stmt->bind_param("si", $studentType, $studentId);
 } else {

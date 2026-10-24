@@ -10,6 +10,8 @@ export default function CashierQueuePage() {
   const { token, logout } = useAuth();
   const [queue, setQueue] = useState([]);
   const [queueBatch, setQueueBatch] = useState("");
+  const [todayQueueCount, setTodayQueueCount] = useState(0);
+  const [yesterdayQueueCount, setYesterdayQueueCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,6 +25,8 @@ export default function CashierQueuePage() {
       );
       setQueue(response.data.queue || []);
       setQueueBatch(response.data.queue_batch || "");
+      setTodayQueueCount(Number(response.data.today_queue_count) || 0);
+      setYesterdayQueueCount(Number(response.data.yesterday_queue_count) || 0);
       setError("");
     } catch (requestError) {
       if (requestError.response?.status === 401) logout();
@@ -65,7 +69,7 @@ export default function CashierQueuePage() {
           <div className="queue-stats" aria-label="Queue summary">
             <div>
               <strong>{queue.length}</strong>
-              <span>Total queued</span>
+              <span>Today and yesterday</span>
             </div>
             <div>
               <strong>{activeCount}</strong>
@@ -74,6 +78,14 @@ export default function CashierQueuePage() {
             <div>
               <strong>{usedCount}</strong>
               <span>Used</span>
+            </div>
+            <div>
+              <strong>{todayQueueCount}</strong>
+              <span>Today</span>
+            </div>
+            <div>
+              <strong>{yesterdayQueueCount}</strong>
+              <span>Yesterday</span>
             </div>
           </div>
 

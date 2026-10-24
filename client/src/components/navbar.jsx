@@ -10,8 +10,6 @@ export default function Navbar() {
     { to: "/admin-login", label: "Staff Login" },
     { to: "/enroll", label: "Student Enroll" },
     { to: "/student-login", label: "Student Login" },
-    { to: "/profile-search", label: "Search Student" },
-    { to: "/request-certificate", label: "Request" },
   ];
 
   return (

@@ -1,5 +1,6 @@
 .print-balance {
   font-family: "Times New Roman", Times, serif;
+  font-size: 11pt;
 }
 
 .cert-error {
@@ -37,15 +38,22 @@
 }
 
 .student-name {
-  font-size: 14pt;
+  font-size: 11pt;
   margin-top: 5px;
+  position: relative;
+  z-index: 1;
+}
+
+.student-lrn {
+  margin: 5px 0 0;
+  font-size: 11pt;
   position: relative;
   z-index: 1;
 }
 
 .balance-table {
   width: 100%;
-  font-size: 13pt;
+  font-size: 11pt;
   margin-bottom: 0.4in;
   position: relative;
   z-index: 1;
@@ -60,6 +68,28 @@
   color: #800080;
   position: relative;
   z-index: 1;
+}
+
+.fee-status-table {
+  width: 100%;
+  margin-bottom: 0.3in;
+  border-collapse: collapse;
+  font-size: 11pt;
+  position: relative;
+  z-index: 1;
+}
+
+.fee-status-table th,
+.fee-status-table td {
+  padding: 7px 6px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.fee-status-table th:nth-child(n + 2),
+.fee-status-table td:nth-child(n + 2) {
+  text-align: right;
+  white-space: nowrap;
 }
 
 .transaction-table {
@@ -78,7 +108,7 @@
 }
 
 .no-payment {
-  font-size: 13pt;
+  font-size: 11pt;
   position: relative;
   z-index: 1;
 }

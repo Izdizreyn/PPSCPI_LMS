@@ -2,11 +2,29 @@
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../helpers/queue_helper.php';
 
 requireRole(['purple_admin']);
 
 function ensureQueueBatchSchema($conn)
 {
+    $conn->query("CREATE TABLE IF NOT EXISTS queue_batch_settings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        batch_date DATE NOT NULL,
+        queue_batch VARCHAR(20) NOT NULL,
+        batch_start VARCHAR(20) NOT NULL,
+        batch_end VARCHAR(20) NOT NULL,
+        current_number INT NOT NULL DEFAULT 1,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )");
+    $conn->query("CREATE TABLE IF NOT EXISTS queue_batch_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        batch_date DATE NOT NULL,
+        batch_start VARCHAR(20) NOT NULL,
+        batch_end VARCHAR(20) NOT NULL,
+        last_queue_number VARCHAR(20) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
     $columns = [];
     $result = $conn->query("SHOW COLUMNS FROM queue_batch_settings");
     if ($result) {
@@ -31,9 +49,9 @@ function ensureQueueBatchSchema($conn)
 
     $conn->query("UPDATE queue_batch_settings
         SET batch_date = COALESCE(batch_date, CURDATE()),
-            queue_batch = COALESCE(queue_batch, CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), '-001')),
-            batch_start = COALESCE(batch_start, CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), '-001')),
-            batch_end = COALESCE(batch_end, CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), '-100')),
+            queue_batch = COALESCE(queue_batch, CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), '-01')),
+            batch_start = COALESCE(batch_start, CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), '-01')),
+            batch_end = COALESCE(batch_end, CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), '-50')),
             current_number = COALESCE(current_number, 1)
         WHERE batch_date IS NULL
            OR queue_batch IS NULL
@@ -43,25 +61,6 @@ function ensureQueueBatchSchema($conn)
 }
 
 ensureQueueBatchSchema($conn);
-
-$conn->query("CREATE TABLE IF NOT EXISTS queue_batch_settings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    batch_date DATE NOT NULL,
-    queue_batch VARCHAR(20) NOT NULL,
-    batch_start VARCHAR(20) NOT NULL,
-    batch_end VARCHAR(20) NOT NULL,
-    current_number INT NOT NULL DEFAULT 1,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)");
-
-$conn->query("CREATE TABLE IF NOT EXISTS queue_batch_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    batch_date DATE NOT NULL,
-    batch_start VARCHAR(20) NOT NULL,
-    batch_end VARCHAR(20) NOT NULL,
-    last_queue_number VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)");
 
 $conn->query("CREATE TABLE IF NOT EXISTS queue_usage_log (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -101,16 +100,24 @@ $sql = "SELECT
             FROM transferee_info
         ) AS student ON student.student_id = schedule.student_id
             AND student.student_type = schedule.student_type
+        WHERE DATE(schedule.enrollment_date) BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND CURDATE()
         ORDER BY
             CASE WHEN schedule.status IN ('Used', 'Settled') THEN 1 ELSE 0 END,
             schedule.enrollment_date ASC";
 
 $result = $conn->query($sql);
 $queue = [];
+$todayQueueCount = 0;
+$yesterdayQueueCount = 0;
 
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $queue[] = $row;
+        if (substr($row['enrollment_date'], 0, 10) === date('Y-m-d')) {
+            $todayQueueCount++;
+        } else {
+            $yesterdayQueueCount++;
+        }
     }
 } else {
     http_response_code(500);
@@ -122,45 +129,45 @@ if ($result) {
     exit();
 }
 
+$todayKey = date('Ymd');
 $batchResult = $conn->query("SELECT * FROM queue_batch_settings WHERE batch_date = CURDATE() ORDER BY id DESC LIMIT 1");
-$queueBatch = date('Ymd') . '-001';
-$batchStart = date('Ymd') . '-001';
-$batchEnd = date('Ymd') . '-100';
-
-if ($batchResult && $batchResult->num_rows === 0) {
-    $fallbackResult = $conn->query("SELECT * FROM queue_batch_settings ORDER BY batch_date DESC, id DESC LIMIT 1");
-    if ($fallbackResult && $fallbackResult->num_rows > 0) {
-        $fallbackRow = $fallbackResult->fetch_assoc();
-        if (!empty($fallbackRow['queue_batch'])) {
-            $queueBatch = $fallbackRow['queue_batch'];
-        }
-        if (!empty($fallbackRow['batch_start'])) {
-            $batchStart = $fallbackRow['batch_start'];
-        }
-        if (!empty($fallbackRow['batch_end'])) {
-            $batchEnd = $fallbackRow['batch_end'];
-        }
-    }
-}
-
-if ($batchResult && $batchResult->num_rows > 0) {
+if (!$batchResult || $batchResult->num_rows === 0) {
+    $batchStart = $todayKey . '-01';
+    $batchEnd = $todayKey . '-50';
+    $queueBatch = $batchStart;
+} else {
     $batchRow = $batchResult->fetch_assoc();
-    if (!empty($batchRow['queue_batch'])) {
-        $queueBatch = $batchRow['queue_batch'];
-    }
-    if (!empty($batchRow['batch_start'])) {
-        $batchStart = $batchRow['batch_start'];
-    }
-    if (!empty($batchRow['batch_end'])) {
-        $batchEnd = $batchRow['batch_end'];
+    $queueBatch = $batchRow['queue_batch'];
+    $batchStart = $batchRow['batch_start'];
+    $batchEnd = $batchRow['batch_end'];
+    foreach (['queueBatch', 'batchStart', 'batchEnd'] as $batchValue) {
+        $$batchValue = normalizeQueueBatchNumber($$batchValue);
     }
 }
 
-$historyResult = $conn->query("SELECT batch_date, batch_start, batch_end, last_queue_number FROM queue_batch_history WHERE batch_date <= CURDATE() ORDER BY batch_date DESC, id DESC LIMIT 10");
+$historyResult = $conn->query("SELECT batch_date, batch_start, batch_end, last_queue_number FROM queue_batch_history WHERE batch_date = DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY id DESC LIMIT 1");
 $history = [];
 if ($historyResult) {
     while ($row = $historyResult->fetch_assoc()) {
         $history[] = $row;
+    }
+}
+if (!$history) {
+    $yesterdaySettings = $conn->query("SELECT batch_date, batch_start, batch_end
+        FROM queue_batch_settings
+        WHERE batch_date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+        ORDER BY id DESC LIMIT 1");
+    if ($yesterdaySettings && $yesterdaySettings->num_rows > 0) {
+        $yesterday = $yesterdaySettings->fetch_assoc();
+        $lastQueueStmt = $conn->prepare("SELECT queue_number FROM enrollment_schedule
+            WHERE DATE(enrollment_date) = ?
+            ORDER BY CAST(SUBSTRING_INDEX(queue_number, '-', -1) AS UNSIGNED) DESC LIMIT 1");
+        $lastQueueStmt->bind_param('s', $yesterday['batch_date']);
+        $lastQueueStmt->execute();
+        $lastQueue = $lastQueueStmt->get_result()->fetch_assoc();
+        $lastQueueStmt->close();
+        $yesterday['last_queue_number'] = $lastQueue['queue_number'] ?? $yesterday['batch_start'];
+        $history[] = $yesterday;
     }
 }
 
@@ -172,6 +179,9 @@ echo json_encode([
     'batch_start' => $batchStart,
     'batch_end' => $batchEnd,
     'history' => $history,
+    'yesterday_batch' => $history[0] ?? null,
+    'today_queue_count' => $todayQueueCount,
+    'yesterday_queue_count' => $yesterdayQueueCount,
     'updated_at' => date('c'),
 ]);
 

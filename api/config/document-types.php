@@ -1,9 +1,4 @@
 <?php
-// Single source of truth for requestable document types.
-// Paragraphs are the official letter text with blanks replaced by
-// placeholders, filled in per-request by document-request.php.
-//
-// Placeholders: {full_name} {lrn} {level} {year_section} {school_year} {issue_date}
 
 return [
     'coe' => [

@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../helpers/queue_helper.php';
 
 $user = requireRole(['purple_student']);
 
@@ -76,21 +77,61 @@ $enrolleeName = trim($studentRow[$matched['fname']] . ' ' . $studentRow[$matched
 $studentId = $studentRow[$matched['id']];
 $studentType = $matched['type'];
 
-// Generate next sequential queue number for today
+$conn->query("CREATE TABLE IF NOT EXISTS queue_batch_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    batch_date DATE NOT NULL,
+    queue_batch VARCHAR(20) NOT NULL,
+    batch_start VARCHAR(20) NOT NULL,
+    batch_end VARCHAR(20) NOT NULL,
+    current_number INT NOT NULL DEFAULT 1,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)");
 $today = date("Ymd");
-$likeParam = "$today%";
-$seqStmt = $conn->prepare("SELECT MAX(queue_number) as max_queue FROM enrollment_schedule WHERE queue_number LIKE ?");
-$seqStmt->bind_param("s", $likeParam);
+$todayDate = date("Y-m-d");
+$batchResult = $conn->query("SELECT * FROM queue_batch_settings
+    WHERE batch_date = CURDATE() ORDER BY id DESC LIMIT 1");
+if (!$batchResult || $batchResult->num_rows === 0) {
+    $batchStart = $today . '-01';
+    $batchEnd = $today . '-50';
+    $nextNumber = $batchStart;
+    $insertBatch = $conn->prepare("INSERT INTO queue_batch_settings
+        (batch_date, queue_batch, batch_start, batch_end, current_number)
+        VALUES (?, ?, ?, ?, 1)");
+    $insertBatch->bind_param('ssss', $todayDate, $nextNumber, $batchStart, $batchEnd);
+    $insertBatch->execute();
+    $insertBatch->close();
+} else {
+    $batchRow = $batchResult->fetch_assoc();
+    $batchStart = (string) $batchRow['batch_start'];
+    $batchEnd = (string) $batchRow['batch_end'];
+    $nextNumber = (string) $batchRow['queue_batch'];
+    foreach (['batchStart', 'batchEnd', 'nextNumber'] as $batchValue) {
+        $$batchValue = normalizeQueueBatchNumber($$batchValue);
+    }
+}
+
+$seqStmt = $conn->prepare("SELECT MAX(CAST(SUBSTRING_INDEX(queue_number, '-', -1) AS UNSIGNED)) as max_sequence
+    FROM enrollment_schedule WHERE queue_number LIKE CONCAT(?, '%')");
+$seqStmt->bind_param("s", $today);
 $seqStmt->execute();
 $row = $seqStmt->get_result()->fetch_assoc();
 $seqStmt->close();
 
-$sequence = 1;
-if ($row['max_queue']) {
-    $parts = explode('-', $row['max_queue']);
-    if (isset($parts[1])) $sequence = intval($parts[1]) + 1;
+$startSequence = queueBatchSequence($batchStart);
+$endSequence = queueBatchSequence($batchEnd);
+$configuredSequence = queueBatchSequence($nextNumber);
+$lastIssuedSequence = (int) ($row['max_sequence'] ?? 0);
+$sequence = max(
+    $startSequence,
+    $configuredSequence,
+    $lastIssuedSequence + ($lastIssuedSequence > 0 ? 1 : 0)
+);
+if ($sequence > $endSequence) {
+    http_response_code(409);
+    echo json_encode(["success" => false, "message" => "Today's queue batch is full. Please contact the cashier."]);
+    exit();
 }
-$queueNumber = $today . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+$queueNumber = $today . '-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
 
 $insert = $conn->prepare("INSERT INTO enrollment_schedule (queue_number, enrollment_date, enrollee_name, lrn, student_type, student_id, status)
     VALUES (?, NOW(), ?, ?, ?, ?, 'Active')");
@@ -106,6 +147,15 @@ if (!$insert->execute()) {
 
 $newQueueId = $conn->insert_id;
 $insert->close();
+
+$nextSequence = min($sequence + 1, $endSequence);
+$nextQueueNumber = $today . '-' . str_pad($nextSequence, 2, '0', STR_PAD_LEFT);
+$updateBatch = $conn->prepare("UPDATE queue_batch_settings
+    SET queue_batch = ?, current_number = ?, batch_start = ?, batch_end = ?
+    WHERE batch_date = CURDATE() ORDER BY id DESC LIMIT 1");
+$updateBatch->bind_param('siis', $nextQueueNumber, $nextSequence, $batchStart, $batchEnd);
+$updateBatch->execute();
+$updateBatch->close();
 
 // Fetch the freshly created row so the frontend gets the full object
 $fetch = $conn->prepare("SELECT id_sched, queue_number, enrollment_date, enrollee_name, lrn, student_type, student_id, status

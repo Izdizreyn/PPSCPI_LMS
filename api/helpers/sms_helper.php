@@ -1,10 +1,6 @@
 <?php
-// Sends an SMS through the local Android SMS Gateway relay (the `sms`
-// folder integration). Returns ['success' => bool, 'message' => string].
-// Never throws — a failed send should never block or roll back an
-// enrollment; the caller decides what to do with the result.
 
-function sendEnrollmentSms(string $phoneRaw, string $message): array
+function sendSms(string $phoneRaw, string $message): array
 {
     $config = require __DIR__ . '/../config/sms.php';
 
@@ -45,7 +41,81 @@ function sendEnrollmentSms(string $phoneRaw, string $message): array
         ];
     }
 
-    $sent = str_contains($response, 'Message sent with ID');
+    $gatewayResponse = trim($response);
+    $sent = smsGatewayAccepted($gatewayResponse);
 
-    return ['success' => $sent, 'message' => trim($response)];
+    return ['success' => $sent, 'message' => $gatewayResponse];
+}
+
+/**
+ * Backward-compatible alias in case anything still calls the old name
+ * directly with a custom message string.
+ */
+function sendEnrollmentSms(string $phoneRaw, string $message): array
+{
+    return sendSms($phoneRaw, $message);
+}
+
+function smsGatewayAccepted(string $response): bool
+{
+    $hasFailure = preg_match('/\b(?:failed|failure|error|invalid|not\s+accepted|rejected)\b/i', $response);
+    $wasAccepted = preg_match('/\bmessage sent with id\b/i', $response)
+        || preg_match('/\b(?:message|sms)\b.{0,60}\b(?:being\s+processed|processing|processed|queued|accepted)\b/i', $response)
+        || preg_match('/\b(?:status|state)\b["\':=\s]+(?:pending|processing|processed|queued|accepted|sent)\b/i', $response);
+
+    return !$hasFailure && (bool) $wasAccepted;
+}
+
+/**
+ * "Your enrollment was approved" SMS.
+ * Call right after a student's status is set to Approved in approve.php.
+ */
+function sendEnrollmentApprovedSms(string $phoneRaw, string $studentName, string $queueNumber): array
+{
+    $message = "Hi {$studentName}, your enrollment at PPCSPI has been "
+        . "approved! Your queue number is {$queueNumber}. Please proceed "
+        . "to the cashier for payment. - PPCSPI";
+
+    return sendSms($phoneRaw, $message);
+}
+
+/**
+ * "Your requested document is ready to claim" SMS.
+ * Call right after a certificate_requests row is set to Approved.
+ */
+function sendDocumentReadySms(string $phoneRaw, string $studentName, string $documentPurpose): array
+{
+    $message = "Hi {$studentName}, your requested document "
+        . "({$documentPurpose}) is now ready to claim at the registrar's "
+        . "office. - PPCSPI";
+
+    return sendSms($phoneRaw, $message);
+}
+
+/**
+ * Looks up a student's phone number by LRN across the three intake
+ * tables (new/old/transferee). These tables keep their row after
+ * enrollment approval — only the status column changes — so this works
+ * both right after approval and later for a document request.
+ */
+function findPhoneByLrn(mysqli $conn, string $lrn): ?string
+{
+    $tables = [
+        ['table' => 'new_student_info', 'lrn' => 'lrn_new', 'phone' => 'phone_new'],
+        ['table' => 'old_student_info', 'lrn' => 'lrn_old', 'phone' => 'phone_old'],
+        ['table' => 'transferee_info', 'lrn' => 'lrn_trans', 'phone' => 'phone_trans'],
+    ];
+
+    foreach ($tables as $t) {
+        $stmt = $conn->prepare("SELECT {$t['phone']} AS phone FROM {$t['table']} WHERE {$t['lrn']} = ?");
+        $stmt->bind_param('s', $lrn);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        if ($row && !empty($row['phone'])) {
+            return $row['phone'];
+        }
+    }
+
+    return null;
 }

@@ -13,6 +13,8 @@ export default function AdminQueuePage() {
   const [queue, setQueue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dashboardQueue, setDashboardQueue] = useState([]);
+  const [dashboardTodayCount, setDashboardTodayCount] = useState(0);
+  const [dashboardYesterdayCount, setDashboardYesterdayCount] = useState(0);
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState("");
   const [queueBatch, setQueueBatch] = useState("");
@@ -48,11 +50,11 @@ export default function AdminQueuePage() {
   const saveQueueBatch = useCallback(async () => {
     const startValue = queueBatchStartInput.trim();
     const endValue = queueBatchEndInput.trim();
-    const isStartValid = /^\d{8}-\d{3}$/i.test(startValue);
-    const isEndValid = /^\d{8}-\d{3}$/i.test(endValue);
+    const isStartValid = /^\d{8}-\d{2}$/i.test(startValue);
+    const isEndValid = /^\d{8}-\d{2}$/i.test(endValue);
 
     if (!isStartValid || !isEndValid) {
-      setBatchError("Queue batch range must use YYYYMMDD-### for both start and end values.");
+      setBatchError("Queue batch range must use YYYYMMDD-## for both start and end values.");
       setQueueBatchStartInput(queueBatchStartInput || queueBatch.split(" to ")[0] || "");
       setQueueBatchEndInput(queueBatchEndInput || queueBatch.split(" to ")[1] || queueBatchStartInput || "");
       return;
@@ -99,6 +101,8 @@ export default function AdminQueuePage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDashboardQueue(res.data.queue || []);
+      setDashboardTodayCount(Number(res.data.today_queue_count) || 0);
+      setDashboardYesterdayCount(Number(res.data.yesterday_queue_count) || 0);
       setQueueBatch(res.data.queue_batch || "");
       setQueueBatchStartInput(res.data.batch_start || (res.data.queue_batch || "").split(" to ")[0] || "");
       setQueueBatchEndInput(res.data.batch_end || (res.data.queue_batch || "").split(" to ")[1] || "");
@@ -114,6 +118,7 @@ export default function AdminQueuePage() {
 
   useEffect(() => {
   if (!type || !id) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadQueueBatch();
     loadDashboard();
     return;
@@ -159,7 +164,7 @@ export default function AdminQueuePage() {
                     onKeyDown={handleQueueBatchKeyDown}
                     disabled={batchSaving}
                     aria-label="Queue batch start"
-                    placeholder="YYYYMMDD-###"
+                    placeholder="YYYYMMDD-01"
                   />
                   <span className="queue-batch-separator">-</span>
                   <input
@@ -172,7 +177,7 @@ export default function AdminQueuePage() {
                     onKeyDown={handleQueueBatchKeyDown}
                     disabled={batchSaving}
                     aria-label="Queue batch end"
-                    placeholder="YYYYMMDD-###"
+                    placeholder="YYYYMMDD-50"
                   />
                   <button type="button" className="queue-batch-btn" onClick={saveQueueBatch} disabled={batchSaving}>
                     {batchSaving ? "Saving..." : "Save"}
@@ -182,22 +187,27 @@ export default function AdminQueuePage() {
               </div>
             </div>
 
-            <div className="queue-stats" aria-label="Queue summary">
-            <div><strong>{dashboardQueue.length}</strong><span>Total queued</span></div>
+          <div className="queue-stats" aria-label="Queue summary">
+            <div><strong>{dashboardQueue.length}</strong><span>Today and yesterday</span></div>
             <div><strong>{activeCount}</strong><span>Active</span></div>
             <div><strong>{usedCount}</strong><span>Used</span></div>
+            <div><strong>{dashboardTodayCount}</strong><span>Today</span></div>
+            <div><strong>{dashboardYesterdayCount}</strong><span>Yesterday</span></div>
           </div>
 
           <div className="queue-history-panel">
-            <h3>Previous Queue Batches</h3>
+            <h3>Yesterday’s Queue Batch</h3>
             {previousBatches.length === 0 ? (
-              <p className="queue-empty subtle-empty">No previous queue batches saved yet.</p>
+              <p className="queue-empty subtle-empty">No queue batch was recorded yesterday.</p>
             ) : (
               <ul className="previous-batch-list">
                 {previousBatches.map((batchItem, index) => (
                   <li key={`${batchItem.batch_date || index}-${batchItem.batch_start || index}`}>
                     <strong>{batchItem.batch_start} to {batchItem.batch_end}</strong>
-                    <small>Last used: {batchItem.last_queue_number || batchItem.batch_start}</small>
+                    <small>
+                      {batchItem.batch_date} · Last queue:{" "}
+                      {batchItem.last_queue_number || "No queue issued"}
+                    </small>
                   </li>
                 ))}
               </ul>
@@ -222,7 +232,14 @@ export default function AdminQueuePage() {
                       <td><strong>{item.enrollee_name}</strong><small>{item.lrn}</small></td>
                       <td>{item.student_type}</td>
                       <td>{item.year_level || "N/A"}<small>{item.strand || "N/A"}</small></td>
-                      <td>{new Date(item.enrollment_date).toLocaleString()}</td>
+                      <td>
+                        {new Date(item.enrollment_date).toLocaleString()}
+                        <small>
+                          {new Date(item.enrollment_date).toDateString() === new Date().toDateString()
+                            ? "Today"
+                            : "Yesterday"}
+                        </small>
+                      </td>
                       <td>
                         <span className={`queue-status ${item.status === "Used" ? "settled" : "active"}`}>
                           {item.status === "Used" ? "USED" : "ACTIVE"}
@@ -325,7 +342,7 @@ export default function AdminQueuePage() {
                     <tr><th>Queue Number</th><th>Date</th><th>Status</th></tr>
                   </thead>
                   <tbody>
-                    {queue.queue_history.map((historyItem) => (
+                    {queue.queue_history.slice(0, 3).map((historyItem) => (
                       <tr key={historyItem.queue_number}>
                         <td>{historyItem.queue_number}</td>
                         <td>{new Date(historyItem.enrollment_date).toLocaleDateString()}</td>

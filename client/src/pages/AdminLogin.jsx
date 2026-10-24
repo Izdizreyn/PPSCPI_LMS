@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar";
 import PageBackground from "../components/PageBackground";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
@@ -28,6 +28,7 @@ export default function AdminLogin() {
         login(res.data.token, res.data.user);
         if (res.data.user.role === "purple_admin") navigate("/admin/dashboard");
         else if (res.data.user.role === "purple_cashier") navigate("/cashier");
+        else if (res.data.user.role === "purple_teacher") navigate("/teacher/dashboard");
         else navigate("/admin/dashboard");
       }
     } catch (err) {

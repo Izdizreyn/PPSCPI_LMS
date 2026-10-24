@@ -6,12 +6,16 @@ import AdminLayout from "../components/AdminLayout";
 import "./AdminRequests.css";
 import { Link } from "react-router-dom";
 import { adminLinks } from "../config/navLinks";
+import TablePagination from "../components/TablePagination";
+
+const PAGE_SIZE = 10;
 
 export default function AdminRequests() {
   const { token } = useAuth();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [page, setPage] = useState(1);
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
@@ -38,7 +42,7 @@ export default function AdminRequests() {
         { id, action, reason },
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setMessage(res.data.message);
+      setMessage(res.data.message || "Request updated successfully.");
       loadRequests();
     } catch (err) {
       setMessage(err.response?.data?.message || "Error updating request.");
@@ -65,6 +69,13 @@ export default function AdminRequests() {
     );
   }
 
+  const pageCount = Math.max(1, Math.ceil(requests.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const visibleRequests = requests.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
   return (
     <AdminLayout links={adminLinks}>
       <div className="admin-requests">
@@ -90,7 +101,7 @@ export default function AdminRequests() {
           </thead>
           <tbody>
             {requests.length > 0 ? (
-              requests.map((r) => (
+              visibleRequests.map((r) => (
                 <tr key={r.id}>
                   <td>{r.id}</td>
                   <td>{r.full_name}</td>
@@ -151,6 +162,14 @@ export default function AdminRequests() {
             )}
           </tbody>
         </table>
+        <TablePagination
+          page={currentPage}
+          pageSize={PAGE_SIZE}
+          totalItems={requests.length}
+          onPageChange={(nextPage) =>
+            setPage(Math.min(Math.max(nextPage, 1), pageCount))
+          }
+        />
       </div>
     </AdminLayout>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -21,8 +21,15 @@ export default function EnrollStudentPage() {
   const [selectedRoom, setSelectedRoom] = useState("");
   const [message, setMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const messageRef = useRef(null);
 
   const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
+
+  useEffect(() => {
+    if (message) {
+      messageRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [message]);
 
   useEffect(() => {
   (async () => {
@@ -51,13 +58,10 @@ const handleSubmit = async (e) => {
       authHeaders,
     );
 
-    setMessage({ type: "success", text: res.data.message });
-
-    const smsNote = res.data.sms_sent
-      ? "An SMS notification was sent to the student."
-      : `SMS notification was not sent (${res.data.sms_message || "no reason given"}).`;
-
-    window.alert(`${res.data.message}\n\n${smsNote}`);
+    setMessage({
+      type: "success",
+      text: res.data.message || "Student enrolled successfully.",
+    });
   } catch (err) {
     setMessage({
       type: "danger",
@@ -73,7 +77,15 @@ const handleSubmit = async (e) => {
       <div className="enroll-student">
         <h1>Enroll Student</h1>
         {message && (
-          <div className={`alert alert-${message.type}`}>{message.text}</div>
+          <div
+            ref={messageRef}
+            className={`alert alert-${message.type}`}
+            role={message.type === "success" ? "status" : "alert"}
+            aria-live={message.type === "success" ? "polite" : "assertive"}
+            tabIndex={-1}
+          >
+            {message.text}
+          </div>
         )}
 
         <form onSubmit={handleSubmit}>

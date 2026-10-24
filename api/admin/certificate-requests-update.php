@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../helpers/sms_helper.php';
 
 requireRole(['purple_admin']);
 
@@ -26,12 +27,37 @@ $status = $action === 'approve' ? 'Approved' : 'Rejected';
 $stmt = $conn->prepare("UPDATE certificate_requests SET status = ?, processed_date = NOW() WHERE id = ?");
 $stmt->bind_param("si", $status, $id);
 
-if ($stmt->execute()) {
-    echo json_encode(["success" => true, "message" => "Request $status successfully!"]);
-} else {
+if (!$stmt->execute()) {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Error updating request: " . $conn->error]);
+    $stmt->close();
+    $conn->close();
+    exit();
+}
+$stmt->close();
+
+$smsResult = null;
+
+// Only approvals notify the student that their document is ready to claim.
+if ($action === 'approve') {
+    $reqStmt = $conn->prepare("SELECT lrn, full_name, purpose FROM certificate_requests WHERE id = ?");
+    $reqStmt->bind_param("i", $id);
+    $reqStmt->execute();
+    $request = $reqStmt->get_result()->fetch_assoc();
+    $reqStmt->close();
+
+    if ($request) {
+        $phone = findPhoneByLrn($conn, $request['lrn']);
+        if ($phone) {
+            $smsResult = sendDocumentReadySms($phone, $request['full_name'], $request['purpose']);
+        }
+    }
 }
 
-$stmt->close();
+echo json_encode([
+    "success" => true,
+    "message" => "Request $status successfully!",
+    "sms_sent" => $smsResult['success'] ?? false,
+]);
+
 $conn->close();

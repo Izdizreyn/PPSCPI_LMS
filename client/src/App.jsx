@@ -9,7 +9,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Cashier from "./pages/Cashier";
 import CashierDashboard from "./pages/CashierDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import ProfileSearch from "./pages/ProfileSearch";
 import RequestDocument from "./pages/RequestDocument";
 import ApprovedStudents from "./pages/ApprovedStudents";
 import AdminQueuePage from "./pages/AdminQueuePage";
@@ -23,6 +22,17 @@ import StudentLogin from "./pages/StudentLogin";
 import StudentDashboard from "./pages/StudentDashboard";
 import ChangePassword from "./pages/ChangePassword";
 import AdminOldStudentImport from "./pages/AdminOldStudentImport";
+import StaffClasses from "./pages/StaffClasses";
+import StaffGrades from "./pages/StaffGrades";
+import AdminGradeReview from "./pages/AdminGradeReview";
+import StudentGrades from "./pages/StudentGrades";
+import StudentDocuments from "./pages/StudentDocuments";
+import StudentProfileEdit from "./pages/StudentProfileEdit";
+import ChatPortal from "./pages/ChatPortal";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import TeacherChangePassword from "./pages/TeacherChangePassword";
+import TeacherManagement from "./pages/TeacherManagement";
+import PurpleBot from "./components/PurpleBot";
 
 function App() {
   return (
@@ -35,7 +45,6 @@ function App() {
         <Route path="/enroll/transferee" element={<Transferee />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/student-login" element={<StudentLogin />} />
-<Route path="/profile-search" element={<ProfileSearch />} />
 <Route path="/print-document" element={<PrintDocumentRequest />} />
 <Route path="/request-document" element={<RequestDocument />} />
 <Route path="/admin/print-balance" element={<PrintBalance />} />
@@ -58,6 +67,78 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["purple_student"]}>
               <ChangePassword />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/grades"
+          element={
+            <ProtectedRoute allowedRoles={["purple_student"]}>
+              <StudentGrades />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/documents"
+          element={
+            <ProtectedRoute allowedRoles={["purple_student"]}>
+              <StudentDocuments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/edit-profile"
+          element={
+            <ProtectedRoute allowedRoles={["purple_student"]}>
+              <StudentProfileEdit />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/chat"
+          element={
+            <ProtectedRoute allowedRoles={["purple_student"]}>
+              <ChatPortal mode="student" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["purple_teacher"]}>
+              <TeacherDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/my-classes"
+          element={
+            <ProtectedRoute allowedRoles={["purple_teacher"]}>
+              <StaffClasses />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/my-grades"
+          element={
+            <ProtectedRoute allowedRoles={["purple_teacher"]}>
+              <StaffGrades />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/chat"
+          element={
+            <ProtectedRoute allowedRoles={["purple_teacher"]}>
+              <ChatPortal mode="teacher" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/change-password"
+          element={
+            <ProtectedRoute allowedRoles={["purple_teacher"]}>
+              <TeacherChangePassword />
             </ProtectedRoute>
           }
         />
@@ -143,7 +224,32 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/grades"
+          element={
+            <ProtectedRoute allowedRoles={["purple_admin"]}>
+              <AdminGradeReview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/chat"
+          element={
+            <ProtectedRoute allowedRoles={["purple_admin"]}>
+              <ChatPortal mode="admin" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/teachers"
+          element={
+            <ProtectedRoute allowedRoles={["purple_admin"]}>
+              <TeacherManagement />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+      <PurpleBot />
     </BrowserRouter>
   );
 }

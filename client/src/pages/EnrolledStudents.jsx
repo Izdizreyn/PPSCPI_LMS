@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 import "./EnrolledStudents.css";
 import { adminLinks } from "../config/navLinks";
+import TablePagination from "../components/TablePagination";
+
+const PAGE_SIZE = 10;
 
 const LEVEL_ORDER = [
   "Nursery",
@@ -22,8 +25,12 @@ export default function EnrolledStudents() {
   const [rooms, setRooms] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
-  const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
+  const authHeaders = useMemo(
+    () => ({ headers: { Authorization: `Bearer ${token}` } }),
+    [token],
+  );
 
   useEffect(() => {
     (async () => {
@@ -35,7 +42,7 @@ export default function EnrolledStudents() {
       setRooms(res.data.rooms);
       setLoading(false);
     })();
-  }, []);
+  }, [authHeaders]);
 
   const filteredStudents = students.filter((s) => {
     const q = search.toUpperCase();
@@ -45,16 +52,25 @@ export default function EnrolledStudents() {
       s.room.toUpperCase().includes(q)
     );
   });
+  const pageCount = Math.max(
+    1,
+    Math.ceil(filteredStudents.length / PAGE_SIZE),
+  );
+  const currentPage = Math.min(page, pageCount);
+  const pageStudents = filteredStudents.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   const byLevel = {};
-  filteredStudents.forEach((s) => {
+  pageStudents.forEach((s) => {
     if (!byLevel[s.level]) byLevel[s.level] = [];
     byLevel[s.level].push(s);
   });
 
   const byRoom = {};
   const roomLevels = {};
-  filteredStudents.forEach((s) => {
+  pageStudents.forEach((s) => {
     if (!byRoom[s.room]) byRoom[s.room] = [];
     byRoom[s.room].push(s);
     roomLevels[s.room] = s.level;
@@ -112,7 +128,10 @@ export default function EnrolledStudents() {
               type="text"
               placeholder="Search by name, LRN, room..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
             />
           </div>
           <button className="print-btn" onClick={() => window.print()}>
@@ -123,25 +142,37 @@ export default function EnrolledStudents() {
         <div className="tab">
           <button
             className={activeTab === "all" ? "active" : ""}
-            onClick={() => setActiveTab("all")}
+            onClick={() => {
+              setActiveTab("all");
+              setPage(1);
+            }}
           >
             All Students
           </button>
           <button
             className={activeTab === "level" ? "active" : ""}
-            onClick={() => setActiveTab("level")}
+            onClick={() => {
+              setActiveTab("level");
+              setPage(1);
+            }}
           >
             By Level
           </button>
           <button
             className={activeTab === "room" ? "active" : ""}
-            onClick={() => setActiveTab("room")}
+            onClick={() => {
+              setActiveTab("room");
+              setPage(1);
+            }}
           >
             By Room
           </button>
           <button
             className={activeTab === "occupancy" ? "active" : ""}
-            onClick={() => setActiveTab("occupancy")}
+            onClick={() => {
+              setActiveTab("occupancy");
+              setPage(1);
+            }}
           >
             Room Occupancy
           </button>
@@ -149,7 +180,7 @@ export default function EnrolledStudents() {
 
         {activeTab === "all" && (
           <>
-            {filteredStudents.length > 0 ? (
+            {pageStudents.length > 0 ? (
               <table className="student-table">
                 <thead>
                   <tr>
@@ -163,7 +194,7 @@ export default function EnrolledStudents() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredStudents.map((s) => (
+                  {pageStudents.map((s) => (
                     <tr key={s.id}>
                       <td>{s.lrn}</td>
                       <td>{s.full_name}</td>
@@ -319,6 +350,16 @@ export default function EnrolledStudents() {
                 </div>
               ))}
           </>
+        )}
+        {activeTab !== "occupancy" && (
+          <TablePagination
+            page={currentPage}
+            pageSize={PAGE_SIZE}
+            totalItems={filteredStudents.length}
+            onPageChange={(nextPage) =>
+              setPage(Math.min(Math.max(nextPage, 1), pageCount))
+            }
+          />
         )}
       </div>
     </AdminLayout>

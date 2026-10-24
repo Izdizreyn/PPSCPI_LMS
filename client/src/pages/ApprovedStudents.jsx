@@ -6,6 +6,9 @@ import { API_BASE_URL } from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 import "./ApprovedStudents.css";
 import { adminLinks } from "../config/navLinks";
+import TablePagination from "../components/TablePagination";
+
+const PAGE_SIZE = 10;
 
 const STRAND_ORDER = { STEM: 1, ABM: 2, HUMSS: 3, "": 4 };
 const strandSort = (a, b) => (STRAND_ORDER[a] ?? 5) - (STRAND_ORDER[b] ?? 5);
@@ -17,6 +20,7 @@ export default function ApprovedStudents() {
   const [balances, setBalances] = useState({});
   const [enrolledLrns, setEnrolledLrns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
@@ -111,14 +115,20 @@ export default function ApprovedStudents() {
     </table>
   );
 
+  const pageCount = Math.max(1, Math.ceil(students.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const pageStudents = students.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
   const byYearLevel = {};
-  students.forEach((s) => {
+  pageStudents.forEach((s) => {
     if (!byYearLevel[s.year_level]) byYearLevel[s.year_level] = [];
     byYearLevel[s.year_level].push(s);
   });
 
   const byStrand = {};
-  students.forEach((s) => {
+  pageStudents.forEach((s) => {
     const strand = s.strand || "Junior High";
     if (!byStrand[strand]) byStrand[strand] = [];
     byStrand[strand].push(s);
@@ -132,19 +142,28 @@ export default function ApprovedStudents() {
         <div className="tab">
           <button
             className={activeTab === "all" ? "active" : ""}
-            onClick={() => setActiveTab("all")}
+            onClick={() => {
+              setActiveTab("all");
+              setPage(1);
+            }}
           >
             All Students
           </button>
           <button
             className={activeTab === "year" ? "active" : ""}
-            onClick={() => setActiveTab("year")}
+            onClick={() => {
+              setActiveTab("year");
+              setPage(1);
+            }}
           >
             By Year Level
           </button>
           <button
             className={activeTab === "strand" ? "active" : ""}
-            onClick={() => setActiveTab("strand")}
+            onClick={() => {
+              setActiveTab("strand");
+              setPage(1);
+            }}
           >
             By Strand
           </button>
@@ -152,7 +171,7 @@ export default function ApprovedStudents() {
 
         {activeTab === "all" &&
           (students.length > 0 ? (
-            renderTable(students)
+            renderTable(pageStudents)
           ) : (
             <p>No enrolled students found.</p>
           ))}
@@ -180,6 +199,15 @@ export default function ApprovedStudents() {
                 {renderTable(byStrand[strand])}
               </div>
             ))}
+
+        <TablePagination
+          page={currentPage}
+          pageSize={PAGE_SIZE}
+          totalItems={students.length}
+          onPageChange={(nextPage) =>
+            setPage(Math.min(Math.max(nextPage, 1), pageCount))
+          }
+        />
       </div>
     </AdminLayout>
   );

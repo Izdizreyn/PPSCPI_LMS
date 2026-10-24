@@ -22,3 +22,5 @@ ppscpi_lms/.VSCodeCounter
 # Uploaded documents — never commit real or test files
 api/uploads/*
 !api/uploads/.gitkeep
+api/private_uploads/student-documents/*
+!api/private_uploads/student-documents/.gitkeep

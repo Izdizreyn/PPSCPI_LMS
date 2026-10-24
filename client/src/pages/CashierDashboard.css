@@ -1,7 +1,9 @@
 .cashier-dashboard {
-  max-width: 1280px;
-  margin: 30px auto;
-  padding: 0 20px;
+  width: 100%;
+  max-width: 1440px;
+  box-sizing: border-box;
+  margin: 12px auto;
+  padding: 0 10px;
   color: #252238;
 }
 
@@ -9,8 +11,8 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 12px;
   text-align: center;
 }
 
@@ -21,7 +23,7 @@
 }
 
 .cashier-dashboard-header {
-  padding: 24px;
+  padding: 14px;
 }
 
 .cashier-eyebrow {
@@ -84,50 +86,67 @@
 }
 
 .cashier-records-table-wrap {
-  overflow-x: auto;
+  width: 100%;
+}
+
+.cashier-records .table-pagination {
+  padding: 0 12px 12px;
 }
 
 .cashier-records table {
   width: 100%;
-  min-width: 850px;
   table-layout: fixed;
+  border-collapse: collapse;
 }
 
 .cashier-records th,
 .cashier-records td {
-  padding: 16px 18px;
-  line-height: 1.5;
+  padding: 8px 7px;
+  font-size: 0.8rem;
+  line-height: 1.3;
   vertical-align: middle;
+  overflow-wrap: anywhere;
 }
 
 .cashier-records th:nth-child(1),
 .cashier-records td:nth-child(1) {
-  width: 19%;
+  width: 13%;
 }
 
 .cashier-records th:nth-child(2),
 .cashier-records td:nth-child(2) {
-  width: 14%;
+  width: 12%;
 }
 
 .cashier-records th:nth-child(3),
 .cashier-records td:nth-child(3) {
-  width: 22%;
+  width: 19%;
 }
 
 .cashier-records th:nth-child(4),
 .cashier-records td:nth-child(4) {
-  width: 13%;
+  width: 11%;
 }
 
 .cashier-records th:nth-child(5),
 .cashier-records td:nth-child(5) {
-  width: 16%;
+  width: 13%;
 }
 
 .cashier-records th:nth-child(6),
 .cashier-records td:nth-child(6) {
-  width: 16%;
+  width: 13%;
+}
+
+.cashier-records th:nth-child(7),
+.cashier-records td:nth-child(7) {
+  width: 19%;
+}
+
+.cashier-statement-link {
+  color: #800080;
+  font-weight: 700;
+  white-space: normal;
 }
 
 .cashier-records tbody tr {
@@ -150,6 +169,49 @@
 
   .cashier-action {
     text-align: center;
+  }
+
+  .cashier-records-table-wrap {
+    overflow: visible;
+  }
+
+  .cashier-records table,
+  .cashier-records tbody,
+  .cashier-records tr {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cashier-records td {
+    width: auto;
+    box-sizing: border-box;
+  }
+
+  .cashier-records thead {
+    display: none;
+  }
+
+  .cashier-records tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 10px;
+    padding: 10px;
+    border-bottom: 1px solid #e1dce5;
+  }
+
+  .cashier-records td {
+    padding: 4px 0;
+    font-size: 0.78rem;
+  }
+
+  .cashier-records td::before {
+    display: block;
+    margin-bottom: 2px;
+    color: #6c687c;
+    content: attr(data-label);
+    font-size: 0.68rem;
+    font-weight: 700;
   }
 }
 

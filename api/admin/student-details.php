@@ -17,9 +17,9 @@ if (empty($type) || empty($id)) {
 function getStudentDetails($conn, $type, $id) {
     $info = [];
     $tables = [
-        'new' => ['info' => 'new_student_info', 'id' => 'id_new', 'addr' => 'new_student_address', 'addr_id' => 'id_add_new', 'parent' => 'new_student_parent', 'parent_id' => 'id_par_new', 'req' => 'new_student_req', 'req_id' => 'id_req_new'],
-        'old' => ['info' => 'old_student_info', 'id' => 'id_old', 'addr' => 'old_student_address', 'addr_id' => 'id_old_add', 'parent' => 'old_student_parent', 'parent_id' => 'id_par_old', 'req' => 'old_student_req', 'req_id' => 'id_req_old'],
-        'transferee' => ['info' => 'transferee_info', 'id' => 'id_trans', 'addr' => 'transferee_address', 'addr_id' => 'id_add_trans', 'parent' => 'transferee_parent', 'parent_id' => 'id_par_trans', 'req' => 'transferee_req', 'req_id' => 'id_req_trans'],
+        'new' => ['info' => 'new_student_info', 'id' => 'id_new', 'suffix' => '_new', 'addr' => 'new_student_address', 'addr_id' => 'id_add_new', 'parent' => 'new_student_parent', 'parent_id' => 'id_par_new', 'req' => 'new_student_req', 'req_id' => 'id_req_new'],
+        'old' => ['info' => 'old_student_info', 'id' => 'id_old', 'suffix' => '_old', 'addr' => 'old_student_address', 'addr_id' => 'id_old_add', 'parent' => 'old_student_parent', 'parent_id' => 'id_par_old', 'req' => 'old_student_req', 'req_id' => 'id_req_old'],
+        'transferee' => ['info' => 'transferee_info', 'id' => 'id_trans', 'suffix' => '_trans', 'addr' => 'transferee_address', 'addr_id' => 'id_add_trans', 'parent' => 'transferee_parent', 'parent_id' => 'id_par_trans', 'req' => 'transferee_req', 'req_id' => 'id_req_trans'],
     ];
 
     if (!isset($tables[$type])) return null;
@@ -52,6 +52,22 @@ function getStudentDetails($conn, $type, $id) {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) $info['requirements'] = $result->fetch_assoc();
     $stmt->close();
+
+    $lrn = $info['basic']["lrn{$t['suffix']}"] ?? null;
+    $info['student_uploads'] = [];
+    if ($lrn !== null) {
+        $uploadStmt = $conn->prepare(
+            'SELECT d.id, d.category, d.original_name, d.mime_type, d.file_size, d.uploaded_at
+             FROM student_documents d
+             INNER JOIN students s ON s.id_student = d.student_id
+             WHERE s.lrn = ?
+             ORDER BY d.uploaded_at DESC, d.id DESC'
+        );
+        $uploadStmt->bind_param('s', $lrn);
+        $uploadStmt->execute();
+        $info['student_uploads'] = $uploadStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $uploadStmt->close();
+    }
 
     return $info;
 }

@@ -56,13 +56,16 @@
 }
 
 .enroll-student .alert-success {
-  color: #3c763d;
-  background-color: #dff0d8;
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #a5d6a7;
+  font-weight: 600;
 }
 
 .enroll-student .alert-danger {
   color: #a94442;
   background-color: #f2dede;
+  border: 1px solid #e4b9b9;
 }
 
 .enroll-student .room-info {

@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [sessionExpired, setSessionExpired] = useState(null); // null | "idle" | "expired"
 
-  const lastActivityRef = useRef(Date.now());
+  const lastActivityRef = useRef(0);
   const expiryTimeoutRef = useRef(null);
 
   useEffect(() => {
@@ -60,6 +60,7 @@ export function AuthProvider({ children }) {
       lastActivityRef.current = Date.now();
     };
 
+    markActive();
     ACTIVITY_EVENTS.forEach((evt) => window.addEventListener(evt, markActive));
     return () => {
       ACTIVITY_EVENTS.forEach((evt) =>
@@ -83,17 +84,12 @@ export function AuthProvider({ children }) {
     const expiryMs = getTokenExpiryMs(token);
     if (!expiryMs) return undefined;
 
-    const msUntilExpiry = expiryMs - Date.now();
-
-    if (msUntilExpiry <= 0) {
-      logout();
-      setSessionExpired("expired");
-      return undefined;
-    }
+    const msUntilExpiry = Math.max(0, expiryMs - Date.now());
 
     expiryTimeoutRef.current = window.setTimeout(() => {
       const idleFor = Date.now() - lastActivityRef.current;
-      const reason = idleFor >= IDLE_THRESHOLD_MS ? "idle" : "expired";
+      const reason =
+        msUntilExpiry > 0 && idleFor >= IDLE_THRESHOLD_MS ? "idle" : "expired";
       logout();
       setSessionExpired(reason);
     }, msUntilExpiry);
