@@ -1,0 +1,37 @@
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 14px 0 4px;
+  color: #625b68;
+  font-size: 13px;
+}
+
+.table-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-pagination button {
+  padding: 7px 12px;
+  border: 1px solid #d8c7de;
+  border-radius: 6px;
+  background: #fff;
+  color: #6e1a79;
+  font: inherit;
+  cursor: pointer;
+}
+
+.table-pagination button:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+  .table-pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

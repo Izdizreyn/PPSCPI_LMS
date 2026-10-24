@@ -1,0 +1,224 @@
+.teacher-account-form,
+.teacher-password-panel form {
+  display: grid;
+  max-width: 560px;
+  gap: 14px;
+  margin: 16px 0 28px;
+}
+
+.teacher-account-form label,
+.teacher-password-panel label {
+  display: grid;
+  gap: 6px;
+  color: #444;
+  font-weight: 600;
+}
+
+.teacher-account-form input,
+.teacher-password-panel input,
+.grades-room-select select {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #cfc7d2;
+  border-radius: 5px;
+  font: inherit;
+}
+
+.teacher-account-form .grades-btn,
+.teacher-password-panel .grades-btn,
+.teacher-dashboard-actions .grades-btn {
+  width: fit-content;
+  text-decoration: none;
+}
+
+.teacher-dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0 8px;
+}
+
+.teacher-dashboard {
+  max-width: 900px;
+  margin: 10px auto;
+  padding: 16px 20px;
+}
+
+.teacher-dashboard h1 {
+  margin: 0 0 8px;
+  font-size: 1.55rem;
+}
+
+.teacher-dashboard > p {
+  margin: 6px 0;
+}
+
+.teacher-dashboard .teacher-dashboard-note {
+  color: #625b68;
+  font-size: 0.85rem;
+}
+
+.teacher-grade-summary {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border: 1px solid #e1d9e6;
+  border-radius: 6px;
+  background: #f5f0f7;
+}
+
+.teacher-grade-summary h2 {
+  margin: 0 0 8px;
+  color: #800080;
+  font-size: 0.95rem;
+}
+
+.teacher-grade-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.teacher-grade-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px;
+  border-radius: 14px;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.teacher-grade-status strong {
+  min-width: 16px;
+  text-align: center;
+}
+
+.teacher-grade-status-submitted {
+  background: #fff0c2;
+  color: #795500;
+}
+
+.teacher-grade-status-returned {
+  background: #f9dfe2;
+  color: #862832;
+}
+
+.teacher-grade-status-validated {
+  background: #dceaff;
+  color: #194d8f;
+}
+
+.teacher-grade-status-released {
+  background: #dff2e3;
+  color: #21633a;
+}
+
+.teacher-advisory-section h2 {
+  margin: 12px 0 8px;
+  font-size: 1rem;
+}
+
+.teacher-room-dropdown {
+  max-width: 600px;
+}
+
+.teacher-room-dropdown summary {
+  width: fit-content;
+  padding: 8px 12px;
+  border: 1px solid #800080;
+  border-radius: 5px;
+  color: #800080;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.teacher-room-options {
+  display: grid;
+  max-width: 600px;
+  max-height: 220px;
+  gap: 6px;
+  margin: 8px 0;
+  overflow-y: auto;
+}
+
+.teacher-room-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid #e1d9e6;
+  border-radius: 6px;
+  background: #faf8fb;
+}
+
+.teacher-room-options input {
+  width: 18px;
+  height: 18px;
+}
+
+.teacher-current-advisory {
+  margin: 10px 0;
+  color: #403746;
+  font-size: 0.85rem;
+}
+
+.teacher-current-advisory ul {
+  margin: 4px 0 8px;
+  padding-left: 20px;
+}
+
+.teacher-current-advisory p {
+  margin: 4px 0 8px;
+}
+
+.teacher-password-page {
+  max-width: 640px;
+  margin: 20px auto;
+}
+
+.teacher-password-form {
+  display: grid;
+  max-width: 460px;
+  gap: 14px;
+  margin: 0 auto;
+}
+
+.teacher-password-form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.teacher-password-form input {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #cfc7d2;
+  border-radius: 5px;
+  font: inherit;
+}
+
+.teacher-password-form .grades-btn {
+  width: fit-content;
+}
+
+.teacher-password-panel {
+  max-width: 560px;
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid #e3dce7;
+}
+
+.teacher-password-panel summary {
+  color: #800080;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.grades-room-select {
+  display: grid;
+  max-width: 420px;
+  gap: 6px;
+  margin: 0 0 18px;
+  color: #444;
+  font-weight: 600;
+}

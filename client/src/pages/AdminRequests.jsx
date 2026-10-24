@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
@@ -6,41 +6,59 @@ import AdminLayout from "../components/AdminLayout";
 import "./AdminRequests.css";
 import { Link } from "react-router-dom";
 import { adminLinks } from "../config/navLinks";
+import TablePagination from "../components/TablePagination";
+
+const PAGE_SIZE = 10;
 
 export default function AdminRequests() {
   const { token } = useAuth();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [page, setPage] = useState(1);
 
-  const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
-
-  const loadRequests = async () => {
+  const loadRequests = useCallback(async () => {
     setLoading(true);
-    const res = await axios.get(
-      `${API_BASE_URL}/admin/certificate-requests.php`,
-      authHeaders,
-    );
-    setRequests(res.data.requests);
-    setLoading(false);
-  };
+    try {
+      const res = await axios.get(
+        `${API_BASE_URL}/admin/document-requests.php`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setRequests(res.data.requests);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
   useEffect(() => {
-    loadRequests();
-  }, []);
+    const loadId = window.setTimeout(loadRequests, 0);
+    return () => window.clearTimeout(loadId);
+  }, [loadRequests]);
 
-  const updateStatus = async (id, action) => {
+  const updateStatus = async (id, action, reason = "") => {
     try {
       const res = await axios.post(
-        `${API_BASE_URL}/admin/certificate-requests-update.php`,
-        { id, action },
-        authHeaders,
+        `${API_BASE_URL}/admin/document-requests-update.php`,
+        { id, action, reason },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      setMessage(res.data.message);
+      setMessage(res.data.message || "Request updated successfully.");
       loadRequests();
     } catch (err) {
       setMessage(err.response?.data?.message || "Error updating request.");
     }
+  };
+
+  const handleReject = (id) => {
+    const reason = window.prompt(
+      "Reason this document cannot be released (required):",
+    );
+    if (reason === null) return;
+    if (!reason.trim()) {
+      setMessage("A reason is required to reject a request.");
+      return;
+    }
+    updateStatus(id, "reject", reason.trim());
   };
 
   if (loading) {
@@ -51,10 +69,17 @@ export default function AdminRequests() {
     );
   }
 
+  const pageCount = Math.max(1, Math.ceil(requests.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const visibleRequests = requests.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
   return (
     <AdminLayout links={adminLinks}>
       <div className="admin-requests">
-        <h1>Certificate of Enrollment Requests</h1>
+        <h1>Document Requests</h1>
 
         {message && <div className="alert">{message}</div>}
 
@@ -64,6 +89,7 @@ export default function AdminRequests() {
               <th>ID</th>
               <th>Student Name</th>
               <th>LRN</th>
+              <th>Document</th>
               <th>Year/Level</th>
               <th>Strand</th>
               <th>Room</th>
@@ -75,11 +101,12 @@ export default function AdminRequests() {
           </thead>
           <tbody>
             {requests.length > 0 ? (
-              requests.map((r) => (
+              visibleRequests.map((r) => (
                 <tr key={r.id}>
                   <td>{r.id}</td>
                   <td>{r.full_name}</td>
                   <td>{r.lrn}</td>
+                  <td>{r.document_type_label}</td>
                   <td>
                     {r.year_level} - {r.level}
                   </td>
@@ -93,6 +120,9 @@ export default function AdminRequests() {
                     >
                       {r.status}
                     </span>
+                    {r.status === "Rejected" && r.rejection_reason && (
+                      <div className="rejection-reason">{r.rejection_reason}</div>
+                    )}
                   </td>
                   <td>
                     {r.status === "Pending" && (
@@ -105,33 +135,41 @@ export default function AdminRequests() {
                         </button>
                         <button
                           className="button button-danger"
-                          onClick={() => updateStatus(r.id, "reject")}
+                          onClick={() => handleReject(r.id)}
                         >
                           Reject
                         </button>
                       </>
                     )}
                     {r.status === "Approved" && (
-                      <Link
-                        to={`/print-certificate?id=${r.id}`}
-                        target="_blank"
-                        className="button button-primary"
-                      >
-                        Print
-                      </Link>
-                    )}
+  <Link
+    to={`/print-document?id=${r.id}`}
+    target="_blank"
+    className="button button-primary"
+  >
+    Print
+  </Link>
+)}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="10" style={{ textAlign: "center" }}>
-                  No certificate requests found.
+                <td colSpan="11" style={{ textAlign: "center" }}>
+                  No document requests found.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        <TablePagination
+          page={currentPage}
+          pageSize={PAGE_SIZE}
+          totalItems={requests.length}
+          onPageChange={(nextPage) =>
+            setPage(Math.min(Math.max(nextPage, 1), pageCount))
+          }
+        />
       </div>
     </AdminLayout>
   );

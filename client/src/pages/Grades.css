@@ -1,0 +1,33 @@
+.grades-page { max-width: 1100px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,.1); }
+.grades-page h1 { color: #800080; text-align: center; margin-bottom: 20px; }
+.grades-page h2 { color: #800080; margin: 20px 0 10px; }
+.grades-page table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.grades-page th { background: #800080; color: #fff; padding: 10px; text-align: left; }
+.grades-page td { padding: 8px 10px; border-bottom: 1px solid #ddd; }
+.grades-page tbody tr:nth-child(even) { background: #f9f9f9; }
+.grades-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.grades-tabs button { padding: 8px 14px; border: 1px solid #ccc; background: #f1f1f1; border-radius: 6px; cursor: pointer; }
+.grades-tabs button.active { background: #800080; color: #fff; border-color: #800080; }
+.grades-input { width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+.grades-btn { padding: 9px 16px; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: 600; margin-right: 8px; }
+.grades-btn:disabled { opacity: .5; cursor: not-allowed; }
+.grades-btn-primary { background: #800080; }
+.grades-btn-success { background: #28a745; }
+.grades-btn-danger { background: #dc3545; }
+.grades-btn-muted { background: #666; }
+.grades-btn-sm { padding: 5px 10px; font-size: 12px; margin: 0; }
+.grades-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: #eee; }
+.grades-badge-Draft { background: #e2e3e5; color: #41464b; }
+.grades-badge-Submitted { background: #fff3cd; color: #856404; }
+.grades-badge-Validated { background: #cfe2ff; color: #084298; }
+.grades-badge-Returned { background: #f8d7da; color: #721c24; }
+.grades-badge-Released { background: #d4edda; color: #155724; }
+.grades-badge-Mixed { background: #e0cffc; color: #5b2a86; }
+.grades-badge-Empty { background: #f1f1f1; color: #999; }
+.grades-alert { padding: 12px; border-radius: 6px; margin-bottom: 14px; }
+.grades-alert-info { background: #d4edda; color: #155724; }
+.grades-alert-error { background: #f8d7da; color: #721c24; }
+.grades-actions { margin-top: 16px; }
+.grades-reason { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ccc; border-radius: 6px; margin: 8px 0; }
+.grades-final { font-weight: 700; color: #800080; }
+.grades-level-header { background: #f0e6f5; color: #800080; padding: 8px 12px; border-radius: 4px; font-weight: 700; margin-top: 18px; }

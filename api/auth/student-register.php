@@ -1,6 +1,4 @@
 <?php
-// api/auth/student-register.php
-// Internal endpoint for creating student accounts after approval
 
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/database.php';
@@ -61,7 +59,8 @@ $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
 // Insert student account
 $stmt = $conn->prepare("INSERT INTO students (email_student, password_student, lrn, full_name, role, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-$stmt->bind_param("sssss", $email, $hashed_password, $lrn, $full_name, $role = 'purple_student');
+$role = 'purple_student';
+$stmt->bind_param("sssss", $email, $hashed_password, $lrn, $full_name, $role);
 $stmt->execute();
 $student_id = $stmt->insert_id;
 $stmt->close();

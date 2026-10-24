@@ -1,5 +1,4 @@
 <?php
-// api/auth/student-change-password.php
 
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/database.php';

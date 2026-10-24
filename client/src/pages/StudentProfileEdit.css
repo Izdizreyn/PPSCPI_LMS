@@ -1,0 +1,82 @@
+.student-profile-edit-page > h1 {
+  margin: 0 0 8px;
+  color: #800080;
+}
+
+.student-profile-edit-page > p {
+  margin: 0 0 24px;
+  color: #555;
+}
+
+.student-profile-edit-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+}
+
+.student-profile-edit-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.student-profile-edit-field label {
+  color: #444;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.student-profile-edit-field input,
+.student-profile-edit-field select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #c9c2cd;
+  border-radius: 5px;
+  background: #fff;
+  color: #333;
+  font: inherit;
+}
+
+.student-profile-edit-field input:focus,
+.student-profile-edit-field select:focus {
+  border-color: #800080;
+  outline: 2px solid rgba(128, 0, 128, 0.16);
+}
+
+.student-profile-edit-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.student-profile-alert {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  border-radius: 6px;
+}
+
+.student-profile-alert.error {
+  border: 1px solid #f1b3b3;
+  background: #fff0f0;
+  color: #8c1d1d;
+}
+
+.student-profile-alert.success {
+  border: 1px solid #b7dfc0;
+  background: #effaf2;
+  color: #1f6b35;
+}
+
+@media (max-width: 640px) {
+  .student-profile-edit-form {
+    grid-template-columns: 1fr;
+  }
+
+  .student-profile-edit-actions {
+    grid-column: 1;
+  }
+}

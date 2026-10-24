@@ -6,12 +6,31 @@ client/.env.local
 
 # PHP (api)
 api/vendor/
-api/.env
 
 # General
 .DS_Store
 *.log
 
-# Secrets
+# Environment files and credentials
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.sample
 api/config/jwt.php
+api/config/sms.php
+api/config/database.php
+*.pem
+*.key
+*.p12
+*.pfx
 ppscpi_lms/sad
+ppscpi_lms/.VSCodeCounter
+
+# Uploaded documents — never commit real or test files
+api/uploads/*
+!api/uploads/.gitkeep
+api/private_uploads/*
+!api/private_uploads/.htaccess
+!api/private_uploads/student-documents/
+api/private_uploads/student-documents/*
+!api/private_uploads/student-documents/.gitkeep

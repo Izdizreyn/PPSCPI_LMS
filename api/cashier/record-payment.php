@@ -86,9 +86,10 @@ if (is_array($payments) && count($payments) > 0) {
 
 if ($success) {
     if ($balanceRow) {
+        $logAmount = $input['amount'] ?? 0;
         $queueLogStmt = $conn->prepare("INSERT INTO queue_usage_log (queue_number, lrn, student_type, student_id, balance_id, amount, recorded_at, status)
-            VALUES (?, ?, ?, ?, ?, ?, NOW(), 'Used')");
-        $queueLogStmt->bind_param("sssiid", $activeQueue['queue_number'], $studentLrn, $balanceRow['student_type'], $balanceRow['student_id'], $input['balance_id'], $input['amount'] ?? 0);
+        VALUES (?, ?, ?, ?, ?, ?, NOW(), 'Used')");
+        $queueLogStmt->bind_param("sssiid", $activeQueue['queue_number'], $studentLrn, $balanceRow['student_type'], $balanceRow['student_id'], $input['balance_id'], $logAmount);
         $queueLogStmt->execute();
         $queueLogStmt->close();
 

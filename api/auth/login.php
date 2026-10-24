@@ -1,5 +1,4 @@
 <?php
-// api/auth/login.php
 
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/database.php';
@@ -29,7 +28,14 @@ $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 $stmt->close();
 
-if (!$row || $password !== $row["password_admin"]) {
+$passwordMatches = false;
+if ($row) {
+    $storedPassword = (string) $row["password_admin"];
+    $passwordMatches = password_verify($password, $storedPassword)
+        || hash_equals($storedPassword, $password);
+}
+
+if (!$passwordMatches) {
     http_response_code(401);
     echo json_encode(["success" => false, "message" => "Invalid username or password."]);
     exit();

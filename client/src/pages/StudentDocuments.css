@@ -1,0 +1,138 @@
+.student-documents-page > h1 {
+  margin: 0 0 8px;
+  color: #800080;
+}
+
+.student-documents-intro {
+  margin: 0 0 24px;
+  color: #555;
+}
+
+.student-documents-page .card {
+  margin-bottom: 24px;
+}
+
+.student-documents-page .card h2 {
+  margin-top: 0;
+  color: #800080;
+}
+
+.student-upload-card form {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.student-upload-card form label {
+  color: #444;
+  font-weight: 600;
+}
+
+.student-upload-card input[type="file"] {
+  max-width: 100%;
+}
+
+.student-upload-card select {
+  width: min(100%, 420px);
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #c9c2cd;
+  border-radius: 5px;
+  background: #fff;
+  color: #333;
+  font: inherit;
+}
+
+.student-upload-card select:focus {
+  border-color: #800080;
+  outline: 2px solid rgba(128, 0, 128, 0.16);
+}
+
+.student-upload-card .btn-primary:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.student-selected-file {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #555;
+}
+
+.student-documents-alert {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  border-radius: 6px;
+}
+
+.student-documents-alert.error {
+  border: 1px solid #f1b3b3;
+  background: #fff0f0;
+  color: #8c1d1d;
+}
+
+.student-documents-alert.success {
+  border: 1px solid #b7dfc0;
+  background: #effaf2;
+  color: #1f6b35;
+}
+
+.student-document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.student-document-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e8e2ea;
+}
+
+.student-document-list li:first-child {
+  padding-top: 0;
+}
+
+.student-document-list li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.student-document-list li > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.student-document-list strong {
+  overflow-wrap: anywhere;
+}
+
+.student-document-list small {
+  color: #666;
+}
+
+.student-document-list a {
+  flex-shrink: 0;
+  color: #800080;
+  font-weight: 600;
+}
+
+.student-document-list a:hover {
+  color: #600060;
+}
+
+@media (max-width: 480px) {
+  .student-document-list li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

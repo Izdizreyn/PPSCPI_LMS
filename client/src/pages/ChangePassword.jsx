@@ -7,7 +7,7 @@ import "./ChangePassword.css";
 
 export default function ChangePassword() {
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -48,7 +48,7 @@ export default function ChangePassword() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (res.data.success) {
@@ -59,7 +59,8 @@ export default function ChangePassword() {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Failed to change password. Please try again."
+        err.response?.data?.message ||
+          "Failed to change password. Please try again.",
       );
     } finally {
       setLoading(false);

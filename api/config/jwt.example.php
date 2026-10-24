@@ -1,15 +1,14 @@
 <?php
-// api/config/jwt.example.php
-// Copy this file to jwt.php and set your own secret.
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-define('JWT_SECRET', 'REPLACE_WITH_A_LONG_RANDOM_STRING');
+define('JWT_SECRET', 'REPLACE_WITH_YOUR_OWN_64_CHAR_RANDOM_SECRET');
 define('JWT_ALGO', 'HS256');
-define('JWT_EXPIRY_SECONDS', 3600); // 1 hour
+define('JWT_EXPIRY_SECONDS', 1800); // 30 mins
+
 
 function generateJWT($payload)
 {

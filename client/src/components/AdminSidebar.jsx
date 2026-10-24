@@ -6,13 +6,13 @@ import { LogoutIcon } from "./AdminIcons";
 
 export default function AdminSidebar({ links }) {
   const { pathname } = useLocation();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       logout();
-      navigate("/");
+      navigate("/", { replace: true });
     }
   };
 
@@ -33,6 +33,17 @@ export default function AdminSidebar({ links }) {
         ))}
       </ul>
       <ul className="logout">
+        {user?.role === "purple_admin" && (
+          <li>
+            <Link
+              to="/admin/teachers"
+              className={pathname === "/admin/teachers" ? "active" : ""}
+            >
+              <span className="icon">+</span>
+              <span className="label">Create Teacher</span>
+            </Link>
+          </li>
+        )}
         <li>
           <a
             href="#"

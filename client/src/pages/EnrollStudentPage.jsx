@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -21,46 +21,71 @@ export default function EnrollStudentPage() {
   const [selectedRoom, setSelectedRoom] = useState("");
   const [message, setMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const messageRef = useRef(null);
 
   const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
-    (async () => {
+    if (message) {
+      messageRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [message]);
+
+  useEffect(() => {
+  (async () => {
+    try {
       const res = await axios.get(
         `${API_BASE_URL}/admin/enroll.php?year=${year}&strand=${strand}`,
-        authHeaders,
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      setRooms(res.data.rooms);
-    })();
-  }, [year, strand]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage(null);
-    setSubmitting(true);
-    try {
-      const res = await axios.post(
-        `${API_BASE_URL}/admin/enroll.php`,
-        { lrn, name, year, strand, room_id: selectedRoom },
-        authHeaders,
-      );
-      setMessage({ type: "success", text: res.data.message });
+      setRooms(res.data?.rooms || []);
     } catch (err) {
-      setMessage({
-        type: "danger",
-        text: err.response?.data?.message || "Failed to enroll student.",
-      });
-    } finally {
-      setSubmitting(false);
+      console.error("Failed to load rooms:", err);
+      setRooms([]);
     }
-  };
+  })();
+}, [year, strand, token]);
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (submitting) return; // hard guard against double-fire
+  setMessage(null);
+  setSubmitting(true);
+  try {
+    const res = await axios.post(
+      `${API_BASE_URL}/admin/enroll.php`,
+      { lrn, name, year, strand, room_id: selectedRoom },
+      authHeaders,
+    );
+
+    setMessage({
+      type: "success",
+      text: res.data.message || "Student enrolled successfully.",
+    });
+  } catch (err) {
+    setMessage({
+      type: "danger",
+      text: err.response?.data?.message || "Failed to enroll student.",
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <AdminLayout links={adminLinks}>
       <div className="enroll-student">
         <h1>Enroll Student</h1>
         {message && (
-          <div className={`alert alert-${message.type}`}>{message.text}</div>
+          <div
+            ref={messageRef}
+            className={`alert alert-${message.type}`}
+            role={message.type === "success" ? "status" : "alert"}
+            aria-live={message.type === "success" ? "polite" : "assertive"}
+            tabIndex={-1}
+          >
+            {message.text}
+          </div>
         )}
 
         <form onSubmit={handleSubmit}>

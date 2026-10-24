@@ -1,4 +1,3 @@
-// client/src/config/navLinks.jsx
 import {
   DashboardIcon,
   StudentsIcon,
@@ -6,6 +5,9 @@ import {
   RequestsIcon,
   QueueIcon,
   CashierIcon,
+  GradesIcon,
+  GradeCheckIcon,
+  PasswordIcon,
 } from "../components/AdminIcons";
 
 export const adminLinks = [
@@ -15,6 +17,16 @@ export const adminLinks = [
   { to: "/admin/queue", label: "Queue", icon: <QueueIcon /> },
   { to: "/admin/enrolled", label: "Enrolled", icon: <EnrolledIcon /> },
   { to: "/admin/requests", label: "Requests", icon: <RequestsIcon /> },
+  { to: "/admin/import-old-student", label: "Import Old Student Records", icon: <StudentsIcon /> },
+  { to: "/admin/grades", label: "Grade Validation", icon: <GradeCheckIcon /> },
+  { to: "/admin/chat", label: "Student Chat", icon: <RequestsIcon /> },
+];
+
+export const teacherLinks = [
+  { to: "/teacher/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
+  { to: "/teacher/my-classes", label: "Update Student Grades", icon: <GradesIcon /> },
+  { to: "/teacher/chat", label: "Room Chat", icon: <RequestsIcon /> },
+  { to: "/teacher/change-password", label: "Change Password", icon: <PasswordIcon /> },
 ];
 
 export const cashierLinks = [

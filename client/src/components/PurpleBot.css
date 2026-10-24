@@ -1,0 +1,338 @@
+.purplebot {
+  position: fixed;
+  right: 24px;
+  bottom: 22px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: Arial, sans-serif;
+}
+
+.purplebot-launcher {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 78px;
+  height: 78px;
+  padding: 5px;
+  border: 0;
+  border-radius: 50%;
+  background: #800080;
+  color: #fff;
+  box-shadow: 0 4px 16px #0004;
+  cursor: pointer;
+}
+
+.purplebot-launcher span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.35px;
+}
+
+.purplebot-launcher:hover,
+.purplebot-launcher:focus-visible {
+  background: #650065;
+}
+
+.purplebot-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(360px, calc(100vw - 32px));
+  height: min(500px, calc(100vh - 130px));
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid #e2d5e8;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 30px #0003;
+}
+
+.purplebot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #800080;
+  color: #fff;
+}
+
+.purplebot-header div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.purplebot-header strong {
+  font-size: 15px;
+}
+
+.purplebot-header span {
+  font-size: 12px;
+  opacity: 0.88;
+}
+
+.purplebot-header button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.purplebot-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  overflow-y: auto;
+  background: #faf8fb;
+}
+
+.purplebot-message,
+.purplebot-loading {
+  max-width: 86%;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: #27212a;
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.purplebot-message.bot,
+.purplebot-loading {
+  align-self: flex-start;
+  border: 1px solid #eee5f0;
+  background: #fff;
+}
+
+.purplebot-message.student {
+  align-self: flex-end;
+  background: #800080;
+  color: #fff;
+}
+
+.purplebot-message-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: flex-start;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.purplebot-message-group.student {
+  align-items: flex-end;
+  align-self: flex-end;
+}
+
+.purplebot-message-group .purplebot-message {
+  max-width: 100%;
+}
+
+.purplebot-message-action,
+.purplebot-ask-another {
+  border: 1px solid #800080;
+  border-radius: 8px;
+  background: #fff;
+  color: #700070;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.purplebot-message-action {
+  align-self: flex-start;
+  padding: 8px 10px;
+}
+
+.purplebot-message-action:hover,
+.purplebot-ask-another:hover,
+.purplebot-message-action:focus-visible,
+.purplebot-ask-another:focus-visible {
+  background: #f7eff9;
+}
+
+.purplebot-typing {
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  padding: 12px 14px;
+  border: 1px solid #eee5f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.purplebot-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #800080;
+  animation: purplebot-typing-pulse 1s infinite ease-in-out;
+}
+
+.purplebot-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.purplebot-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes purplebot-typing-pulse {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+.purplebot-options {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+  padding: 2px 0 4px;
+}
+
+.purplebot-options p {
+  margin: 0 0 2px;
+  color: #4a3b4d;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.purplebot-options button {
+  padding: 9px 11px;
+  border: 1px solid #e2d5e8;
+  border-radius: 9px;
+  background: #fff;
+  color: #5c1768;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.purplebot-options button:hover,
+.purplebot-options button:focus-visible {
+  border-color: #800080;
+  background: #f7eff9;
+}
+
+.purplebot-options button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.purplebot-options .purplebot-back {
+  align-self: flex-start;
+  border: 0;
+  padding: 5px 0;
+  background: transparent;
+  color: #800080;
+  font-weight: 700;
+}
+
+.purplebot-ask-another {
+  margin: 0 12px 8px;
+  padding: 8px 11px;
+  align-self: flex-start;
+}
+
+.purplebot-ask-another:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.purplebot-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #eee5f0;
+}
+
+.purplebot-form input {
+  min-width: 0;
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #d8cbdc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.purplebot-form button,
+.purplebot-error button {
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #800080;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.purplebot-form button:disabled,
+.purplebot-error button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.purplebot-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  background: #fff1f0;
+  color: #8b1e1e;
+  font-size: 12px;
+}
+
+.purplebot-error button {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  font-size: 12px;
+}
+
+.purplebot-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 480px) {
+  .purplebot {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .purplebot-launcher {
+    width: 68px;
+    height: 68px;
+  }
+
+  .purplebot-panel {
+    width: calc(100vw - 24px);
+    height: min(460px, calc(100vh - 110px));
+  }
+}

@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 import "./StudentSidebar.css";
@@ -6,6 +6,51 @@ import "./StudentSidebar.css";
 const DashboardIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="white">
     <path d="M341.8 72.6C329.5 61.2 310.5 61.2 298.3 72.6L74.3 280.6C64.7 289.6 61.5 303.5 66.3 315.7C71.1 327.9 82.8 336 96 336L112 336L112 512C112 547.3 140.7 576 176 576L464 576C499.3 576 528 547.3 528 512L528 336L544 336C557.2 336 569 327.9 573.8 315.7C578.6 303.5 575.4 289.5 565.8 280.6L341.8 72.6zM264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320zM208 496C208 451.8 243.8 416 288 416L352 416C396.2 416 432 451.8 432 496C432 504.8 424.8 512 416 512L224 512C215.2 512 208 504.8 208 496z"/>
+  </svg>
+);
+
+const DocumentIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="white">
+    <path d="M192 64C156.7 64 128 92.7 128 128L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 245.3C512 228.3 505.3 212 493.3 200L376 82.7C364 70.7 347.7 64 330.7 64L192 64zM320 96L320 208C320 234.5 341.5 256 368 256L480 256L480 512C480 529.7 465.7 544 448 544L192 544C174.3 544 160 529.7 160 512L160 128C160 110.3 174.3 96 192 96L320 96zM352 100L476 224L368 224C358.1 224 352 217.9 352 208L352 100zM208 320C199.2 320 192 327.2 192 336C192 344.8 199.2 352 208 352L432 352C440.8 352 448 344.8 448 336C448 327.2 440.8 320 432 320L208 320zM208 400C199.2 400 192 407.2 192 416C192 424.8 199.2 432 208 432L432 432C440.8 432 448 424.8 448 416C448 407.2 440.8 400 432 400L208 400z"/>
+  </svg>
+);
+
+const UploadDocumentIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 640 640"
+    width="20"
+    height="20"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M416.5 88L416.5 160L352.5 160C273 160 208.5 224.5 208.5 304C208.5 397.4 291.3 438.8 309.1 446.6C311.3 447.6 313.7 448 316.2 448L318.7 448C328.5 448 336.5 440 336.5 430.2C336.5 421.9 330.6 414.7 323.7 409.9C314.8 403.7 304.5 391.7 304.5 369.4C304.5 324.4 341 287.9 386 287.9L416.5 287.9L416.5 359.9C416.5 369.6 422.3 378.4 431.3 382.1C440.3 385.8 450.6 383.8 457.5 376.9L593.5 240.9C602.9 231.5 602.9 216.3 593.5 207L457.5 71C450.6 64.1 440.3 62.1 431.3 65.8C422.3 69.5 416.5 78.3 416.5 88zM144.5 160C100.3 160 64.5 195.8 64.5 240L64.5 496C64.5 540.2 100.3 576 144.5 576L400.5 576C444.7 576 480.5 540.2 480.5 496L480.5 464C480.5 446.3 466.2 432 448.5 432C430.8 432 416.5 446.3 416.5 464L416.5 496C416.5 504.8 409.3 512 400.5 512L144.5 512C135.7 512 128.5 504.8 128.5 496L128.5 240C128.5 231.2 135.7 224 144.5 224L160.5 224C178.2 224 192.5 209.7 192.5 192C192.5 174.3 178.2 160 160.5 160L144.5 160z" />
+  </svg>
+);
+
+const ChatIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 640 640"
+    width="20"
+    height="20"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M144 64C117.5 64 96 85.5 96 112L96 272L176 272L176 240C176 187 219 144 272 144L480 144L480 112C480 85.5 458.5 64 432 64L144 64zM272 192C245.5 192 224 213.5 224 240L224 272L304 272C357 272 400 315 400 368L400 480L560 480C586.5 480 608 458.5 608 432L608 240C608 213.5 586.5 192 560 192L272 192zM472 256L520 256C533.3 256 544 266.7 544 280L544 328C544 341.3 533.3 352 520 352L472 352C458.7 352 448 341.3 448 328L448 280C448 266.7 458.7 256 472 256zM80 320C53.5 320 32 341.5 32 368L32 378.4L188.6 464.6C189.7 465.2 190.8 465.5 192 465.5C193.2 465.5 194.4 465.2 195.4 464.6L352 378.4L352 368C352 341.5 330.5 320 304 320L80 320zM352 433.2L218.6 506.6C210.5 511.1 201.3 513.4 192 513.4C182.7 513.4 173.6 511 165.4 506.6L32 433.2L32 528C32 554.5 53.5 576 80 576L304 576C330.5 576 352 554.5 352 528L352 433.2z" />
+  </svg>
+);
+
+const GradesIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 640 640"
+    width="20"
+    height="20"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M128 352a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zM80 448l192 0 0 128-192 0zM320 480l224 0 0 32-224 0zM320 544l224 0 0 32-224 0zM343.3 64c8.2 0 15.8 4.4 19.9 11.5l19.4 33.4c5 8.6 14.2 13.6 23.9 12.9l38.4-2.8c8.2-.6 16 3.4 20.3 10.4s4.4 15.8-.1 22.7l-21 32.3c-5.3 8.1-5.3 18.6 0 26.7l21 32.3c4.5 6.9 4.4 15.7-.1 22.7s-12.1 11-20.3 10.4l-38.4-2.8c-9.7-.7-18.9 4.3-23.9 12.9l-19.4 33.4c-4.1 7.1-11.7 11.5-19.9 11.5s-15.8-4.4-19.9-11.5l-19.4-33.4c-5-8.6-14.2-13.6-23.9-12.9l-38.4 2.8c-8.2 .6-16-3.4-20.3-10.4s-4.4-15.8 .1-22.7l21-32.3c5.3-8.1 5.3-18.6 0-26.7l-21-32.3c-4.5-6.9-4.4-15.7 .1-22.7s12.1-11 20.3-10.4l38.4 2.8c9.7 .7 18.9-4.3 23.9-12.9l19.4-33.4c4.1-7.1 11.7-11.5 19.9-11.5zM343.3 160a48 48 0 1 0 0 96 48 48 0 1 0 0-96z" />
   </svg>
 );
 
@@ -22,19 +67,22 @@ const LogoutIcon = () => (
 );
 
 export default function StudentSidebar() {
-  const { pathname } = useLocation();
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       logout();
-      navigate("/");
+      navigate("/", { replace: true });
     }
   };
 
   const links = [
     { to: "/student/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
+    { to: "/request-document", label: "Request Document", icon: <DocumentIcon /> },
+    { to: "/student/documents", label: "Upload Documents", icon: <UploadDocumentIcon /> },
+    { to: "/student/chat", label: "Student Chat", icon: <ChatIcon /> },
+    { to: "/student/grades", label: "My Grades", icon: <GradesIcon /> },
     { to: "/student/change-password", label: "Change Password", icon: <PasswordIcon /> },
   ];
 
@@ -43,21 +91,22 @@ export default function StudentSidebar() {
       <img src={logo} alt="logo" />
       <ul>
         {links.map((link) => (
-          <li key={link.to}>
-            <Link
+          <li key={link.label}>
+            <NavLink
               to={link.to}
-              className={pathname === link.to ? "active" : ""}
+              end
+              className={({ isActive }) => (isActive ? "active" : "")}
             >
               <span className="icon">{link.icon}</span>
               <span className="label">{link.label}</span>
-            </Link>
+            </NavLink>
           </li>
         ))}
       </ul>
       <ul className="logout">
         <li>
-          <a
-            href="#"
+          
+          <a href="#"
             onClick={(e) => {
               e.preventDefault();
               handleLogout();

@@ -1,6 +1,4 @@
 <?php
-// api/config/database.php
-
 $servername = "localhost";
 $username = "root";
 $password = "";

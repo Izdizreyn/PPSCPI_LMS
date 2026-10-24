@@ -1,0 +1,92 @@
+.request-document-card form {
+  max-width: 100%;
+}
+
+.request-document-card .form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.request-document-card .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+.request-document-card input,
+.request-document-card select,
+.request-document-card textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.request-document-card textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.alert {
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.my-requests-card table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.my-requests-card th,
+.my-requests-card td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-pending { background-color: #fff3cd; color: #856404; }
+.status-approved { background-color: #d4edda; color: #155724; }
+.status-rejected { background-color: #f8d7da; color: #721c24; }
+
+.rejection-note {
+  display: block;
+  margin-top: 4px;
+  color: #721c24;
+  font-size: 12px;
+}
+
+.view-link {
+  margin-left: 10px;
+  color: #800080;
+  font-weight: 600;
+}
+
+.request-document-note {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}

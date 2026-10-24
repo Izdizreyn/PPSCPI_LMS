@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../helpers/sms_helper.php';
 
 requireRole(['purple_admin']);
 
@@ -93,13 +94,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $stmt->close();
 
-        $conn->commit();
-        echo json_encode(["success" => true, "message" => "Student successfully enrolled in {$roomData['room_name']}."]);
+                $conn->commit();
     } catch (Exception $e) {
         $conn->rollback();
         http_response_code(500);
         echo json_encode(["success" => false, "message" => "Error enrolling student: " . $e->getMessage()]);
+        $conn->close();
+        exit();
     }
+
+    // Enrollment succeeded — now try to notify the student by SMS.
+    // A failed/skipped SMS never undoes the enrollment; it's reported
+    // separately so the admin knows whether to follow up manually.
+    $smsResult = ['success' => false, 'message' => 'No phone number on file.'];
+
+    $tableMap = [
+        ['table' => 'new_student_info', 'lrn' => 'lrn_new', 'phone' => 'phone_new'],
+        ['table' => 'old_student_info', 'lrn' => 'lrn_old', 'phone' => 'phone_old'],
+        ['table' => 'transferee_info', 'lrn' => 'lrn_trans', 'phone' => 'phone_trans'],
+    ];
+
+    $phone = null;
+    foreach ($tableMap as $t) {
+        $stmt = $conn->prepare("SELECT {$t['phone']} AS phone FROM {$t['table']} WHERE {$t['lrn']} = ? LIMIT 1");
+        $stmt->bind_param("s", $lrn);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        if ($row && !empty($row['phone'])) {
+            $phone = $row['phone'];
+            break;
+        }
+    }
+
+    if ($phone) {
+        $smsMessage = "Hi {$name}! You have been successfully enrolled at Power Purple College of Southern Philippines Inc. — Room: {$roomData['room_name']}. Welcome!";
+        $smsResult = sendEnrollmentSms($phone, $smsMessage);
+    }
+
+    echo json_encode([
+        "success" => true,
+        "message" => "Student successfully enrolled in {$roomData['room_name']}.",
+        "sms_sent" => $smsResult['success'],
+        "sms_message" => $smsResult['message'],
+    ]);
 
     $conn->close();
     exit();
